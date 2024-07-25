@@ -1,70 +1,54 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+import React from 'react';
+import { SectionList, StyleSheet, Text, View } from 'react-native';
+import { Game } from '../../models/game';
+import { GameView } from '../../components/GameView';
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    paddingTop: 22,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  sectionHeader: {
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 2,
+    fontSize: 18,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(247,247,247,1.0)',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  item: {
+    padding: 10,
+    height: 44,
   },
 });
+
+export default function HomeScreen() {
+  const games1: Game[] = [
+    new Game('Golden Gate Park - field 1', '4:00 pm', 1),
+    new Game('Golden Gate Park - field 2', '6:00 pm', 2)
+  ];
+
+  const games2: Game[] = [
+    new Game('Crocker Park - field 1', '5:00 pm', 2),
+    {location: 'Crocker Park - field 2', startTime: '8:00 pm', durationInHours: 2}
+  ];
+
+ return (
+  <View style={styles.container}>
+      <SectionList
+        sections={[
+          {title: '8/2', data: games1},
+          {title: '8/5', data: games2},
+        ]}
+        renderItem={({item}) => 
+          <GameView style={styles.item} game={item}/>
+        }
+        renderSectionHeader={({section}) => (
+            <Text style={styles.sectionHeader}>{section.title}</Text>
+        )}
+        keyExtractor={item => `basicListEntry-${item.location}`}
+      />
+    </View>
+ );
+}
