@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, ViewStyle, Text, StyleSheet } from 'react-native';
+import { View, ViewStyle, Text, StyleSheet, Pressable } from 'react-native';
 import { Game } from '../models/game';
+import { Link } from 'expo-router';
 
 type GameViewProps = {
     game: Game;
@@ -15,8 +16,15 @@ const styles = StyleSheet.create({
 
 export function GameView({ game, style }: GameViewProps) {
     return(
-        <View style={style}>
-            <Text style={styles.textFont}>{game.location} at {game.startTime} ({game.durationInHours} hours)</Text>
-        </View>
+        <Link href={{
+            pathname: '/game/[id]',
+            params: {id: game.id}
+          }} asChild>
+            <Pressable>
+                <View style={style}>
+                    <Text style={styles.textFont}>{game.location} at {game.startTime} ({game.durationInHours} hours)</Text>
+                </View>
+            </Pressable>
+        </Link>
     );
 }
