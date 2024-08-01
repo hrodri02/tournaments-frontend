@@ -25,13 +25,13 @@ const styles = StyleSheet.create({
 
 export default function HomeScreen() {
   const games1: Game[] = [
-    new Game('Golden Gate Park - field 1', '4:00 pm', 1),
-    new Game('Golden Gate Park - field 2', '6:00 pm', 2)
+    new Game(1, 'Golden Gate Park - field 1', '4:00 pm', 1),
+    new Game(2, 'Golden Gate Park - field 2', '6:00 pm', 2)
   ];
 
   const games2: Game[] = [
-    new Game('Crocker Park - field 1', '5:00 pm', 2),
-    {location: 'Crocker Park - field 2', startTime: '8:00 pm', durationInHours: 2}
+    new Game(3, 'Crocker Park - field 1', '5:00 pm', 2),
+    {id: 4, location: 'Crocker Park - field 2', startTime: '8:00 pm', durationInHours: 2}
   ];
 
  return (
@@ -45,7 +45,7 @@ export default function HomeScreen() {
           <GameView style={styles.item} game={item}/>
         }
         renderSectionHeader={({section}) => (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
+          <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
         keyExtractor={item => `basicListEntry-${item.location}`}
       />
