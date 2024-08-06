@@ -22,6 +22,7 @@ export interface GameStat {
 export interface Game {
     homeTeam: Team;
     awayTeam: Team;
+    address: string;
     date: Date;
     stats: GameStat[];
 }
