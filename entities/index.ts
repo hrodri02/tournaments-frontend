@@ -9,17 +9,20 @@ export interface Player extends User {
 }
 
 export interface Team {
+    id: number;
     name: string;
     players: Player[];
 }
 
 export interface GameStat {
+    id: number;
     goal: number;
     player: Player;
     time: Date;
 }
 
 export interface Game {
+    id: number;
     homeTeam: Team;
     awayTeam: Team;
     address: string;
@@ -28,6 +31,7 @@ export interface Game {
 }
 
 export interface League {
+    id: number;
     name: string;
     // This property might be better as an enum with values (open, closed, ongoing, ended)
     status: number;
