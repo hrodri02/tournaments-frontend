@@ -1,5 +1,5 @@
 import {faker} from '@faker-js/faker';
-import {Game, GameStat, League, Player, Team} from "@/entities";
+import {Game, GameStat, GameStatType, League, Player, Team} from "@/entities";
 
 const generateMockPlayers = (count: number): Player[] => {
     return Array.from({length: count}, (_, id) => ({
@@ -21,20 +21,22 @@ const generateMockTeams = (count: number, playersPerTeam: number): Team[] => {
 const generateMockGameStats = (players: Player[], count: number): GameStat[] => {
     return Array.from({length: count}, (_, id) => ({
         id: id + 1,
-        goal: faker.number.int({min: 0, max: 5}),
+        goal: faker.helpers.enumValue(GameStatType),
         player: players[faker.number.int({min: 0, max: players.length - 1})],
         time: faker.date.past()
     }));
 };
 
 const generateMockGames = (teams: Team[], count: number): Game[] => {
+    const homeTeam = teams[faker.number.int({min: 0, max: teams.length - 1})];
+    const awayTeam = teams[faker.number.int({min: 0, max: teams.length - 1})];
     return Array.from({length: count}, (_, id) => ({
         id: id + 1,
-        homeTeam: teams[faker.number.int({min: 0, max: teams.length - 1})],
-        awayTeam: teams[faker.number.int({min: 0, max: teams.length - 1})],
+        homeTeam: homeTeam,
+        awayTeam: awayTeam,
         address: faker.location.streetAddress(),
         date: faker.date.future(),
-        stats: generateMockGameStats(teams.flatMap(team => team.players), 5)
+        stats: generateMockGameStats(homeTeam.players.concat(awayTeam.players), 5)
     }));
 };
 
