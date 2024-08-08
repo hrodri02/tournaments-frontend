@@ -16,9 +16,15 @@ export interface Team {
 
 export interface GameStat {
     id: number;
-    goal: number;
+    type: GameStatType;
     player: Player;
     time: Date;
+}
+
+export enum GameStatType {
+    goal = 'goal',
+    yellowCard = 'yellow card',
+    redCard = 'red card'
 }
 
 export interface Game {
