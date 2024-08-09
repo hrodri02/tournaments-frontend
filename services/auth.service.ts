@@ -47,6 +47,6 @@ export const changePassword = async (userId: number, oldPassword: string, newPas
         user.password = newPassword;
         return {message: "Password change successful"};
     } else {
-        throw new Error("Invalid old password");
+        throw new Error("Invalid user");
     }
 };
