@@ -1,4 +1,4 @@
-import {AuthResponse, MockUser} from "@/entities/auth.types";
+import {AuthResponse, MockUser} from "@/entities/auth";
 
 const mockUsers: MockUser[] = [
     {id: 1, name: "Brayan Rodriguez", email: "brayan.rodriguez@example.com", password: "password1"},
