@@ -21,7 +21,7 @@ const generateMockTeams = (count: number, playersPerTeam: number): Team[] => {
 const generateMockGameStats = (players: Player[], count: number): GameStat[] => {
     return Array.from({length: count}, (_, id) => ({
         id: id + 1,
-        goal: faker.helpers.enumValue(GameStatType),
+        type: faker.helpers.enumValue(GameStatType),
         player: players[faker.number.int({min: 0, max: players.length - 1})],
         time: faker.date.past()
     }));

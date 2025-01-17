@@ -1,4 +1,4 @@
-import {User} from "@/entities/auth.types";
+import {User} from "@/entities/auth";
 
 export interface Player extends User {
     position: number;
