@@ -1,70 +1,66 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { SectionList, StyleSheet, Text, View, Image, Dimensions } from 'react-native';
+const screenHeight = Dimensions.get('window').height;
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 22,
+  },
+  sectionHeader: {
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 2,
+    fontSize: 18,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(247,247,247,1.0)',
+  },
+  item: {
+    display: 'flex',
+    flexDirection: 'row',
+    columnGap: '0.5em',
+    padding: 10,
+    marginVertical: 5,
+  },
+  image: {
+    borderRadius: '10px',
+    height: screenHeight * 0.1,
+    width: screenHeight * 0.1,
+    backgroundColor: '#0000aa'
+  },
+  textView: {
+  },
+  itemHeader: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  itemSubheader: {
+    fontSize: 12,
+  }
+});
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SectionList
+      style={styles.container}
+      sections={[
+        {title: 'Upcomming Leagues', data: [1,2]},
+        {title: 'Current Leagues', data: [1,2]},
+        {title: 'Previous Leagues', data: [1,2]},
+      ]}
+      renderItem={({item}) => 
+        <View style={styles.item}>
+          <Image style={styles.image}/>
+          <View style={styles.textView}>
+            <Text style={styles.itemHeader}>Premier Leage at Hawk</Text>
+            <Text style={styles.itemSubheader}>Tuesday Night League</Text>
+          </View>
+        </View>
+      }
+      renderSectionHeader={({section}) => (
+        <Text style={styles.sectionHeader}>{section.title}</Text>
+      )}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
