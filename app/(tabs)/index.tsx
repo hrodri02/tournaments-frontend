@@ -1,6 +1,8 @@
-import React from 'react';
-import { SectionList, StyleSheet, Text, View, Image, Dimensions } from 'react-native';
-const screenHeight = Dimensions.get('window').height;
+import React, { useEffect } from 'react';
+import { SectionList, StyleSheet, Text } from 'react-native';
+import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
+import { fetchLeagues, selectAllLeagues, selectLeaguesStatus } from '@/store/leagues/leaguesSlice'
+import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
 
 const styles = StyleSheet.create({
   container: {
@@ -22,41 +24,34 @@ const styles = StyleSheet.create({
     columnGap: '0.5em',
     padding: 10,
     marginVertical: 5,
-  },
-  image: {
-    borderRadius: '10px',
-    height: screenHeight * 0.1,
-    width: screenHeight * 0.1,
-    backgroundColor: '#0000aa'
-  },
-  textView: {
-  },
-  itemHeader: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  itemSubheader: {
-    fontSize: 12,
   }
 });
 
 export default function HomeScreen() {
+  const dispatch = useAppDispatch()
+  const leagues = useAppSelector(selectAllLeagues)
+  const leaguesStatus = useAppSelector(selectLeaguesStatus)
+
+  useEffect(() => {
+    if (leaguesStatus === 'idle') {
+      dispatch(fetchLeagues())
+    }
+  }, [leaguesStatus, dispatch])
+
+  const upcomingLeagues = leagues.filter(league => league.status === 'not started')
+  const currentLeagues = leagues.filter(league => league.status === 'in progress')
+  const previousLeagues = leagues.filter(league => league.status === 'ended')
+
   return (
     <SectionList
       style={styles.container}
       sections={[
-        {title: 'Upcomming Leagues', data: [1,2]},
-        {title: 'Current Leagues', data: [1,2]},
-        {title: 'Previous Leagues', data: [1,2]},
+        {title: 'Upcomming Leagues', data: upcomingLeagues},
+        {title: 'Current Leagues', data: currentLeagues},
+        {title: 'Previous Leagues', data: previousLeagues},
       ]}
       renderItem={({item}) => 
-        <View style={styles.item}>
-          <Image style={styles.image}/>
-          <View style={styles.textView}>
-            <Text style={styles.itemHeader}>Premier Leage at Hawk</Text>
-            <Text style={styles.itemSubheader}>Tuesday Night League</Text>
-          </View>
-        </View>
+        <LeagueExcerpt style={styles.item} league={item}/>
       }
       renderSectionHeader={({section}) => (
         <Text style={styles.sectionHeader}>{section.title}</Text>
