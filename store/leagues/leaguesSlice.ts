@@ -1,6 +1,6 @@
 import { getLeagues } from '@/services/tournaments.service'
-import { League } from '@/entities/index'
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { League, LeagueStatus } from '@/entities/index'
+import { createSlice, createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@/store/store'
 import { createAppAsyncThunk } from '@/hooks/useStore'
 
@@ -61,5 +61,12 @@ export default leaguesSlice.reducer
 
 // Export selectors to read data from
 export const selectAllLeagues = (state: RootState) => state.leagues.data
+export const selectLeaguesByStatus = createSelector(
+  [
+    selectAllLeagues,
+    (state: RootState, status: LeagueStatus) => status      
+  ],
+  (leagues, status) => leagues.filter(league => league.status === status)
+)
 export const selectLeaguesStatus = (state: RootState) => state.leagues.status
 export const selectLeaguesError = (state: RootState) => state.leagues.error
