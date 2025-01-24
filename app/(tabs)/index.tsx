@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { SectionList, StyleSheet, Text } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { fetchLeagues, selectAllLeagues, selectLeaguesStatus } from '@/store/leagues/leaguesSlice'
+import { fetchLeagues, selectLeaguesByStatus, selectLeaguesStatus } from '@/store/leagues/leaguesSlice'
 import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
+import { LeagueStatus } from '@/entities';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,7 +30,9 @@ const styles = StyleSheet.create({
 
 export default function HomeScreen() {
   const dispatch = useAppDispatch()
-  const leagues = useAppSelector(selectAllLeagues)
+  const upcomingLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.notStarted))
+  const currentLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.inProgress))
+  const previousLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.ended))
   const leaguesStatus = useAppSelector(selectLeaguesStatus)
 
   useEffect(() => {
@@ -37,10 +40,6 @@ export default function HomeScreen() {
       dispatch(fetchLeagues())
     }
   }, [leaguesStatus, dispatch])
-
-  const upcomingLeagues = leagues.filter(league => league.status === 'not started')
-  const currentLeagues = leagues.filter(league => league.status === 'in progress')
-  const previousLeagues = leagues.filter(league => league.status === 'ended')
 
   return (
     <SectionList
