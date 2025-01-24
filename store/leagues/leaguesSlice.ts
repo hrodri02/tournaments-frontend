@@ -1,20 +1,20 @@
 import { getLeagues } from '@/services/tournaments.service'
 import { League, LeagueStatus } from '@/entities/index'
-import { createSlice, createSelector } from '@reduxjs/toolkit'
+import { createSlice, createSelector, createEntityAdapter, EntityState } from '@reduxjs/toolkit'
 import { RootState } from '@/store/store'
 import { createAppAsyncThunk } from '@/hooks/useStore'
 
-interface LeaguesState {
-    data: League[],
+interface LeaguesState extends EntityState<League, number> {
     status: 'idle' | 'loading' | 'succeeded' | 'failed',
     error: string | null
 }
 
-const initialState: LeaguesState = {
-    data: [],
-    status: 'idle',
-    error: null
-};
+const leaguesAdapter = createEntityAdapter<League>();
+
+const initialState: LeaguesState = leaguesAdapter.getInitialState({
+  status: 'idle',
+  error: null
+})
 
 export const fetchLeagues = createAppAsyncThunk(
   'leagues/fetchLeagues',
@@ -44,7 +44,7 @@ const leaguesSlice = createSlice({
         .addCase(fetchLeagues.fulfilled, (state, action) => {
           state.status = 'succeeded'
           // Add any fetched posts to the array
-          state.data.push(...action.payload)
+          leaguesAdapter.setAll(state, action.payload)
         })
         .addCase(fetchLeagues.rejected, (state, action) => {
           state.status = 'failed'
@@ -60,7 +60,13 @@ const leaguesSlice = createSlice({
 export default leaguesSlice.reducer
 
 // Export selectors to read data from
-export const selectAllLeagues = (state: RootState) => state.leagues.data
+export const {
+  selectAll: selectAllLeagues,
+  selectById: selectLeaguesById,
+  selectIds: selectLeagueIds
+  // Pass in a selector that returns the leagues slice of state
+} = leaguesAdapter.getSelectors((state: RootState) => state.leagues)
+
 export const selectLeaguesByStatus = createSelector(
   [
     selectAllLeagues,
