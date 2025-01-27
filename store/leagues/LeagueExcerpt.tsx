@@ -37,7 +37,7 @@ export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
           }} asChild>
             <Pressable>
                 <View style={style}>
-                    <Image style={styles.image}/>
+                    <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
                     <View>
                         <Text style={styles.itemHeader}>{league.name}</Text>
                         <Text style={styles.itemSubheader}>{day} {timeOfDay}</Text>
