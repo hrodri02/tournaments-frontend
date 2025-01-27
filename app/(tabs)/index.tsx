@@ -1,12 +1,17 @@
 import React, { useEffect } from 'react';
-import { SectionList, StyleSheet, Text } from 'react-native';
+import { SectionList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { fetchLeagues, selectLeaguesByStatus, selectLeaguesStatus } from '@/store/leagues/leaguesSlice'
+import { fetchLeagues, selectLeaguesByStatus, selectLeaguesError, selectLeaguesStatus } from '@/store/leagues/leaguesSlice'
 import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
 import { LeagueStatus } from '@/entities';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    justifyContent: 'center'
+  },
+  sectionList: {
     flex: 1,
     paddingTop: 22,
   },
@@ -25,6 +30,9 @@ const styles = StyleSheet.create({
     columnGap: '0.5em',
     padding: 10,
     marginVertical: 5,
+  },
+  errorView: {
+    textAlign: 'center'
   }
 });
 
@@ -34,6 +42,7 @@ export default function HomeScreen() {
   const currentLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.inProgress))
   const previousLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.ended))
   const leaguesStatus = useAppSelector(selectLeaguesStatus)
+  const leaguesError = useAppSelector(selectLeaguesError)
 
   useEffect(() => {
     if (leaguesStatus === 'idle') {
@@ -41,20 +50,35 @@ export default function HomeScreen() {
     }
   }, [leaguesStatus, dispatch])
 
+  let content: React.ReactNode
+  if (leaguesStatus === "loading") {
+    content = <ActivityIndicator size="large" color="#0000ff"/>
+  }
+  else if (leaguesStatus === "succeeded") {
+    content = <SectionList
+              style={styles.sectionList}
+              sections={[
+                {title: 'Upcomming Leagues', data: upcomingLeagues},
+                {title: 'Current Leagues', data: currentLeagues},
+                {title: 'Previous Leagues', data: previousLeagues},
+              ]}
+              renderItem={({item}) => 
+                <LeagueExcerpt style={styles.item} league={item}/>
+              }
+              renderSectionHeader={({section}) => (
+                <Text style={styles.sectionHeader}>{section.title}</Text>
+              )}
+            />
+  }
+  else if (leaguesStatus === "failed") {
+    content = <Text style={styles.errorView}>{leaguesError}</Text>
+  }
+
   return (
-    <SectionList
-      style={styles.container}
-      sections={[
-        {title: 'Upcomming Leagues', data: upcomingLeagues},
-        {title: 'Current Leagues', data: currentLeagues},
-        {title: 'Previous Leagues', data: previousLeagues},
-      ]}
-      renderItem={({item}) => 
-        <LeagueExcerpt style={styles.item} league={item}/>
-      }
-      renderSectionHeader={({section}) => (
-        <Text style={styles.sectionHeader}>{section.title}</Text>
-      )}
-    />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        {content}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
