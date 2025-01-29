@@ -1,70 +1,84 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+import React, { useEffect } from 'react';
+import { SectionList, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
+import { fetchLeagues, selectLeaguesByStatus, selectLeaguesError, selectLeaguesStatus } from '@/store/leagues/leaguesSlice'
+import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
+import { LeagueStatus } from '@/entities';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    justifyContent: 'center'
+  },
+  sectionList: {
+    flex: 1,
+    paddingTop: 22,
+  },
+  sectionHeader: {
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 2,
+    fontSize: 18,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(247,247,247,1.0)',
+  },
+  item: {
+    display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    columnGap: '0.5em',
+    padding: 10,
+    marginVertical: 5,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  errorView: {
+    textAlign: 'center'
+  }
 });
+
+export default function HomeScreen() {
+  const dispatch = useAppDispatch()
+  const upcomingLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.notStarted))
+  const currentLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.inProgress))
+  const previousLeagues = useAppSelector(state => selectLeaguesByStatus(state, LeagueStatus.ended))
+  const leaguesStatus = useAppSelector(selectLeaguesStatus)
+  const leaguesError = useAppSelector(selectLeaguesError)
+
+  useEffect(() => {
+    if (leaguesStatus === 'idle') {
+      dispatch(fetchLeagues())
+    }
+  }, [leaguesStatus, dispatch])
+
+  let content: React.ReactNode
+  if (leaguesStatus === "loading") {
+    content = <ActivityIndicator size="large" color="#0000ff"/>
+  }
+  else if (leaguesStatus === "succeeded") {
+    content = <SectionList
+              style={styles.sectionList}
+              sections={[
+                {title: 'Upcomming Leagues', data: upcomingLeagues},
+                {title: 'Current Leagues', data: currentLeagues},
+                {title: 'Previous Leagues', data: previousLeagues},
+              ]}
+              renderItem={({item}) => 
+                <LeagueExcerpt style={styles.item} league={item}/>
+              }
+              renderSectionHeader={({section}) => (
+                <Text style={styles.sectionHeader}>{section.title}</Text>
+              )}
+            />
+  }
+  else if (leaguesStatus === "failed") {
+    content = <Text style={styles.errorView}>{leaguesError}</Text>
+  }
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        {content}
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}

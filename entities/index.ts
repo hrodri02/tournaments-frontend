@@ -28,15 +28,20 @@ export interface Game {
     homeTeam: Team;
     awayTeam: Team;
     address: string;
-    date: Date;
     stats: GameStat[];
+}
+
+export enum LeagueStatus {
+    notStarted = 'not started',
+    inProgress = 'in progress',
+    ended = 'ended'
 }
 
 export interface League {
     id: number;
+    date: string;
     name: string;
-    // This property might be better as an enum with values (open, closed, ongoing, ended)
-    status: number;
+    status: LeagueStatus;
     teams: Team[];
     games: Game[];
 }

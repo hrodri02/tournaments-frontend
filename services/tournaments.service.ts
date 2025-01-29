@@ -1,5 +1,6 @@
 import {faker} from '@faker-js/faker';
-import {Game, GameStat, GameStatType, League, Player, Team} from "@/entities";
+import {Game, GameStat, GameStatType, League, LeagueStatus, Player, Team} from "@/entities";
+import { DevToolsSettingsManager } from 'react-native';
 
 const generateMockPlayers = (count: number): Player[] => {
     return Array.from({length: count}, (_, id) => ({
@@ -23,7 +24,7 @@ const generateMockGameStats = (players: Player[], count: number): GameStat[] => 
         id: id + 1,
         type: faker.helpers.enumValue(GameStatType),
         player: players[faker.number.int({min: 0, max: players.length - 1})],
-        time: faker.date.past()
+        time: faker.date.past().toISOString()
     }));
 };
 
@@ -35,7 +36,6 @@ const generateMockGames = (teams: Team[], count: number): Game[] => {
         homeTeam: homeTeam,
         awayTeam: awayTeam,
         address: faker.location.streetAddress(),
-        date: faker.date.future(),
         stats: generateMockGameStats(homeTeam.players.concat(awayTeam.players), 5)
     }));
 };
@@ -44,7 +44,8 @@ const generateMockLeagues = (count: number, teamsPerLeague: number, gamesPerLeag
     return Array.from({length: count}, (_, id) => ({
         id: id + 1,
         name: faker.company.name(),
-        status: faker.number.int({min: 0, max: 3}), // 0 = open, 1 = closed, 2 = ongoing, 3 = ended, these are just some ideas
+        date: faker.date.future().toISOString(),
+        status: faker.helpers.enumValue(LeagueStatus), 
         teams: generateMockTeams(teamsPerLeague, 15),
         games: generateMockGames(generateMockTeams(teamsPerLeague, 15), gamesPerLeague)
     }));
@@ -68,5 +69,7 @@ export const getGames = async (): Promise<Game[]> => {
 };
 
 export const getLeagues = async (): Promise<League[]> => {
-    return mockLeagues;
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve(mockLeagues), 2000);
+    });
 };

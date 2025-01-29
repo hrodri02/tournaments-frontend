@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit'
 import authSlice from "@/store/auth.slice";
+import leaguesSlice from "@/store/leagues/leaguesSlice";
 
 const store = configureStore({
     reducer: {
         auth: authSlice,
+        leagues: leaguesSlice
     },
 })
 
