@@ -53,20 +53,24 @@ const styles = StyleSheet.create({
 
 export function GameExcerpt({ game, style }: GameExcerptProps) {
 	return (
-        <View style={style}>
-            <View style={styles.teamViews}>
+        <Link href="/other" asChild>
+            <Pressable>
+            <View style={style}>
+                <View style={styles.teamViews}>
                 <View style={styles.teamView}>
-                <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                <Text style={styles.text}>{game.homeTeam}</Text>
+                    <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
+                    <Text style={styles.text}>{game.homeTeam}</Text>
                 </View>
 
                 <View style={styles.teamView}>
-                <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                <Text style={styles.text}>{game.awayTeam}</Text>
+                    <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
+                    <Text style={styles.text}>{game.awayTeam}</Text>
+                    </View>
                 </View>
+
+                <Text style={styles.date}>{game.date}</Text>
             </View>
-
-            <Text style={styles.date}>{game.date}</Text>
-        </View>
+            </Pressable>
+        </Link>
     )
 }
