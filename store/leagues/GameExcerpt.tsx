@@ -52,8 +52,11 @@ const styles = StyleSheet.create({
 })
 
 export function GameExcerpt({ game, style }: GameExcerptProps) {
-	return (
-        <Link href="/other" asChild>
+    return (
+        <Link href={{
+            pathname: './games/[id]',
+            params: {id: game.id}
+        }} asChild>
             <Pressable>
             <View style={style}>
                 <View style={styles.teamViews}>
@@ -73,4 +76,4 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
             </Pressable>
         </Link>
     )
-}
+}   
