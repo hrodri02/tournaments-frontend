@@ -54,9 +54,9 @@ const DATA = [
 ];
 
 export default function LeagueScreen() {
-    return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
         <FlatList style={styles.flatlist}
           ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
           ItemSeparatorComponent={() => (<View style={styles.separator}></View>)}
@@ -65,8 +65,8 @@ export default function LeagueScreen() {
             <GameExcerpt game={item} style={styles.item}></GameExcerpt>
           }
         />
-        </SafeAreaView>
-      </SafeAreaProvider>
-    );
-  }
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
   
