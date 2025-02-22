@@ -28,6 +28,7 @@ export interface Game {
     homeTeam: Team;
     awayTeam: Team;
     address: string;
+    date: string;
     stats: GameStat[];
 }
 

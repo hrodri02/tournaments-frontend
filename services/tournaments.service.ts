@@ -35,6 +35,7 @@ const generateMockGames = (teams: Team[], count: number): Game[] => {
         id: id + 1,
         homeTeam: homeTeam,
         awayTeam: awayTeam,
+        date: faker.date.future().toISOString(),
         address: faker.location.streetAddress(),
         stats: generateMockGameStats(homeTeam.players.concat(awayTeam.players), 5)
     }));
