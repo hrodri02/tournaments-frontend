@@ -1,6 +1,5 @@
 import {faker} from '@faker-js/faker';
 import {Game, GameStat, GameStatType, League, LeagueStatus, Player, Team} from "@/entities";
-import { DevToolsSettingsManager } from 'react-native';
 
 const generateMockPlayers = (count: number): Player[] => {
     return Array.from({length: count}, (_, id) => ({
