@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
-import { League } from '@/entities/index'
-import { parseISO, format } from 'date-fns'
+import { League } from '@/entities/index';
+import { parseISO, format } from 'date-fns';
 const screenHeight = Dimensions.get('window').height;
 
 type LeagueExcerptProps = {
