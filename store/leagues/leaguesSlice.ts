@@ -76,3 +76,4 @@ export const selectLeaguesByStatus = createSelector(
 )
 export const selectLeaguesStatus = (state: RootState) => state.leagues.status
 export const selectLeaguesError = (state: RootState) => state.leagues.error
+export const selectGamesByLeagueId = (state: RootState, leagueId: number) => 	selectLeaguesById(state, leagueId).games
