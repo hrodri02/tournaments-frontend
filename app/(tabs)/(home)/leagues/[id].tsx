@@ -1,8 +1,10 @@
 import React from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-import { format } from 'date-fns';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
+import { useAppSelector } from '@/hooks/useStore';
+import { selectGamesByLeagueId } from '@/store/leagues/leaguesSlice';
+import { useLocalSearchParams } from 'expo-router';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,35 +34,18 @@ const styles = StyleSheet.create({
    }
 })
 
-const DATA = [
-  {
-    id: 0,
-    homeTeam: "Barcelona",
-    awayTeam: "Chivas",
-    date: format(new Date(2025, 1, 6), 'eee, MMM i pp')
-  },
-  {
-    id: 1,
-    homeTeam: "Pumas",
-    awayTeam: "America",
-    date: format(new Date(2025, 1, 3), 'eee, MMM i pp')
-  },		
-  {
-    id: 2,
-    homeTeam: "Toluca",
-    awayTeam: "Monterey",
-    date: format(new Date(2025, 1, 3), 'eee, MMM i pp')
-  }
-];
-
 export default function LeagueScreen() {
+  const { id } = useLocalSearchParams()
+  const leagueId = Number(id)
+  const gamesOfLeague = useAppSelector(state => selectGamesByLeagueId(state, leagueId))
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <FlatList style={styles.flatlist}
           ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
           ItemSeparatorComponent={() => (<View style={styles.separator}></View>)}
-          data={DATA}
+          data={gamesOfLeague}
           renderItem={({item}) => 
             <GameExcerpt game={item} style={styles.item}></GameExcerpt>
           }
