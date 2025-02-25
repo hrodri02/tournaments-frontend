@@ -1,16 +1,11 @@
 import React from 'react'; 
 import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
+import { Game } from '@/entities/index';
+import { format } from 'date-fns';
 
 const screenHeight = Dimensions.get('window').height;
 
-interface Game {
-    id: number;
-    homeTeam: string;
-    awayTeam: string;
-    date: string;
-}
-  
 type GameExcerptProps = {
     game: Game;
     style?: ViewStyle;
@@ -52,6 +47,9 @@ const styles = StyleSheet.create({
 })
 
 export function GameExcerpt({ game, style }: GameExcerptProps) {
+    const date = Date.parse(game.date);
+    const formattedDate = format(date, 'eee, MMM i pp');
+
     return (
         <Link href={{
             pathname: './games/[id]',
@@ -62,16 +60,16 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
                 <View style={styles.teamViews}>
                 <View style={styles.teamView}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <Text style={styles.text}>{game.homeTeam}</Text>
+                    <Text style={styles.text}>{game.homeTeam.name}</Text>
                 </View>
 
                 <View style={styles.teamView}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <Text style={styles.text}>{game.awayTeam}</Text>
+                    <Text style={styles.text}>{game.awayTeam.name}</Text>
                     </View>
                 </View>
 
-                <Text style={styles.date}>{game.date}</Text>
+                <Text style={styles.date}>{formattedDate}</Text>
             </View>
             </Pressable>
         </Link>
