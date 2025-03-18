@@ -16,8 +16,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignContent: 'center',
         fontWeight: 'bold',
-        fontSize: 20,
-        color: 'white'
+        fontSize: 16,
     },
     image: { 
         backgroundColor: 'yellow',
@@ -36,13 +35,12 @@ const styles = StyleSheet.create({
     date: { 
         marginTop: 20,
         marginBottom: 20,
-        fontSize: 24,
+        fontSize: 16,
         textAlign: 'center',
         alignContent: 'center',
+        fontWeight: 'bold',
         flex: 1,
-        color: 'white',
-        borderLeftWidth: 3,
-        borderLeftColor: 'white',
+        borderLeftWidth: 1
     }
 })
 
