@@ -10,27 +10,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,  
    },
-  
    item: {
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
    },
-  
    header: { 
     fontWeight: 'bold',
-    backgroundColor: 'black',
-    fontSize: 28,
-    color: 'white', 
-    borderBottomWidth: 6,
-    borderBottomColor: 'white'
-   },
-   flatlist: { 
-    backgroundColor: 'black',
+    fontSize: 18,
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 2,
+    borderBottomWidth: 2
    },
    separator: { 
-    borderWidth: 3,
-    borderColor: 'white',    
+    borderWidth: 1,
+    borderColor: 'black'  
    }
 })
 
@@ -42,7 +38,7 @@ export default function LeagueScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <FlatList style={styles.flatlist}
+        <FlatList
           ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
           ItemSeparatorComponent={() => (<View style={styles.separator}></View>)}
           data={gamesOfLeague}
