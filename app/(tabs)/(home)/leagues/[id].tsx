@@ -22,10 +22,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     paddingBottom: 2,
-    borderBottomWidth: 2
+    borderBottomWidth: 1
    },
    separator: { 
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'black'  
    }
 })
