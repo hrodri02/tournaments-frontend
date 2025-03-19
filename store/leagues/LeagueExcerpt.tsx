@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
         borderRadius: '10px',
         height: screenHeight * 0.1,
         width: screenHeight * 0.1,
-        backgroundColor: '#0000aa'
     },
     itemHeader: {
         fontWeight: 'bold',
@@ -23,6 +22,9 @@ const styles = StyleSheet.create({
     },
     itemSubheader: {
         fontSize: 12,
+    },
+    leagueDetails: {
+        justifyContent: 'center',
     }
 });
 
@@ -38,7 +40,7 @@ export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
             <Pressable>
                 <View style={style}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <View>
+                    <View style={styles.leagueDetails}>
                         <Text style={styles.itemHeader}>{league.name}</Text>
                         <Text style={styles.itemSubheader}>{day} {timeOfDay}</Text>
                     </View>

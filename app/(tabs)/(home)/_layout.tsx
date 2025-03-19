@@ -6,7 +6,7 @@ export default function HomeTabLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }}/>
-      <Stack.Screen name="leagues/[id]" options={{headerTitle: 'League', headerTitleAlign: 'center'}}/>
+      <Stack.Screen name="leagues/[id]" options={{headerTitleAlign: 'center'}}/>
     </Stack>
   );
 }

@@ -62,7 +62,7 @@ export default leaguesSlice.reducer
 // Export selectors to read data from
 export const {
   selectAll: selectAllLeagues,
-  selectById: selectLeaguesById,
+  selectById: selectLeagueById,
   selectIds: selectLeagueIds
   // Pass in a selector that returns the leagues slice of state
 } = leaguesAdapter.getSelectors((state: RootState) => state.leagues)
@@ -76,4 +76,3 @@ export const selectLeaguesByStatus = createSelector(
 )
 export const selectLeaguesStatus = (state: RootState) => state.leagues.status
 export const selectLeaguesError = (state: RootState) => state.leagues.error
-export const selectGamesByLeagueId = (state: RootState, leagueId: number) => 	selectLeaguesById(state, leagueId).games
