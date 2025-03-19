@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
 import { useAppSelector } from '@/hooks/useStore';
-import { selectGamesByLeagueId } from '@/store/leagues/leaguesSlice';
+import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { useLocalSearchParams } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,8 +33,15 @@ const styles = StyleSheet.create({
 
 export default function LeagueScreen() {
   const { id } = useLocalSearchParams()
+  const navigation = useNavigation();
   const leagueId = Number(id)
-  const gamesOfLeague = useAppSelector(state => selectGamesByLeagueId(state, leagueId))
+  const league = useAppSelector(state => selectLeagueById(state, leagueId));
+
+  useLayoutEffect(() => {
+    if (league.name) {
+      navigation.setOptions({ title: league.name });
+    }
+  }, [navigation, league.name]);
 
   return (
     <SafeAreaProvider>
@@ -41,7 +49,7 @@ export default function LeagueScreen() {
         <FlatList
           ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
           ItemSeparatorComponent={() => (<View style={styles.separator}></View>)}
-          data={gamesOfLeague}
+          data={league.games}
           renderItem={({item}) => 
             <GameExcerpt game={item} style={styles.item}></GameExcerpt>
           }
