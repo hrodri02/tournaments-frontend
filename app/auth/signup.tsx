@@ -1,3 +1,4 @@
+import { Picker } from '@react-native-picker/picker';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
@@ -6,6 +7,7 @@ const SignUpScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [role, setRole] = useState('');
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -49,6 +51,18 @@ const SignUpScreen = () => {
                     secureTextEntry
                     placeholderTextColor="#6e6e6e"
                 />
+
+                <Picker
+                    selectedValue={role}
+                    style={styles.input}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setRole(itemValue)
+                    }
+                >
+                    <Picker.Item label="Select a role..." value="" enabled={false}/>
+                    <Picker.Item label="User" value="USER" />
+                    <Picker.Item label="Admin" value="ADMIN" />
+                </Picker>
 
                 <TouchableOpacity style={styles.button} onPress={() => console.log('Sign Up pressed')}>
                     <Text style={styles.buttonText}>Sign Up</Text>
