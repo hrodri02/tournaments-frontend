@@ -1,8 +1,10 @@
 import { Stack, Redirect } from "expo-router";
+import { selectAuthUser } from '@/store/auth.slice';
+import { useAppSelector } from '@/hooks/useStore';
 
 export default function AppLayout() {
-    const status = 'signOut';
-    if (status === 'signOut') {
+    const authUser =  useAppSelector(selectAuthUser);
+    if (authUser === null) {
       return <Redirect href="/auth/login" />;
     }
     return (
