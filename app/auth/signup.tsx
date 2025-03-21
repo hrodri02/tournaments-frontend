@@ -1,4 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
+import { Link }  from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
@@ -69,7 +70,7 @@ const SignUpScreen = () => {
                 </TouchableOpacity>
 
                 <Text style={styles.footerText}>
-                    Already have an account? <Text style={styles.linkText}>Login</Text>
+                    Already have an account? <Link href="/auth/login" style={styles.linkText}>Login</Link>
                 </Text>
             </View>
         </KeyboardAvoidingView>

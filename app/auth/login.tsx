@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'expo-router';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
 const LoginScreen = () => {
@@ -35,7 +36,7 @@ const LoginScreen = () => {
                 </TouchableOpacity>
 
                 <Text style={styles.footerText}>
-                    Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
+                    Don't have an account? <Link href="/auth/signup" style={styles.linkText}>Sign Up</Link>
                 </Text>
             </View>
         </KeyboardAvoidingView>
