@@ -37,7 +37,12 @@ export const loginRequest = createAppAsyncThunk(
 const slice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {},
+    reducers: {
+      resetAuthState: (state) => {
+        state.status = 'idle';
+        state.error = null;
+      }
+    },
     extraReducers: builder => {
         builder
         .addCase(loginRequest.pending, (state, action) => {
@@ -45,8 +50,7 @@ const slice = createSlice({
         })
         .addCase(loginRequest.fulfilled, (state, action) => {
             state.status = 'succeeded'
-            state.user = action.payload;
-            console.log('current user:', state.user);
+            state.user = action.payload
         })
         .addCase(loginRequest.rejected, (state, action) => {
             state.status = 'failed'
@@ -55,7 +59,7 @@ const slice = createSlice({
     }
 })
 
-export const {} = slice.actions
+export const { resetAuthState } = slice.actions
 
 export default slice.reducer
 
