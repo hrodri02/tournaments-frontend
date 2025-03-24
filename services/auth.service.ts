@@ -6,12 +6,17 @@ const mockUsers: MockUser[] = [
 ];
 
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
-    const user = mockUsers.find(u => u.email === email && u.password === password);
-    if (user) {
-        return {token: "fake-jwt-token", user: {id: user.id, name: user.name, email: user.email}};
-    } else {
-        throw new Error("Invalid credentials");
-    }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const user = mockUsers.find(u => u.email === email && u.password === password);
+            if (user) {
+                resolve({token: "fake-jwt-token", user: {id: user.id, name: user.name, email: user.email}});
+            } else {
+                reject(new Error("Invalid credentials"));
+            }
+        }, 1000);
+    });
+    
 };
 
 export const signup = async (email: string, password: string): Promise<AuthResponse> => {
