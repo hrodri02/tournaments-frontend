@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, Redirect } from 'expo-router';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { loginRequest, selectAuthStatus, selectAuthError } from '@/store/auth.slice';
+import { loginRequest, resetAuthState, selectAuthStatus, selectAuthError } from '@/store/auth.slice';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
@@ -13,7 +13,7 @@ const LoginScreen = () => {
     const authError = useAppSelector(selectAuthError);
 
     let content: React.ReactNode
-    if (authStatus === "idle") {
+    if (authStatus === "idle" || authStatus === 'failed') {
         content = <KeyboardAvoidingView style={styles.container} behavior="padding">
                     <View style={styles.innerContainer}>
                         <Text style={styles.title}>Welcome Back!</Text>
@@ -23,7 +23,10 @@ const LoginScreen = () => {
                             style={styles.input}
                             placeholder="Email"
                             value={email}
-                            onChangeText={text => setEmail(text)}
+                            onChangeText={text => { 
+                                dispatch(resetAuthState())
+                                setEmail(text) 
+                            }}
                             keyboardType="email-address"
                             autoCapitalize="none"
                             placeholderTextColor="#6e6e6e"
@@ -33,12 +36,17 @@ const LoginScreen = () => {
                             style={styles.input}
                             placeholder="Password"
                             value={password}
-                            onChangeText={text => setPassword(text)}
+                            onChangeText={text => {
+                                dispatch(resetAuthState())
+                                setPassword(text)
+                            }}
                             secureTextEntry
                             placeholderTextColor="#6e6e6e"
                         />
 
-                        <TouchableOpacity style={styles.button} onPress={() => 
+                        {authStatus === 'failed' && <Text style={styles.errorView}>{authError}</Text>}
+
+                        <TouchableOpacity style={styles.button} onPress={() =>
                             dispatch(loginRequest({email, password}))
                         }>
                             <Text style={styles.buttonText}>Login</Text>
@@ -47,17 +55,15 @@ const LoginScreen = () => {
                         <Text style={styles.footerText}>
                             Don't have an account? <Link href="/auth/signup" style={styles.linkText}>Sign Up</Link>
                         </Text>
+                        
                     </View>
                 </KeyboardAvoidingView>
     }
-    if (authStatus === "loading") {
+    else if (authStatus === "loading") {
         content = <ActivityIndicator size="large" color="#0000ff"/>
     }
     else if (authStatus === "succeeded") {
         content = <Redirect href="/" />
-    }
-    else if (authStatus === "failed") {
-        content = <Text style={styles.errorView}>{authError}</Text>
     }
 
     return (
@@ -126,7 +132,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     errorView: {
-        textAlign: 'center'
+        backgroundColor: 'red',
+        color: '#fff',
+        textAlign: 'center',
+        paddingVertical: 12,
+        fontSize: 18,
+        fontWeight: 'bold'
     }
 });
 
