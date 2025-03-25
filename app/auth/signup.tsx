@@ -1,7 +1,10 @@
 import { Picker } from '@react-native-picker/picker';
-import { Link }  from 'expo-router';
+import { Link, Redirect }  from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
+import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
+import { signupRequest, resetAuthState, selectAuthStatus, selectAuthError } from '@/store/auth.slice';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const SignUpScreen = () => {
     const [name, setName] = useState('');
@@ -9,9 +12,13 @@ const SignUpScreen = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [role, setRole] = useState('');
+    const authStatus = useAppSelector(state => selectAuthStatus(state));
+    const authError = useAppSelector(state => selectAuthError(state));
+    const dispatch = useAppDispatch();
 
-    return (
-        <KeyboardAvoidingView style={styles.container} behavior="padding">
+    let content: React.ReactNode
+    if (authStatus === "idle" || authStatus === 'failed') {
+        content = <KeyboardAvoidingView style={styles.container} behavior="padding">
             <View style={styles.innerContainer}>
                 <Text style={styles.title}>Create Account</Text>
                 <Text style={styles.subtitle}>Sign up to get started</Text>
@@ -29,7 +36,10 @@ const SignUpScreen = () => {
                     style={styles.input}
                     placeholder="Email"
                     value={email}
-                    onChangeText={text => setEmail(text)}
+                    onChangeText={text => {
+                        dispatch(resetAuthState())
+                        setEmail(text)
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     placeholderTextColor="#6e6e6e"
@@ -39,7 +49,10 @@ const SignUpScreen = () => {
                     style={styles.input}
                     placeholder="Password"
                     value={password}
-                    onChangeText={text => setPassword(text)}
+                    onChangeText={text => {
+                        dispatch(resetAuthState())
+                        setPassword(text)
+                    }}
                     secureTextEntry
                     placeholderTextColor="#6e6e6e"
                 />
@@ -48,7 +61,10 @@ const SignUpScreen = () => {
                     style={styles.input}
                     placeholder="Confirm Password"
                     value={confirmPassword}
-                    onChangeText={text => setConfirmPassword(text)}
+                    onChangeText={text => {
+                        dispatch(resetAuthState())
+                        setConfirmPassword(text)
+                    }}
                     secureTextEntry
                     placeholderTextColor="#6e6e6e"
                 />
@@ -65,7 +81,11 @@ const SignUpScreen = () => {
                     <Picker.Item label="Admin" value="ADMIN" />
                 </Picker>
 
-                <TouchableOpacity style={styles.button} onPress={() => console.log('Sign Up pressed')}>
+                {authStatus === 'failed' && <Text style={styles.errorView}>{authError}</Text>}
+
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    dispatch(signupRequest({email, password}))
+                }}>
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
 
@@ -74,10 +94,29 @@ const SignUpScreen = () => {
                 </Text>
             </View>
         </KeyboardAvoidingView>
+    }
+    else if (authStatus === "loading") {
+        content = <ActivityIndicator size="large" color="#0000ff"/>
+    }
+    else if (authStatus === "succeeded") {
+        content = <Redirect href="/" />
+    }
+
+    return (
+        <SafeAreaProvider>
+            <SafeAreaView style={styles.safeAreaView}>
+                {content}
+            </SafeAreaView>
+        </SafeAreaProvider>
     );
 };
 
 const styles = StyleSheet.create({
+    safeAreaView: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+        justifyContent: 'center'
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -130,6 +169,15 @@ const styles = StyleSheet.create({
         color: '#6200ee',
         fontWeight: 'bold',
     },
+    errorView: {
+        backgroundColor: 'red',
+        color: '#fff',
+        textAlign: 'center',
+        paddingVertical: 12,
+        fontSize: 18,
+        fontWeight: 'bold',
+        borderRadius: 8
+    }
 });
 
 export default SignUpScreen;
