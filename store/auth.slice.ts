@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User} from "@/entities/auth";
 import { createAppAsyncThunk } from '@/hooks/useStore';
-import { login } from '@/services/auth.service';
+import { login, signup } from '@/services/auth.service';
 import { RootState } from '@/store/store'
 
 interface AuthState {
@@ -34,6 +34,22 @@ export const loginRequest = createAppAsyncThunk(
   }
 )
 
+export const signupRequest = createAppAsyncThunk(
+  'auth/signup',
+  async ({ email, password }: { email: string; password: string }) => {
+    const {token, user} = await signup(email, password)
+    return user
+  },
+  {
+    condition(arg, thunkApi) {
+      const authStatus = selectAuthStatus(thunkApi.getState())
+      if (authStatus !== 'idle') {
+        return false
+      }
+    }
+  }
+)
+
 const slice = createSlice({
     name: 'auth',
     initialState,
@@ -46,15 +62,26 @@ const slice = createSlice({
     extraReducers: builder => {
         builder
         .addCase(loginRequest.pending, (state, action) => {
-            state.status = 'loading'
+          state.status = 'loading'
         })
         .addCase(loginRequest.fulfilled, (state, action) => {
-            state.status = 'succeeded'
-            state.user = action.payload
+          state.status = 'succeeded'
+          state.user = action.payload
         })
         .addCase(loginRequest.rejected, (state, action) => {
-            state.status = 'failed'
-            state.error = action.error.message ?? 'Unknown Error'
+          state.status = 'failed'
+          state.error = action.error.message ?? 'Unknown Error'
+        })
+        .addCase(signupRequest.pending, (state, action) => {
+          state.status = 'loading'
+        })
+        .addCase(signupRequest.fulfilled, (state, action) => {
+          state.status = 'succeeded'
+          state.user = action.payload
+        })
+        .addCase(signupRequest.rejected, (state, action) => {
+          state.status = 'failed'
+          state.error = action.error.message ?? 'Unknown Error'
         })
     }
 })
