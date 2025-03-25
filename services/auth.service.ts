@@ -20,14 +20,18 @@ export const login = async (email: string, password: string): Promise<AuthRespon
 };
 
 export const signup = async (email: string, password: string): Promise<AuthResponse> => {
-    const userExists = mockUsers.some(u => u.email === email);
-    if (userExists) {
-        throw new Error("User already exists");
-    } else {
-        const newUser: MockUser = {id: mockUsers.length + 1, name: "", email, password};
-        mockUsers.push(newUser);
-        return {token: "fake-jwt-token", user: {id: newUser.id, name: newUser.name, email: newUser.email}};
-    }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const userExists = mockUsers.some(u => u.email === email);
+            if (userExists) {
+                reject(new Error("User already exists"));
+            } else {
+                const newUser: MockUser = {id: mockUsers.length + 1, name: "", email, password};
+                mockUsers.push(newUser);
+                resolve({token: "fake-jwt-token", user: {id: newUser.id, name: newUser.name, email: newUser.email}});
+            }
+        }, 1000);
+    });
 };
 
 export const resetPassword = async (email: string, newPassword: string): Promise<{ message: string }> => {
