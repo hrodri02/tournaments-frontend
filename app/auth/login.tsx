@@ -139,7 +139,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingVertical: 12,
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        borderRadius: 8
     }
 });
 
