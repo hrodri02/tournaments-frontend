@@ -1,5 +1,5 @@
 import { Stack, Redirect } from "expo-router";
-import { selectAuthUser } from '@/store/auth.slice';
+import { selectAuthUser } from '@/store/auth/auth.slice';
 import { useAppSelector } from '@/hooks/useStore';
 
 export default function AppLayout() {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, Redirect } from 'expo-router';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { loginRequest, resetAuthState, selectAuthStatus, selectAuthError } from '@/store/auth.slice';
+import { loginRequest, resetAuthState, selectAuthStatus, selectAuthError } from '@/store/auth/auth.slice';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
