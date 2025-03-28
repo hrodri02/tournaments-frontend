@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Link, Redirect } from 'expo-router';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { loginRequest, resetAuthState, selectAuthStatus, selectAuthError } from '@/store/auth/auth.slice';
+import { loginRequest, resetAuthState, selectAuthStatus, selectAuthError, selectAuthToken } from '@/store/auth/auth.slice';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
     const dispatch = useAppDispatch()
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const authStatus = useAppSelector(selectAuthStatus);
-    const authError = useAppSelector(selectAuthError);
+    const [password, setPassword] = useState('')
+    const authStatus = useAppSelector(selectAuthStatus)
+    const authError = useAppSelector(selectAuthError)
+    const authToken = useAppSelector(selectAuthToken)
 
     let content: React.ReactNode
-    if (authStatus === "idle" || authStatus === 'failed') {
+    if (authStatus === "idle" || authStatus === 'failed' || (authStatus === 'succeeded' && authToken === null)) {
         content = <KeyboardAvoidingView style={styles.container} behavior="padding">
                     <View style={styles.innerContainer}>
                         <Text style={styles.title}>Welcome Back!</Text>
@@ -62,7 +63,7 @@ const LoginScreen = () => {
     else if (authStatus === "loading") {
         content = <ActivityIndicator size="large" color="#0000ff"/>
     }
-    else if (authStatus === "succeeded") {
+    else if (authStatus === "succeeded" && authToken !== null) {
         content = <Redirect href="/" />
     }
 
