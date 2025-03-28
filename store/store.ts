@@ -1,5 +1,5 @@
 import {configureStore} from '@reduxjs/toolkit'
-import authSlice from "@/store/auth.slice";
+import authSlice from "@/store/auth/auth.slice";
 import leaguesSlice from "@/store/leagues/leaguesSlice";
 
 const store = configureStore({
