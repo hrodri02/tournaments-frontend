@@ -2,15 +2,18 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 export const TOKEN_KEY = 'jws';
+export const USER_KEY = 'user';
 
 export async function getStoredAuth() {
   if (Platform.OS === 'web') {
     const jws = localStorage.getItem(TOKEN_KEY);
-    return jws;
+    const user = localStorage.getItem(USER_KEY);
+    return {jws, user};
   }
   else {
     const jws = await SecureStore.getItemAsync(TOKEN_KEY);
-    return jws;
+    const user = await SecureStore.getItemAsync(USER_KEY);
+    return {jws, user};
   }
 }
 
