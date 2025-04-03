@@ -79,8 +79,8 @@ export const logoutRequest = createAppAsyncThunk(
   },
   {
     condition(arg, thunkApi) {
-      const authStatus = selectAuthStatus(thunkApi.getState())
-      if (authStatus !== 'idle') {
+      const status = selectAuthStatus(thunkApi.getState())
+      if (status !== 'succeeded') {
         return false
       }
     }
@@ -95,12 +95,6 @@ const slice = createSlice({
         state.status = 'idle'
         state.error = null
       },
-      logout: (state) => {
-        state.jws = null
-        state.user = null
-        state.status = 'idle'
-        state.error = null
-      } 
     },
     extraReducers: builder => {
         builder
@@ -144,7 +138,7 @@ const slice = createSlice({
           state.status = 'loading'
         })
         .addCase(logoutRequest.fulfilled, (state, action) => {
-          state.status = 'succeeded'
+          state.status = 'idle'
           state.user = null
           state.jws = null
         })
