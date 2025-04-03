@@ -14,26 +14,23 @@ export default function SettingsScreen() {
   if (authStatus === 'succeeded') {
     content = <>
                 <SectionList
-                    style={styles.sectionList}
-                    sections={[
-                      {title: 'My Account', data: myAccountSectionItems},
-                    ]}
-                    renderItem={({item}) => 
-                      <Text style={styles.item}>{item}</Text>
-                    }
-                    renderSectionHeader={({section}) => (
-                      <Text style={styles.sectionHeader}>{section.title}</Text>
-                    )}
-                  />
-                  <TouchableOpacity style={styles.button} onPress={() => {
-                    dispatch(logoutRequest())
-                  }}>
-                    <Text style={styles.buttonText}>Log Out</Text>
-                  </TouchableOpacity>
+                  style={styles.sectionList}
+                  sections={[
+                    {title: 'My Account', data: myAccountSectionItems},
+                  ]}
+                  renderItem={({item}) => 
+                    <Text style={styles.item}>{item}</Text>
+                  }
+                  renderSectionHeader={({section}) => (
+                    <Text style={styles.sectionHeader}>{section.title}</Text>
+                  )}
+                />
+                <TouchableOpacity style={styles.button} onPress={() => {
+                  dispatch(logoutRequest())
+                }}>
+                  <Text style={styles.buttonText}>Log Out</Text>
+                </TouchableOpacity>
               </>
-  }
-  else if (authStatus === 'loading') {
-    content = <ActivityIndicator size="large" color="#0000ff"/>
   }
   else if (authStatus === 'failed') {
     content = <Text style={styles.errorView}>{authError}</Text>
@@ -50,7 +47,7 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   sectionList: {
     flex: 1,
