@@ -7,6 +7,7 @@ import { ActivityIndicator, Text, View, StyleSheet } from 'react-native'
 const styles = StyleSheet.create({
     containerView: {
         flex: 1,
+        backgroundColor: '#f5f5f5',
         justifyContent: 'center'
     },
     errorView: {
@@ -33,7 +34,7 @@ export default function AppLayout() {
     }, [authStatus, dispatch])
 
     let content: React.ReactNode
-    if (authStatus === 'idle') {
+    if (authStatus === 'loading') {
         content = <ActivityIndicator size="large" color="#0000ff"/>
     }
     else if (authStatus === 'succeeded') {
