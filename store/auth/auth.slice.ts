@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User} from "@/entities/auth";
 import { createAppAsyncThunk } from '@/hooks/useStore';
-import { login, signup } from '@/services/auth.service';
+import { login, signup, logout } from '@/services/auth.service';
 import { RootState } from '@/store/store';
 import { getStoredAuth, setStorageItemAsync, TOKEN_KEY, USER_KEY } from './authStorage';
 
@@ -74,6 +74,7 @@ export const signupRequest = createAppAsyncThunk(
 export const logoutRequest = createAppAsyncThunk(
   'auth/logout',
   async () => {
+    await logout()
     await setStorageItemAsync(TOKEN_KEY, null)
     await setStorageItemAsync(USER_KEY, null)
   },
