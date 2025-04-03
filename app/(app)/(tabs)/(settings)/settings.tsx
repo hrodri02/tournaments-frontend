@@ -1,26 +1,48 @@
-import { StyleSheet, Text, SectionList, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
+import { logoutRequest, selectAuthStatus, selectAuthError } from '@/store/auth/auth.slice';
 
 export default function SettingsScreen() {
-  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account'];
+  const dispatch = useAppDispatch()
+  const authStatus = useAppSelector(selectAuthStatus)
+  const authError = useAppSelector(selectAuthError)
+  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account']
+
+  let content: React.ReactNode
+  if (authStatus === 'succeeded') {
+    content = <>
+                <SectionList
+                    style={styles.sectionList}
+                    sections={[
+                      {title: 'My Account', data: myAccountSectionItems},
+                    ]}
+                    renderItem={({item}) => 
+                      <Text style={styles.item}>{item}</Text>
+                    }
+                    renderSectionHeader={({section}) => (
+                      <Text style={styles.sectionHeader}>{section.title}</Text>
+                    )}
+                  />
+                  <TouchableOpacity style={styles.button} onPress={() => {
+                    dispatch(logoutRequest())
+                  }}>
+                    <Text style={styles.buttonText}>Log Out</Text>
+                  </TouchableOpacity>
+              </>
+  }
+  else if (authStatus === 'loading') {
+    content = <ActivityIndicator size="large" color="#0000ff"/>
+  }
+  else if (authStatus === 'failed') {
+    content = <Text style={styles.errorView}>{authError}</Text>
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <SectionList
-          style={styles.sectionList}
-          sections={[
-            {title: 'My Account', data: myAccountSectionItems},
-          ]}
-          renderItem={({item}) => 
-            <Text style={styles.item}>{item}</Text>
-          }
-          renderSectionHeader={({section}) => (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
-          )}
-        />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Log Out</Text>
-        </TouchableOpacity>
+        {content}
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -57,5 +79,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     paddingVertical: 12
+  },
+  errorView: {
+    textAlign: 'center'
   }
 });
