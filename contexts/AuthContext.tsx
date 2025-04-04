@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
+      // This coudl be moved to a service file for modularity as well as other endpoints
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {

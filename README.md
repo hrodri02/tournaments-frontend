@@ -1,8 +1,6 @@
 # Tournaments Frontend
 
-## Development Server
-
-The application uses Expo for development. To start the development server:
+The application uses Expo for development. To start the app:
 
 1. Install dependencies:
 ```bash
@@ -28,6 +26,7 @@ For development purposes, a mock authentication server is included. To start it:
 
 ```bash
 cd mock-server
+npm install 
 npm run dev
 ```
 
@@ -44,7 +43,7 @@ The server includes these mock users for testing:
 
 Future plans: If we don't have a backend, we could mock some data in the NodeJS server too.
 
-## Environment Variables
+## Environment Variables (In Progress...)
 
 Create a `.env` file in the root directory with the following variables:
 ```
