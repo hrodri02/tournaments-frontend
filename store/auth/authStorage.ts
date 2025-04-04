@@ -38,6 +38,10 @@ export async function setStorageItemAsync(key: string, value: string | null) {
 }
 
 export async function getStorageItemAsync(key: string): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem(key);
+  }
+  
   return await SecureStore.getItemAsync(key);
 }
 
