@@ -47,8 +47,7 @@ export const resetPassword = async (email: string, newPassword: string): Promise
 export const logout = async (): Promise<{ message: string }> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            // resolve({message: "Logout successful"})
-            reject(new Error("Failed to log out"))
+            resolve({message: "Logout successful"})
         }, 1000)
     })
 };
