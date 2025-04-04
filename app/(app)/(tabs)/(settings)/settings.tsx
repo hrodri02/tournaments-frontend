@@ -10,36 +10,27 @@ export default function SettingsScreen() {
   const authError = useAppSelector(selectAuthError)
   const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account']
 
-  let content: React.ReactNode
-  if (authStatus === 'succeeded') {
-    content = <>
-                <SectionList
-                  style={styles.sectionList}
-                  sections={[
-                    {title: 'My Account', data: myAccountSectionItems},
-                  ]}
-                  renderItem={({item}) => 
-                    <Text style={styles.item}>{item}</Text>
-                  }
-                  renderSectionHeader={({section}) => (
-                    <Text style={styles.sectionHeader}>{section.title}</Text>
-                  )}
-                />
-                <TouchableOpacity style={styles.button} onPress={() => {
-                  dispatch(logoutRequest())
-                }}>
-                  <Text style={styles.buttonText}>Log Out</Text>
-                </TouchableOpacity>
-              </>
-  }
-  else if (authStatus === 'failed') {
-    content = <Text style={styles.errorView}>{authError}</Text>
-  }
-
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        {content}
+        <SectionList
+          style={styles.sectionList}
+          sections={[
+            {title: 'My Account', data: myAccountSectionItems},
+          ]}
+          renderItem={({item}) => 
+            <Text style={styles.item}>{item}</Text>
+          }
+          renderSectionHeader={({section}) => (
+            <Text style={styles.sectionHeader}>{section.title}</Text>
+          )}
+        />
+        {authStatus === 'failed' && <Text style={styles.errorView}>{authError}</Text>}
+        <TouchableOpacity style={styles.button} onPress={() => {
+          dispatch(logoutRequest())
+        }}>
+          <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -78,6 +69,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12
   },
   errorView: {
-    textAlign: 'center'
+    marginHorizontal: 20,
+    marginBottom: 20,
+    backgroundColor: 'red',
+    color: '#fff',
+    textAlign: 'center',
+    paddingVertical: 12,
+    fontSize: 18,
+    fontWeight: 'bold',
+    borderRadius: 8
   }
 });
