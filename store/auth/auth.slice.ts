@@ -139,7 +139,7 @@ const slice = createSlice({
           state.status = 'loading'
         })
         .addCase(logoutRequest.fulfilled, (state, action) => {
-          state.status = 'idle'
+          state.status = 'succeeded'
           state.user = null
           state.jws = null
         })
