@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+# Tournaments Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Development Server
 
-## Get started
+The application uses Expo for development. To start the development server:
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+1. Install dependencies:
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Start the development server:
+```bash
+npm start
+```
 
-## Learn more
+This will start the Expo development server. You can then:
+- Press `w` to open in web browser
+- Press `a` to open in Android emulator
+- Press `i` to open in iOS simulator
+- Scan the QR code with your phone's camera to open in Expo Go app
 
-To learn more about developing your project with Expo, look at the following resources:
+The server will automatically reload when you make changes to the code.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Mock Authentication Server
 
-## Join the community
+For development purposes, a mock authentication server is included. To start it:
 
-Join our community of developers creating universal apps.
+```bash
+cd mock-server
+npm run dev
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This will start a local server on port 3000 that provides mock authentication endpoints:
+- POST `/auth/login` - Login with email and password
+- POST `/auth/register` - Register a new user
+- GET `/auth/me` - Get current user profile
+
+### Mock Users
+
+The server includes these mock users for testing:
+- Email: `user@example.com`, Password: `password`
+- Email: `admin@example.com`, Password: `admin123`
+
+Future plans: If we don't have a backend, we could mock some data in the NodeJS server too.
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+```
+EXPO_PUBLIC_API_URL=http://localhost:3000
+```

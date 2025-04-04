@@ -1,14 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { logoutRequest, selectAuthStatus, selectAuthError } from '@/store/auth/auth.slice';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function SettingsScreen() {
-  const dispatch = useAppDispatch()
-  const authStatus = useAppSelector(selectAuthStatus)
-  const authError = useAppSelector(selectAuthError)
-  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account']
+  const { logout, isLoading } = useAuth();
+  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account'];
 
   return (
     <SafeAreaProvider>
@@ -25,11 +22,16 @@ export default function SettingsScreen() {
             <Text style={styles.sectionHeader}>{section.title}</Text>
           )}
         />
-        {authStatus === 'failed' && <Text style={styles.errorView}>{authError}</Text>}
-        <TouchableOpacity style={styles.button} onPress={() => {
-          dispatch(logoutRequest())
-        }}>
-          <Text style={styles.buttonText}>Log Out</Text>
+        <TouchableOpacity 
+          style={[styles.button, isLoading && styles.buttonDisabled]} 
+          onPress={logout}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Log Out</Text>
+          )}
         </TouchableOpacity>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -58,15 +60,20 @@ const styles = StyleSheet.create({
   button: {
     marginHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: '#0000ff',
-    marginBottom: 20
+    backgroundColor: '#ff3b30',
+    marginBottom: 20,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     textAlign: 'center',
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    paddingVertical: 12
   },
   errorView: {
     marginHorizontal: 20,
@@ -79,4 +86,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     borderRadius: 8
   }
-});
+}); 
