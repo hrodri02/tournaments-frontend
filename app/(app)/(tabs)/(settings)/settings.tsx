@@ -1,8 +1,15 @@
-import { StyleSheet, Text, SectionList, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
+import { logoutRequest, selectAuthStatus, selectAuthError } from '@/store/auth/auth.slice';
 
 export default function SettingsScreen() {
-  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account'];
+  const dispatch = useAppDispatch()
+  const authStatus = useAppSelector(selectAuthStatus)
+  const authError = useAppSelector(selectAuthError)
+  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account']
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -18,7 +25,10 @@ export default function SettingsScreen() {
             <Text style={styles.sectionHeader}>{section.title}</Text>
           )}
         />
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
+        {authStatus === 'failed' && <Text style={styles.errorView}>{authError}</Text>}
+        <TouchableOpacity style={styles.button} onPress={() => {
+          dispatch(logoutRequest())
+        }}>
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -28,7 +38,7 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   sectionList: {
     flex: 1,
@@ -57,5 +67,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     paddingVertical: 12
+  },
+  errorView: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    backgroundColor: 'red',
+    color: '#fff',
+    textAlign: 'center',
+    paddingVertical: 12,
+    fontSize: 18,
+    fontWeight: 'bold',
+    borderRadius: 8
   }
 });

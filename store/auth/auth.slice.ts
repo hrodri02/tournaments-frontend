@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User} from "@/entities/auth";
 import { createAppAsyncThunk } from '@/hooks/useStore';
-import { login, signup } from '@/services/auth.service';
+import { login, signup, logout } from '@/services/auth.service';
 import { RootState } from '@/store/store';
 import { getStoredAuth, setStorageItemAsync, TOKEN_KEY, USER_KEY } from './authStorage';
 
@@ -74,13 +74,14 @@ export const signupRequest = createAppAsyncThunk(
 export const logoutRequest = createAppAsyncThunk(
   'auth/logout',
   async () => {
+    await logout()
     await setStorageItemAsync(TOKEN_KEY, null)
     await setStorageItemAsync(USER_KEY, null)
   },
   {
     condition(arg, thunkApi) {
-      const authStatus = selectAuthStatus(thunkApi.getState())
-      if (authStatus !== 'idle') {
+      const status = selectAuthStatus(thunkApi.getState())
+      if (status !== 'succeeded') {
         return false
       }
     }
@@ -95,12 +96,6 @@ const slice = createSlice({
         state.status = 'idle'
         state.error = null
       },
-      logout: (state) => {
-        state.jws = null
-        state.user = null
-        state.status = 'idle'
-        state.error = null
-      } 
     },
     extraReducers: builder => {
         builder
