@@ -12,7 +12,7 @@ import {
   AuthState,
   LoginCredentials,
   RegisterCredentials,
-} from "@/types/auth";
+} from "@/entities/auth";
 import {
   getStoredAuth,
   setStorageItemAsync,

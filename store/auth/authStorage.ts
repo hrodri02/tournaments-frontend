@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
-import { User } from '@/types/auth';
+import { User } from '@/entities/auth';
 
 export const TOKEN_KEY = 'auth_token';
 export const USER_KEY = 'auth_user';
