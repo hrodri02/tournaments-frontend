@@ -1,20 +1,20 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import { User } from '@/entities/auth';
 
-export const TOKEN_KEY = 'jws';
-export const USER_KEY = 'user';
+export const TOKEN_KEY = 'auth_token';
+export const USER_KEY = 'auth_user';
 
-export async function getStoredAuth() {
-  if (Platform.OS === 'web') {
-    const jws = localStorage.getItem(TOKEN_KEY);
-    const user = localStorage.getItem(USER_KEY);
-    return {jws, user};
-  }
-  else {
-    const jws = await SecureStore.getItemAsync(TOKEN_KEY);
-    const user = await SecureStore.getItemAsync(USER_KEY);
-    return {jws, user};
-  }
+export async function getStoredAuth(): Promise<{ token: string | null; user: User | null }> {
+  const [token, userStr] = await Promise.all([
+    getStorageItemAsync(TOKEN_KEY),
+    getStorageItemAsync(USER_KEY),
+  ]);
+
+  return {
+    token,
+    user: userStr ? JSON.parse(userStr) : null,
+  };
 }
 
 export async function setStorageItemAsync(key: string, value: string | null) {
@@ -29,10 +29,25 @@ export async function setStorageItemAsync(key: string, value: string | null) {
       console.error('Local storage is unavailable:', e);
     }
   } else {
-    if (value == null) {
+    if (value === null) {
       await SecureStore.deleteItemAsync(key);
     } else {
       await SecureStore.setItemAsync(key, value);
     }
   }
+}
+
+export async function getStorageItemAsync(key: string): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem(key);
+  }
+  
+  return await SecureStore.getItemAsync(key);
+}
+
+export async function clearStoredAuth() {
+  await Promise.all([
+    setStorageItemAsync(TOKEN_KEY, null),
+    setStorageItemAsync(USER_KEY, null),
+  ]);
 }

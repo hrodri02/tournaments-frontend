@@ -12,7 +12,7 @@ type LeagueExcerptProps = {
 
 const styles = StyleSheet.create({
     image: {
-        borderRadius: '10px',
+        borderRadius: 10,
         height: screenHeight * 0.1,
         width: screenHeight * 0.1,
     },
@@ -29,12 +29,16 @@ const styles = StyleSheet.create({
 });
 
 export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
+    if (!league) {
+        return null;
+    }
+
     const date = parseISO(league.date)
     const day = format(date, 'cccc');
     const timeOfDay = format(date, 'BBBB')
     return(
         <Link href={{
-            pathname: '/leagues/[id]',
+            pathname: '/(app)/home/leagues/[id]',
             params: {id: league.id}
           }} asChild>
             <Pressable>
