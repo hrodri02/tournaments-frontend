@@ -20,12 +20,11 @@ export default function Game() {
     const awayTeam = game.awayTeam
     const date = Date.parse(game.date);
     const formattedDate = format(date, 'eee, MMM i');
-    const goalStats = game.stats.filter((gameStat) => gameStat.type === GameStatType.goal)
-    const homeTeamGoalStats = goalStats.filter((stat) => homeTeam.players.includes(stat.player) );
+    const homeTeamGoalStats = game.stats.filter((stat) => stat.type === GameStatType.goal && homeTeam.players.includes(stat.player) );
     const homeTeamGoalScorers = homeTeamGoalStats.reduce((accumulator, stat) => {
         return (accumulator === '')? stat.player.name : accumulator + ', ' + stat.player.name
     }, '')
-    const awayTeamGoalStats = goalStats.filter((stat) => awayTeam.players.includes(stat.player) );
+    const awayTeamGoalStats = game.stats.filter((stat) => stat.type === GameStatType.goal && awayTeam.players.includes(stat.player) );
     const awayTeamGoalScorers = awayTeamGoalStats.reduce((accumulator, stat) => {
         return (accumulator === '')? stat.player.name : accumulator + ', ' + stat.player.name
     }, '')
