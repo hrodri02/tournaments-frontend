@@ -3,14 +3,18 @@ import { StyleSheet, View, Text, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
+import { useAppSelector } from '@/hooks/useStore';
+import { selectGameById, selectLeagueById } from '@/store/leagues/leaguesSlice';
 
 const screenHeight = Dimensions.get('window').height; 
 
 export default function Game() {
-    const { id, gameID } = useLocalSearchParams();
+    const { id, gameId } = useLocalSearchParams();
     const leagueId = Number(id);
-    const gameId = Number(gameID);
-
+    const gameID = Number(gameId);
+    const league = useAppSelector(state => selectLeagueById(state, leagueId));
+    const game = useAppSelector(state => selectGameById(league, gameID))
+    
     const navigation = useNavigation(); 
     useLayoutEffect(() => { 
         navigation.setOptions({
