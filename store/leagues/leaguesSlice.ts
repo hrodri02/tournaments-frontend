@@ -95,4 +95,7 @@ export const selectLeaguesError = (state: RootState) =>
 export const makeSelectLeaguesByStatus = (status: LeagueStatus) =>
   createSelector([selectAllLeagues], (leagues) =>
     leagues.filter((league) => league.status === status)
-  );
+);
+
+export const selectGameById = (league: League, gameId: number) => 
+  league.games.find((game) => game.id === gameId)
