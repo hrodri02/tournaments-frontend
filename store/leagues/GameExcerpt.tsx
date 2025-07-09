@@ -3,6 +3,7 @@ import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 
 import { Link } from 'expo-router';
 import { Game } from '@/entities/index';
 import { format } from 'date-fns';
+import { useLocalSearchParams } from 'expo-router';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -47,11 +48,13 @@ const styles = StyleSheet.create({
 export function GameExcerpt({ game, style }: GameExcerptProps) {
     const date = Date.parse(game.date);
     const formattedDate = format(date, 'eee, MMM i pp');
+    const { id } = useLocalSearchParams();
+    const leagueId = Number(id);
 
     return (
         <Link href={{
-            pathname: './games/[id]',
-            params: {id: game.id}
+            pathname: '/(app)/home/leagues/[leagueId]/games/[gameId]',
+            params: {leagueId: leagueId, gameId: game.id}
         }} asChild>
             <Pressable>
             <View style={style}>
