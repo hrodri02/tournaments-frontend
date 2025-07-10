@@ -7,7 +7,7 @@ import { useAppSelector } from '@/hooks/useStore';
 import { selectGameById, selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { getStorageItemAsync, USER_KEY } from '@/store/auth/authStorage';
 import { format } from 'date-fns';
-import { GameStatType } from '@/entities';
+import { GameStatType, filterStatsForTeam, countStatsForTeam, getGoalScorersForTeam } from '@/entities';
 import { User } from '@/entities/auth';
 
 const screenHeight = Dimensions.get('window').height; 
@@ -25,34 +25,14 @@ export default function Game() {
     const awayTeam = game.awayTeam
     const date = Date.parse(game.date);
     const formattedDate = format(date, 'eee, MMM i');
-    const homeTeamGoalStats = game.stats.filter((stat) => stat.type === GameStatType.goal && homeTeam.players.includes(stat.player) );
-    const homeTeamGoalScorers = homeTeamGoalStats.reduce((accumulator, stat) => {
-        return (accumulator === '')? stat.player.name : accumulator + ', ' + stat.player.name
-    }, '')
-    const awayTeamGoalStats = game.stats.filter((stat) => stat.type === GameStatType.goal && awayTeam.players.includes(stat.player) );
-    const awayTeamGoalScorers = awayTeamGoalStats.reduce((accumulator, stat) => {
-        return (accumulator === '')? stat.player.name : accumulator + ', ' + stat.player.name
-    }, '')
-    const homeTeamYellowCards = game.stats.reduce((numCards, stat) => {
-        if (stat.type === GameStatType.yellowCard && homeTeam.players.includes(stat.player))
-            return numCards += 1
-        return numCards
-    }, 0)
-    const awayTeamYellowCards = game.stats.reduce((numCards, stat) => {
-        if (stat.type === GameStatType.yellowCard && awayTeam.players.includes(stat.player))
-            return numCards += 1
-        return numCards
-    }, 0)
-    const homeTeamRedCards = game.stats.reduce((numCards, stat) => {
-        if (stat.type === GameStatType.redCard && homeTeam.players.includes(stat.player))
-            return numCards += 1
-        return numCards
-    }, 0)
-    const awayTeamRedCards = game.stats.reduce((numCards, stat) => {
-        if (stat.type === GameStatType.redCard && awayTeam.players.includes(stat.player))
-            return numCards += 1
-        return numCards
-    }, 0)
+    const homeTeamGoalStats = filterStatsForTeam(game.stats, GameStatType.goal, homeTeam)
+    const homeTeamGoalScorers = getGoalScorersForTeam(homeTeamGoalStats)
+    const awayTeamGoalStats = filterStatsForTeam(game.stats, GameStatType.goal, awayTeam)
+    const awayTeamGoalScorers = getGoalScorersForTeam(awayTeamGoalStats)
+    const homeTeamYellowCards = countStatsForTeam(game.stats, GameStatType.yellowCard, homeTeam)
+    const awayTeamYellowCards = countStatsForTeam(game.stats, GameStatType.yellowCard, awayTeam)
+    const homeTeamRedCards = countStatsForTeam(game.stats, GameStatType.redCard, homeTeam)
+    const awayTeamRedCards = countStatsForTeam(game.stats, GameStatType.redCard, awayTeam)
     
     const checkAdminStatus = useCallback(async () => {
         try {

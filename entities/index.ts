@@ -47,3 +47,20 @@ export interface League {
     games: Game[];
 }
 
+export function filterStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): GameStat[] {
+    return stats.filter((stat) => stat.type === type && team.players.includes(stat.player) )
+}
+
+export function getGoalScorersForTeam(goalStats: GameStat[]): string {
+    return goalStats.reduce((goalScorers, stat) => {
+        return (goalScorers === '')? stat.player.name : goalScorers + ', ' + stat.player.name
+    }, '')
+}
+
+export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): number {
+    return stats.reduce((count, stat) => {
+                if (stat.type === type && team.players.includes(stat.player))
+                    return count += 1
+                return count
+            }, 0)
+}
