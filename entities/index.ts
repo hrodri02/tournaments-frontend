@@ -59,8 +59,8 @@ export function getGoalScorersForTeam(goalStats: GameStat[]): string {
 
 export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): number {
     return stats.reduce((count, stat) => {
-                if (stat.type === type && team.players.includes(stat.player))
-                    return count += 1
-                return count
-            }, 0)
+        if (stat.type === type && team.players.includes(stat.player))
+            return count += 1
+        return count
+    }, 0)
 }
