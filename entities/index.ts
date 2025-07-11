@@ -57,9 +57,28 @@ export function filterStatsForTeam(stats: GameStat[], type: GameStatType, team: 
 }
 
 export function getGoalScorersForTeam(goalStats: GameStat[]): string {
-    return goalStats.reduce((goalScorers, stat) => {
-        return (goalScorers === '')? stat.player.name : goalScorers + ', ' + stat.player.name
-    }, '')
+    const playerNameToNumGoals: { [key: string]:number } = {}
+    goalStats.forEach((stat) => {
+        const name = stat.player.name
+        if (name in playerNameToNumGoals) {
+            playerNameToNumGoals[name] += 1
+        }
+        else {
+            playerNameToNumGoals[name] = 1
+        }
+    })
+    const playerNames: string[] = Object.keys(playerNameToNumGoals)
+    let res = ''
+    playerNames.forEach((name) => {
+        const goals = playerNameToNumGoals[name]
+        if (goals > 1) {
+            res += `${name} (${goals})\n`
+        }
+        else {
+            res += `${name}\n`
+        }
+    })
+    return res
 }
 
 export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): number {
