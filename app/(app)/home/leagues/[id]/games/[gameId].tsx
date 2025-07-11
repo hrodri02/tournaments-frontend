@@ -114,9 +114,15 @@ export default function Game() {
             time: new Date().toISOString()
         }
         dispatch(gameStatAdded(newGameStat))
-        setModalVisible(!modalVisible)
         setSelectedGameStat('')
         setSelectedPlayerId('')
+        setModalVisible(!modalVisible)
+    }
+
+    const handleCancelButtonPressed = () => {
+        setSelectedGameStat('')
+        setSelectedPlayerId('')
+        setModalVisible(!modalVisible)
     }
 
     return (
@@ -200,13 +206,21 @@ export default function Game() {
                             <Picker.Item key={player.email} label={player.name} value={player.email} />
                         ))}
                     </Picker>
-                    <TouchableOpacity
-                        style={styles.pickerButton}
-                        onPress={handleSaveButtonPressed}
-                        disabled={selectedGameStat === '' || selectedPlayerId === ''}
-                    >
-                        <Text style={styles.pickerButtonText}>Save</Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={styles.pickerButton}
+                            onPress={handleSaveButtonPressed}
+                            disabled={selectedGameStat === '' || selectedPlayerId === ''}
+                        >
+                            <Text style={styles.pickerButtonText}>Save</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.pickerButton}
+                            onPress={handleCancelButtonPressed}
+                        >
+                            <Text style={styles.pickerButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </Modal>
         </SafeAreaView>
@@ -285,13 +299,17 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center'
     },
+    buttonContainer: {
+        flexDirection: 'row',
+        columnGap: 10
+    },
     pickerButton: {
         backgroundColor: '#007AFF',
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 5
+        paddingVertical: 5,
     },
     pickerButtonText: {
         color: '#fff',
