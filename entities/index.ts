@@ -14,13 +14,18 @@ export interface GameStat {
     id: number;
     type: GameStatType;
     player: Player;
-    time: Date;
+    time: string;
+}
+
+export interface GameStatPayload extends GameStat {
+    leagueId: number;
+    gameId: number;
 }
 
 export enum GameStatType {
-    goal = 'goal',
-    yellowCard = 'yellow card',
-    redCard = 'red card'
+    goal = 'Goal',
+    yellowCard = 'Yellow card',
+    redCard = 'Red card'
 }
 
 export interface Game {
@@ -63,4 +68,18 @@ export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: T
             return count += 1
         return count
     }, 0)
+}
+
+export function stringToGameStatType(typeString: string): GameStatType | undefined {
+  if (typeof typeString !== 'string') {
+    return undefined;
+  }
+
+  // Iterate over the values of the enum
+  for (const enumValue of Object.values(GameStatType)) {
+    if (enumValue === typeString) {
+      return enumValue as GameStatType; // Cast back to the enum type
+    }
+  }
+  return undefined; // Not found
 }
