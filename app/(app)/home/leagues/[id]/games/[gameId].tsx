@@ -1,6 +1,5 @@
 import React, { useLayoutEffect, useState, useEffect, useCallback } from 'react'; 
 import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity, Modal } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
@@ -10,16 +9,14 @@ import { getStorageItemAsync, USER_KEY } from '@/store/auth/authStorage';
 import { format } from 'date-fns';
 import { GameStatType, filterStatsForTeam, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType, GameStatPayload } from '@/entities';
 import { User } from '@/entities/auth';
+import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 
 const screenHeight = Dimensions.get('window').height; 
-const gameStatValues = Object.values(GameStatType);
 
 export default function Game() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoadingAdminStatus, setIsLoadingAdminStatus] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedGameStat, setSelectedGameStat] = useState('');
-    const [selectedPlayerId, setSelectedPlayerId] = useState('');
     const dispatch = useAppDispatch()
     const navigation = useNavigation(); 
     const { id, gameId } = useLocalSearchParams();
@@ -77,7 +74,7 @@ export default function Game() {
                         style={styles.rightNavButton}
                         onPress={() => { setModalVisible(true) }}
                     >
-                        <Text style={styles.rightNavButtonText}>Edit</Text>
+                        <Text style={styles.rightNavButtonText}>Add</Text>
                     </TouchableOpacity>
                 )
             });
@@ -88,16 +85,9 @@ export default function Game() {
         }
     }, [navigation, isAdmin, isLoadingAdminStatus])
 
-    const handleGameStatChange = (itemValue: GameStatType) => {
-        setSelectedGameStat(itemValue)
-
-    };
-
-    const handlePlayerIdChange = (itemValue: string) => {
-        setSelectedPlayerId(itemValue)
-    }
-
-    const handleSaveButtonPressed = () => {
+    const handleSaveButtonPressed = (data: GameStatFormData) => {
+        const selectedPlayerId = data.playerId
+        const selectedGameStat = data.gameStatType
         let selectedPlayer = homeTeam.players.find((player) => player.email === selectedPlayerId)
         if (!selectedPlayer) {
             selectedPlayer = awayTeam.players.find((player) => player.email === selectedPlayerId)
@@ -114,14 +104,10 @@ export default function Game() {
             time: new Date().toISOString()
         }
         dispatch(gameStatAdded(newGameStat))
-        setSelectedGameStat('')
-        setSelectedPlayerId('')
         setModalVisible(!modalVisible)
     }
 
     const handleCancelButtonPressed = () => {
-        setSelectedGameStat('')
-        setSelectedPlayerId('')
         setModalVisible(!modalVisible)
     }
 
@@ -174,54 +160,20 @@ export default function Game() {
                 <Text style={[styles.text, styles.equalWidth]}> Red Cards </Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamRedCards}</Text>
             </View>
-
             <Modal
                 animationType="slide" // How the modal appears (slide, fade, none)
                 transparent={true}    // Whether the background behind the modal is transparent
                 visible={modalVisible} // Controls the visibility of the modal
                 onRequestClose={() => { // Required for Android back button and accessibility
-                    console.log('Modal has been closed.');
                     setModalVisible(!modalVisible);
                 }}
             >
-                <View style={styles.modalView}>
-                    <Picker
-                        style={styles.picker}
-                        onValueChange={handleGameStatChange}>
-                        <Picker.Item label="Select Game Stat..." value="" />
-                        {gameStatValues.map((type) => (
-                            <Picker.Item key={type} label={type} value={type} />
-                        ))}
-                    </Picker>
-                    <Picker
-                        style={styles.picker}
-                        onValueChange={handlePlayerIdChange}>
-                        <Picker.Item label="Select Player..." value="" />
-                        <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
-                        {homeTeam.players.map((player) => (
-                            <Picker.Item key={player.email} label={player.name} value={player.email} />
-                        ))}
-                        <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
-                        {awayTeam.players.map((player) => (
-                            <Picker.Item key={player.email} label={player.name} value={player.email} />
-                        ))}
-                    </Picker>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={styles.pickerButton}
-                            onPress={handleSaveButtonPressed}
-                            disabled={selectedGameStat === '' || selectedPlayerId === ''}
-                        >
-                            <Text style={styles.pickerButtonText}>Save</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.pickerButton}
-                            onPress={handleCancelButtonPressed}
-                        >
-                            <Text style={styles.pickerButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <GameStatForm 
+                    homeTeam={homeTeam} 
+                    awayTeam={awayTeam} 
+                    onCancel={handleCancelButtonPressed}
+                    onSubmit={handleSaveButtonPressed}
+                />
             </Modal>
         </SafeAreaView>
     );
@@ -273,47 +225,5 @@ const styles = StyleSheet.create({
     rightNavButtonText: {
         color: 'black',
         fontSize: 16
-    },
-    modalView: {
-        flex: 1,
-        marginTop: 44,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 35,
-        backgroundColor: '#777',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        elevation: 5,
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    picker: {
-        marginBottom: 15,
-        textAlign: 'center'
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        columnGap: 10
-    },
-    pickerButton: {
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 5,
-    },
-    pickerButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
     }
 })
