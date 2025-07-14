@@ -160,6 +160,7 @@ export default function Game() {
                 <Text style={[styles.text, styles.equalWidth]}> Red Cards </Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamRedCards}</Text>
             </View>
+            
             <Modal
                 animationType="slide" // How the modal appears (slide, fade, none)
                 transparent={true}    // Whether the background behind the modal is transparent
