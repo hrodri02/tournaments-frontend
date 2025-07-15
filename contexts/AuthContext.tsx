@@ -24,9 +24,9 @@ import {
 // TODO: Change to the API_URL from the .env file
 // Platform-specific API URL
 const API_URL = Platform.select({
-  android: "http://10.0.2.2:3001/api", // Android emulator
-  ios: "http://localhost:3001/api", // iOS simulator
-  default: "http://localhost:3001/api", // fallback
+  android: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // Android emulator
+  ios: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // iOS simulator
+  default: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // fallback
 });
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
