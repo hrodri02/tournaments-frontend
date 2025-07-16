@@ -1,5 +1,13 @@
+import {Platform} from 'react-native'
 import {faker} from '@faker-js/faker';
 import {Game, GameStat, GameStatType, League, LeagueStatus, Player, Team} from "@/entities";
+import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
+
+const API_URL = Platform.select({
+  android: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // Android emulator
+  ios: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // iOS simulator
+  default: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // fallback
+});
 
 const generateMockPlayers = (count: number): Player[] => {
     return Array.from({length: count}, (_, id) => ({
@@ -69,7 +77,19 @@ export const getGames = async (): Promise<Game[]> => {
 };
 
 export const getLeagues = async (): Promise<League[]> => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => resolve(mockLeagues), 2000);
-    });
+    try {
+        const jwt = await getStorageItemAsync(TOKEN_KEY)
+        const response = await fetch(`${API_URL}/leagues`, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwt}`
+            }
+        });
+
+        const data = await response.json()
+        return data
+    }
+    catch (error) {
+        throw error
+    }
 };
