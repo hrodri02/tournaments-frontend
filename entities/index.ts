@@ -38,14 +38,15 @@ export interface Game {
 }
 
 export enum LeagueStatus {
-    notStarted = 'not started',
-    inProgress = 'in progress',
-    ended = 'ended'
+    notStarted = 'NOT_STARTED',
+    inProgress = 'IN_PROGRESS',
+    ended = 'ENDED'
 }
 
 export interface League {
     id: number;
-    date: string;
+    startDate: string;
+    durationInWeeks: number;
     name: string;
     status: LeagueStatus;
     teams: Team[];
