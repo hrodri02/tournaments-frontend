@@ -28,8 +28,8 @@ const initialState: LeaguesState = leaguesAdapter.getInitialState({
 // Thunk for async fetching leagues
 export const fetchLeagues = createAppAsyncThunk(
   "leagues/fetchLeagues",
-  async () => {
-    const leagues = await getLeagues();
+  async (status: LeagueStatus | undefined) => {
+    const leagues = await getLeagues(status);
     return leagues;
   },
   {
