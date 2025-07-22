@@ -33,9 +33,9 @@ export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
         return null;
     }
 
-    const date = parseISO(league.date)
-    const day = format(date, 'cccc');
-    const timeOfDay = format(date, 'BBBB')
+    const date = parseISO(league.startDate)
+    const formattedDate = format(date, 'MMMM d y');
+
     return(
         <Link href={{
             pathname: '/(app)/home/leagues/[id]',
@@ -46,7 +46,7 @@ export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
                     <View style={styles.leagueDetails}>
                         <Text style={styles.itemHeader}>{league.name}</Text>
-                        <Text style={styles.itemSubheader}>{day} {timeOfDay}</Text>
+                        <Text style={styles.itemSubheader}>{formattedDate}</Text>
                     </View>
                 </View>
             </Pressable>
