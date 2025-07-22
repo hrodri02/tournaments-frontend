@@ -79,7 +79,7 @@ export const getGames = async (): Promise<Game[]> => {
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
     try {
         const jwt = await getStorageItemAsync(TOKEN_KEY)
-        const url = (status) ? `${API_URL}/leagues?${status}` : `${API_URL}/leagues`
+        const url = (status) ? `${API_URL}/leagues?status=${status}` : `${API_URL}/leagues`
         const response = await fetch(url, {
             headers: {
                 "Content-Type": "application/json",
