@@ -28,6 +28,7 @@ const API_URL = Platform.select({
   ios: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // iOS simulator
   default: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // fallback
 });
+const TOKEN_PREFIX_LENTH = 7;
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -91,12 +92,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error("Invalid credentials");
       }
 
-      const data = await response.json();
+      const data = await response.json()
+      const headers = response.headers
+      const authorization = headers.get("Authorization")
+      const token = authorization?.substring(TOKEN_PREFIX_LENTH)
 
       // Store auth data
       await Promise.all([
-        setStorageItemAsync(TOKEN_KEY, data.token),
-        setStorageItemAsync(USER_KEY, JSON.stringify(data.user)),
+        setStorageItemAsync(TOKEN_KEY, token!),
+        setStorageItemAsync(USER_KEY, JSON.stringify(data)),
       ]);
 
       setState({
