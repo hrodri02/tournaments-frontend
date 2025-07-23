@@ -73,7 +73,22 @@ export const getTeams = async (): Promise<Team[]> => {
 };
 
 export const getGames = async (): Promise<Game[]> => {
-    return mockGames;
+    try {
+        const jwt = await getStorageItemAsync(TOKEN_KEY)
+        const url = `${API_URL}/games`
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwt}`
+            }
+        });
+
+        const data = await response.json()
+        return data
+    }
+    catch (error) {
+        throw error
+    }
 };
 
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
