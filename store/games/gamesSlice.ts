@@ -8,8 +8,7 @@ import {
   createSlice,
   createEntityAdapter,
   EntityState,
-  createSelector,
-  PayloadAction,
+  createSelector
 } from "@reduxjs/toolkit";
 
 import { createAppAsyncThunk } from "@/hooks/useStore";
