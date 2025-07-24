@@ -78,7 +78,7 @@ export const getGames = async (): Promise<Game[]> => {
 };
 
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
-    const url = new URL(`${API_URL}/leagues`); // Use URL object for safer URL construction
+    const url = new URL(`${API_URL}/leagues`);
 
     if (status) {
         url.searchParams.append('status', status);
