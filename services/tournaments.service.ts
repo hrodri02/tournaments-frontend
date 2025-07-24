@@ -73,39 +73,40 @@ export const getTeams = async (): Promise<Team[]> => {
 };
 
 export const getGames = async (): Promise<Game[]> => {
-    try {
-        const jwt = await getStorageItemAsync(TOKEN_KEY)
-        const url = `${API_URL}/games`
-        const response = await fetch(url, {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${jwt}`
-            }
-        });
-
-        const data = await response.json()
-        return data
-    }
-    catch (error) {
-        throw error
-    }
+    const url = `${API_URL}/games`
+    return httpGetRequest<Game[]>(url)
 };
 
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
+    const url = new URL(`${API_URL}/leagues`); // Use URL object for safer URL construction
+
+    if (status) {
+        url.searchParams.append('status', status);
+    }
+    
+    return httpGetRequest<League[]>(url.toString()); 
+};
+
+const httpGetRequest = async<T> (url: string): Promise<T> => {
     try {
         const jwt = await getStorageItemAsync(TOKEN_KEY)
-        const url = (status) ? `${API_URL}/leagues?status=${status}` : `${API_URL}/leagues`
+
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+        };
+
+        if (jwt) {
+            headers["Authorization"] = `Bearer ${jwt}`;
+        }
+
         const response = await fetch(url, {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${jwt}`
-            }
+            headers: headers
         });
 
-        const data = await response.json()
+        const data: T = await response.json()
         return data
     }
     catch (error) {
         throw error
     }
-};
+}
