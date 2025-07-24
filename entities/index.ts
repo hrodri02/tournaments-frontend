@@ -30,10 +30,11 @@ export enum GameStatType {
 
 export interface Game {
     id: number;
+    leagueId: number;
     homeTeam: Team;
     awayTeam: Team;
     address: string;
-    date: string;
+    gameDateTime: string;
     stats: GameStat[];
 }
 

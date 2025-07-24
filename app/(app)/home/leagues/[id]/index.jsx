@@ -1,9 +1,10 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import { FlatList, StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { selectLeagueById, selectLeaguesStatus, fetchLeagues } from '@/store/leagues/leaguesSlice';
+import { selectGamesStatus, fetchGames, makeSelectGamesByLeagueId } from '@/store/games/gamesSlice';
+import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 
@@ -41,15 +42,20 @@ export default function LeagueScreen() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const leagueId = Number(id);
-  const leaguesStatus = useAppSelector(selectLeaguesStatus);
   const league = useAppSelector(state => selectLeagueById(state, leagueId));
+  const gamesStatus = useAppSelector(selectGamesStatus);
+  const selectGamesOfLeague = useMemo(
+    () => makeSelectGamesByLeagueId(leagueId),
+    []
+  );
+  const gamesOfLeague = useAppSelector(selectGamesOfLeague);
 
-  // Fetch leagues if not already loaded
+  // fetch games if they haven't already
   React.useEffect(() => {
-    if (leaguesStatus === 'idle') {
-      dispatch(fetchLeagues());
+    if (gamesStatus === 'idle') {
+      dispatch(fetchGames(leagueId));
     }
-  }, [dispatch, leaguesStatus]);
+  }, [dispatch, gamesStatus]);
 
   useLayoutEffect(() => {
     if (league?.name) {
@@ -57,7 +63,7 @@ export default function LeagueScreen() {
     }
   }, [navigation, league?.name]);
 
-  if (leaguesStatus === 'loading') {
+  if (gamesStatus === 'loading') {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.loadingContainer}>
@@ -67,11 +73,11 @@ export default function LeagueScreen() {
     );
   }
 
-  if (!league) {
+  if (!gamesOfLeague) {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.loadingContainer}>
-          <Text>League not found</Text>
+          <Text>Games not found</Text>
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -83,7 +89,7 @@ export default function LeagueScreen() {
         <FlatList
           ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
-          data={league.games}
+          data={gamesOfLeague}
           renderItem={({ item }) => (
             <GameExcerpt game={item} style={styles.item} />
           )}

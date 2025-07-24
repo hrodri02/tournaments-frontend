@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 })
 
 export function GameExcerpt({ game, style }: GameExcerptProps) {
-    const date = Date.parse(game.date);
+    const date = Date.parse(game.gameDateTime);
     const formattedDate = format(date, 'eee, MMM i pp');
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
