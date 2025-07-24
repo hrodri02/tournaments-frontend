@@ -72,6 +72,11 @@ export const getTeams = async (): Promise<Team[]> => {
     return mockTeams;
 };
 
+export const getGameStats = async (): Promise<GameStat[]> => {
+    const url = `${API_URL}/gamestats`
+    return httpGetRequest<GameStat[]>(url)
+}
+
 export const getGames = async (): Promise<Game[]> => {
     const url = `${API_URL}/games`
     return httpGetRequest<Game[]>(url)
