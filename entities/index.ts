@@ -12,6 +12,7 @@ export interface Team {
 
 export interface GameStat {
     id: number;
+    gameId: number;
     type: GameStatType;
     player: Player;
     time: string;
@@ -23,9 +24,9 @@ export interface GameStatPayload extends GameStat {
 }
 
 export enum GameStatType {
-    goal = 'Goal',
-    yellowCard = 'Yellow card',
-    redCard = 'Red card'
+    goal = 'GOAL',
+    yellowCard = 'YELLOW_CARD',
+    redCard = 'RED_CARD'
 }
 
 export interface Game {
@@ -55,13 +56,13 @@ export interface League {
 }
 
 export function filterStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): GameStat[] {
-    return stats.filter((stat) => stat.type === type && team.players.includes(stat.player) )
+    return stats.filter((stat) => stat.type === type && team.players.some(playerInTeam => playerInTeam.id === stat.player.id) )
 }
 
 export function getGoalScorersForTeam(goalStats: GameStat[]): string {
     const playerNameToNumGoals: { [key: string]:number } = {}
     goalStats.forEach((stat) => {
-        const name = stat.player.name
+        const name = `${stat.player.firstName} ${stat.player.lastName}`
         if (name in playerNameToNumGoals) {
             playerNameToNumGoals[name] += 1
         }
@@ -85,7 +86,8 @@ export function getGoalScorersForTeam(goalStats: GameStat[]): string {
 
 export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): number {
     return stats.reduce((count, stat) => {
-        if (stat.type === type && team.players.includes(stat.player))
+        const isPlayerInTeam = team.players.some(playerInTeam => playerInTeam.id === stat.player.id)
+        if (stat.type === type && isPlayerInTeam)
             return count += 1
         return count
     }, 0)
