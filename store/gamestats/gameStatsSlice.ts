@@ -1,6 +1,6 @@
-import { getGameStats } from "@/services/tournaments.service";
+import { getGameStats, postGameStat } from "@/services/tournaments.service";
 
-import { GameStat } from "@/entities/index";
+import { GameStat, GameStatPayload } from "@/entities/index";
 
 import { RootState } from "@/store/store";
 
@@ -15,16 +15,20 @@ import { createAppAsyncThunk } from "@/hooks/useStore";
 
 // Define the shape of our game stats state
 interface GameStatsState extends EntityState<GameStat, number> {
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
+  fetchStatus: "idle" | "loading" | "succeeded" | "failed";
+  fetchError: string | null;
+  createStatus: "idle" | "loading" | "succeeded" | "failed";
+  createError: string | null;
 }
 
 const gameStatsAdapter = createEntityAdapter<GameStat>();
 
 // Initial state using the adapter
 const initialState: GameStatsState = gameStatsAdapter.getInitialState({
-  status: "idle",
-  error: null,
+  fetchStatus: "idle",
+  fetchError: null,
+  createStatus: "idle",
+  createError: null
 });
 
 // Thunk for async fetching game stats
@@ -37,8 +41,24 @@ export const fetchGameStats = createAppAsyncThunk(
   {
       // Only fetch if the current status is idle
       condition(arg, thunkApi) {
-        const gameStatsStatus = selectGameStatsStatus(thunkApi.getState());
+        const gameStatsStatus = selectGameStatsFetchStatus(thunkApi.getState());
         return gameStatsStatus === "idle";
+      },
+  }
+);
+
+// Thunk for async creating game stats
+export const createGameStat = createAppAsyncThunk(
+  "gameStats/createGameStat",
+  async (stat: any) => {
+    const gameStat = await postGameStat(stat);
+    return gameStat;
+  },
+  {
+      // Only fetch if the current status is idle
+      condition(arg, thunkApi) {
+        const gameStatsCreateStatus = selectGameStatsCreateStatus(thunkApi.getState());
+        return gameStatsCreateStatus === "idle";
       },
   }
 );
@@ -47,24 +67,42 @@ export const fetchGameStats = createAppAsyncThunk(
 const gameStatsSlice = createSlice({
   name: "gameStats",
   initialState,
-  reducers: {},
+  reducers: {
+    resetCreateGameStatStatus: (state) => {
+      state.createStatus = 'idle'
+      state.createError = null
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchGameStats.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.fetchStatus = "loading";
+        state.fetchError = null;
       })
       .addCase(fetchGameStats.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.fetchStatus = "succeeded";
         gameStatsAdapter.setAll(state, action.payload);
       })
       .addCase(fetchGameStats.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "Unknown Error";
+        state.fetchStatus = "failed";
+        state.fetchError = action.error.message ?? "Unknown Error";
+      })
+      .addCase(createGameStat.pending, (state) => {
+        state.createStatus = "loading";
+        state.createError = null;
+      })
+      .addCase(createGameStat.fulfilled, (state, action) => {
+        state.createStatus = "succeeded";
+        gameStatsAdapter.addOne(state, action.payload);
+      })
+      .addCase(createGameStat.rejected, (state, action) => {
+        state.createStatus = "failed";
+        state.createError = action.error.message ?? "Unknown Error";
       });
   },
 });
 
+export const { resetCreateGameStatStatus } = gameStatsSlice.actions
 export default gameStatsSlice.reducer;
 
 //
@@ -82,11 +120,18 @@ export const {
 } = gameStatsAdapter.getSelectors(selectGameStatsState);
 
 // game stats status and error
-export const selectGameStatsStatus = (state: RootState) =>
-  selectGameStatsState(state).status;
+export const selectGameStatsFetchStatus = (state: RootState) =>
+  selectGameStatsState(state).fetchStatus;
 
-export const selectGameStatsError = (state: RootState) =>
-  selectGameStatsState(state).error;
+export const selectGameStatsFetchError = (state: RootState) =>
+  selectGameStatsState(state).fetchError;
+
+// game state create status and error
+export const selectGameStatsCreateStatus = (state: RootState) =>
+  selectGameStatsState(state).createStatus
+
+export const selectGameStatsCreateError = (state: RootState) =>
+  selectGameStatsState(state).createError
 
 // Memoized selector factory to filter games by leagueId
 export const makeSelectGameStatsByGameId = (gameId: number) =>
