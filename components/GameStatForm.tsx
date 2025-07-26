@@ -64,11 +64,11 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                         <Picker.Item label="Select Player..." value="" />
                         <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
                         {homeTeam.players.map((player) => (
-                            <Picker.Item key={player.email} label={player.name} value={player.email} />
+                            <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
                         ))}
                         <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
                         {awayTeam.players.map((player) => (
-                            <Picker.Item key={player.email} label={player.name} value={player.email} />
+                            <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
                         ))}
                     </Picker>
                     {error && <Text style={styles.errorText}>{error.message}</Text>}
