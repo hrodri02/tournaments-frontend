@@ -4,12 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { gameStatAdded } from '@/store/leagues/leaguesSlice';
 import { selectGameById } from '@/store/games/gamesSlice';
-import { fetchGameStats, makeSelectGameStatsByGameId, selectGameStatsStatus } from '@/store/gamestats/gameStatsSlice';
+import { fetchGameStats, makeSelectGameStatsByGameId, selectGameStatsFetchStatus, createGameStat, selectGameStatsCreateStatus, resetCreateGameStatStatus } from '@/store/gamestats/gameStatsSlice';
 import { getStorageItemAsync, USER_KEY } from '@/store/auth/authStorage';
 import { format } from 'date-fns';
-import { GameStatType, filterStatsForTeam, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType, GameStatPayload } from '@/entities';
+import { GameStatType, filterStatsForTeam, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType } from '@/entities';
 import { User } from '@/entities/auth';
 import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 
@@ -29,7 +28,8 @@ export default function Game() {
     const awayTeam = game.awayTeam
     const date = Date.parse(game.gameDateTime)
     const formattedDate = format(date, 'eee, MMM i')
-    const gameStatsStatus = useAppSelector(selectGameStatsStatus)
+    const gameStatsStatus = useAppSelector(selectGameStatsFetchStatus)
+    const createStatus = useAppSelector(selectGameStatsCreateStatus)
     const selectGameStatsOfGame = useMemo(
         () => makeSelectGameStatsByGameId(gameID),
         []
@@ -50,7 +50,7 @@ export default function Game() {
             const userJSON = await getStorageItemAsync(USER_KEY);
             if (userJSON) {
                 const user = JSON.parse(userJSON) as User;
-                setIsAdmin(user.role === 'admin');
+                setIsAdmin(user.appUserRole === 'ADMIN');
             } else {
                 setIsAdmin(false); // No user found
             }
@@ -98,7 +98,7 @@ export default function Game() {
         }
     }, [navigation, isAdmin, isLoadingAdminStatus])
 
-    const handleSaveButtonPressed = (data: GameStatFormData) => {
+    const handleSaveButtonPressed = async (data: GameStatFormData) => {
         const selectedPlayerId = data.playerId
         const selectedGameStat = data.gameStatType
         let selectedPlayer = homeTeam.players.find((player) => player.email === selectedPlayerId)
@@ -106,19 +106,26 @@ export default function Game() {
             selectedPlayer = awayTeam.players.find((player) => player.email === selectedPlayerId)
         }
         const gameStatType: GameStatType | undefined = stringToGameStatType(selectedGameStat);
-        // Note: the game stat needs to be sent to the backend first which will generate the game stat id
-        // save the new game stat in redux
-        const newGameStat: GameStatPayload = {
-            leagueId: leagueId,
+        const newGameStat = {
             gameId: gameID,
-            id: 100,
+            playerId: selectedPlayer?.id,
             type: gameStatType!,
-            player: selectedPlayer!,
-            time: new Date().toISOString()
+            createdAt: new Date().toISOString()
         }
-        dispatch(gameStatAdded(newGameStat))
+        dispatch(createGameStat(newGameStat))
         setModalVisible(!modalVisible)
     }
+
+    useEffect(() => {
+        if (createStatus === 'succeeded' || createStatus === 'failed') {
+            // You can add a timeout here if you want the message to persist for a few seconds
+            const timer = setTimeout(() => {
+                dispatch(resetCreateGameStatStatus());
+            }, 3000); // Reset after 3 seconds
+
+            return () => clearTimeout(timer); // Cleanup timer
+        }
+    }, [createStatus, dispatch]);
 
     const handleCancelButtonPressed = () => {
         setModalVisible(!modalVisible)
