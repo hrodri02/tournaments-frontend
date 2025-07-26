@@ -1,11 +1,11 @@
-export type Role = 'user' | 'admin';
+export type Role = 'USER' | 'ADMIN' | 'PLAYER';
 
 export interface User {
     id: string;
     email: string;
     firstName: string;
     lastName: string;
-    role: Role;
+    appUserRole: Role;
 }
   
 export interface AuthState {
