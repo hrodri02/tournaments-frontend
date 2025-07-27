@@ -133,22 +133,16 @@ export default function Game() {
 
     let view: JSX.Element = <></>;
     if (gameStatsStatus === 'loading' || createStatus === 'loading') {
-        view = <View style={styles.container}>
-            <ActivityIndicator size="large" color="#0000ff" />
-        </View>
+        view = <ActivityIndicator size="large" color="#0000ff" />
     }
     else if (gameStatsStatus === 'failed') {
-        view = <View style={styles.container}>
-            <Text>Game stats not found</Text>
-        </View>
+        view = <Text>Game stats not found</Text>
     }
     else if (createStatus === 'failed') {
-        view = <View style={styles.container}>
-            <Text>Could not create stat</Text>
-        </View>
+        view = <Text>Could not create stat</Text>
     }
     else if (gameStatsStatus === 'succeeded') {
-        view = <View style={styles.containerWithoutCentering}>
+        view = <View>
             <Text style={styles.date}>{formattedDate} at {game.address}</Text>
             
             <View style={styles.gameStatView}> 
@@ -216,7 +210,7 @@ export default function Game() {
     }
 
     return (
-        <SafeAreaView style={styles.containerWithoutCentering}>
+        <SafeAreaView style={[styles.container, gameStatsStatus !== 'succeeded' && styles.perfectCentering]}>
             {view}
         </SafeAreaView>
     );
@@ -244,13 +238,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 48,
     },
-    containerWithoutCentering: {
-        flex: 1
-    },
     container: {
         flex: 1,
+    },
+    perfectCentering: {
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     gameStatView: { 
         marginTop: 20,
