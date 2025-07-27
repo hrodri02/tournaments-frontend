@@ -130,9 +130,9 @@ export default function Game() {
     const handleCancelButtonPressed = () => {
         setModalVisible(!modalVisible)
     }
-    
+
     let view: JSX.Element = <></>;
-    if (gameStatsStatus === 'loading') {
+    if (gameStatsStatus === 'loading' || createStatus === 'loading') {
         view = <View style={styles.container}>
             <ActivityIndicator size="large" color="#0000ff" />
         </View>
@@ -140,6 +140,11 @@ export default function Game() {
     else if (gameStatsStatus === 'failed') {
         view = <View style={styles.container}>
             <Text>Game stats not found</Text>
+        </View>
+    }
+    else if (createStatus === 'failed') {
+        view = <View style={styles.container}>
+            <Text>Could not create stat</Text>
         </View>
     }
     else if (gameStatsStatus === 'succeeded') {
