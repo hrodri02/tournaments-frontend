@@ -130,6 +130,7 @@ export default function Game() {
     const handleCancelButtonPressed = () => {
         setModalVisible(!modalVisible)
     }
+    
     let view: JSX.Element = <></>;
     if (gameStatsStatus === 'loading') {
         view = <View style={styles.container}>
