@@ -8,6 +8,7 @@ import { Slot } from "expo-router";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Provider } from "react-redux";
 import store from "@/store/store";
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -29,7 +30,9 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <Provider store={store}>
-        <Slot />
+        <ActionSheetProvider>
+          <Slot />
+        </ActionSheetProvider>
       </Provider>
     </AuthProvider>
   );
