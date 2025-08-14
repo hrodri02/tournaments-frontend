@@ -18,6 +18,11 @@ export const getGameStats = async (): Promise<GameStat[]> => {
     return httpRequest<GameStat[]>(url, 'GET')
 }
 
+export const deleteGameStat = async (id: number): Promise<GameStat> => {
+    const url = `${API_URL}/gamestats/${id}`
+    return httpRequest<GameStat[]>(url, 'DELETE')
+}
+
 export const getGames = async (): Promise<Game[]> => {
     const url = `${API_URL}/games`
     return httpRequest<Game[]>(url, 'GET')
