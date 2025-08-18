@@ -1,4 +1,4 @@
-import { getGameStats, postGameStat } from "@/services/tournaments.service";
+import { getGameStats, postGameStat, deleteGameStat } from "@/services/tournaments.service";
 
 import { GameStat, GameStatPayload } from "@/entities/index";
 
@@ -19,6 +19,8 @@ interface GameStatsState extends EntityState<GameStat, number> {
   fetchError: string | null;
   createStatus: "idle" | "loading" | "succeeded" | "failed";
   createError: string | null;
+  deleteStatus: "idle" | "loading" | "succeeded" | "failed";
+  deleteError: string | null;
 }
 
 const gameStatsAdapter = createEntityAdapter<GameStat>();
@@ -28,7 +30,9 @@ const initialState: GameStatsState = gameStatsAdapter.getInitialState({
   fetchStatus: "idle",
   fetchError: null,
   createStatus: "idle",
-  createError: null
+  createError: null,
+  deleteStatus: "idle",
+  deleteError: null
 });
 
 // Thunk for async fetching game stats
@@ -63,6 +67,22 @@ export const createGameStat = createAppAsyncThunk(
   }
 );
 
+// Thunk for async deleting game stats
+export const deleteGameStatFromStore = createAppAsyncThunk(
+  "gameStats/deleteGameStat",
+  async (statId: number) => {
+    const gameStat = await deleteGameStat(statId);
+    return gameStat;
+  },
+  {
+      // Only fetch if the current status is idle
+      condition(arg, thunkApi) {
+        const deleteStatus = selectGameStatsDeleteStatus(thunkApi.getState());
+        return deleteStatus === "idle";
+      },
+  }
+);
+
 // Slice definition
 const gameStatsSlice = createSlice({
   name: "gameStats",
@@ -71,7 +91,11 @@ const gameStatsSlice = createSlice({
     resetCreateGameStatStatus: (state) => {
       state.createStatus = 'idle'
       state.createError = null
-    }
+    },
+    resetDeleteGameStatStatus: (state) => {
+      state.deleteStatus = 'idle'
+      state.deleteError = null
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -98,11 +122,23 @@ const gameStatsSlice = createSlice({
       .addCase(createGameStat.rejected, (state, action) => {
         state.createStatus = "failed";
         state.createError = action.error.message ?? "Unknown Error";
+      })
+      .addCase(deleteGameStatFromStore.pending, (state) => {
+        state.deleteStatus = "loading";
+        state.deleteError = null;
+      })
+      .addCase(deleteGameStatFromStore.fulfilled, (state, action) => {
+        state.deleteStatus = "succeeded";
+        gameStatsAdapter.removeOne(state, action.payload.id);
+      })
+      .addCase(deleteGameStatFromStore.rejected, (state, action) => {
+        state.deleteStatus = "failed";
+        state.deleteError = action.error.message ?? "Unknown Error";
       });
   },
 });
 
-export const { resetCreateGameStatStatus } = gameStatsSlice.actions
+export const { resetCreateGameStatStatus, resetDeleteGameStatStatus } = gameStatsSlice.actions
 export default gameStatsSlice.reducer;
 
 //
@@ -132,6 +168,13 @@ export const selectGameStatsCreateStatus = (state: RootState) =>
 
 export const selectGameStatsCreateError = (state: RootState) =>
   selectGameStatsState(state).createError
+
+// game stat state delete status and error
+export const selectGameStatsDeleteStatus = (state: RootState) =>
+  selectGameStatsState(state).deleteStatus
+
+export const selectGameStatsDeleteError = (state: RootState) =>
+  selectGameStatsState(state).deleteError
 
 // Memoized selector factory to filter games by leagueId
 export const makeSelectGameStatsByGameId = (gameId: number) =>
