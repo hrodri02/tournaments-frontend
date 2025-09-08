@@ -18,6 +18,8 @@ export interface GameStat {
     time: string;
 }
 
+export type GameStatUpdatePayload = Omit<GameStat, 'player'> & { playerId: number };
+
 export interface GameStatPayload extends GameStat {
     leagueId: number;
     gameId: number;
