@@ -1,9 +1,19 @@
 import React, { useEffect } from 'react';
 import { View, SectionList, ViewStyle, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { GameStatType, GameStat, Team, filterStats } from '@/entities';
-import { deleteGameStatFromStore, resetDeleteGameStatStatus, selectGameStatsDeleteError, selectGameStatsDeleteStatus } from '@/store/gamestats/gameStatsSlice';
+import { GameStatType, GameStat, GameStatUpdatePayload, Team, filterStats } from '@/entities';
+import { 
+    deleteGameStatFromStore, 
+    resetDeleteGameStatStatus, 
+    selectGameStatsDeleteError, 
+    selectGameStatsDeleteStatus,
+    updateGameStats,
+    selectGameStatsUpdateStatus,
+    selectGameStatsUpdateError,
+    resetUpdateGameStatStatus 
+} from '@/store/gamestats/gameStatsSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
+import { useForm, Controller } from 'react-hook-form';
 
 type EditGameStatFormProps = {
     stats: GameStat[],
@@ -13,6 +23,10 @@ type EditGameStatFormProps = {
     style?: ViewStyle;
 }
 
+export interface EditGameStatFormData {
+    statIdToplayerId: {[key: string]: number}
+}
+
 export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }: EditGameStatFormProps) {
     const dispatch = useAppDispatch();
     const goalStats = filterStats(stats, GameStatType.goal)
@@ -20,6 +34,17 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
     const redCardStats = filterStats(stats, GameStatType.redCard)
     const deleteStatus = useAppSelector(selectGameStatsDeleteStatus)
     const deleteError = useAppSelector(selectGameStatsDeleteError)
+    const updateStatus = useAppSelector(selectGameStatsUpdateStatus)
+    const updateError = useAppSelector(selectGameStatsUpdateError)
+    const initialValues: {[key: string]: number} = {};
+    stats.forEach(stat => {
+        initialValues[stat.id.toString()] = +stat.player.id;
+    });
+    const { control, handleSubmit } = useForm<EditGameStatFormData>({
+        defaultValues: {
+            statIdToplayerId: initialValues
+        }
+    });
 
     const handleDeleteStatButtonPressed = (stat: GameStat) => {
         dispatch(deleteGameStatFromStore(stat.id))
@@ -36,14 +61,36 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         }
     }, [deleteStatus, dispatch]);
 
+    const onFormSubmitted = (data: EditGameStatFormData) => {
+        const updatedGameStats: GameStatUpdatePayload[] = stats.map(stat => ({
+            ...stat,
+            playerId: data.statIdToplayerId[stat.id.toString()]
+        }))
+        dispatch(updateGameStats(updatedGameStats))
+    };
+
+    useEffect(() => {
+        if (updateStatus === 'succeeded' || updateStatus === 'failed') {
+            // You can add a timeout here if you want the message to persist for a few seconds
+            const timer = setTimeout(() => {
+                dispatch(resetUpdateGameStatStatus());
+            }, 3000); // Reset after 3 seconds
+
+            return () => clearTimeout(timer); // Cleanup timer
+        }
+    }, [updateStatus, dispatch]);
+
     let view: JSX.Element = <></>;
-    if (deleteStatus === 'loading') {
+    if (deleteStatus === 'loading' || updateStatus === 'loading') {
         view = <ActivityIndicator size="large" color="#0000ff" />
     }
-    else if (deleteStatus === 'failed') {
-        view = <Text>{deleteError}</Text>
-    }
-    else if (deleteStatus === 'succeeded' || deleteStatus === 'idle') {
+    else if (
+        deleteStatus === 'succeeded' || 
+        deleteStatus === 'idle' ||
+        updateStatus === 'succeeded' ||
+        updateStatus === 'idle'
+    ) 
+    {
         view = <>
             <SectionList
                 style={styles.sectionList}
@@ -54,19 +101,31 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 ]}
                 renderItem={({ item }) =>
                     <View style={styles.item}>
-
-                        <Picker
-                            style={styles.picker}
-                            onValueChange={() => {}}>
-                            <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
-                            {homeTeam.players.map((player) => (
-                                <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
-                            ))}
-                            <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
-                            {awayTeam.players.map((player) => (
-                                <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
-                            ))}
-                        </Picker>
+                        <Controller
+                            control={control}
+                            name={`statIdToplayerId.${item.id.toString()}`}
+                            rules={{ required: 'Player is required' }}
+                            render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <>
+                                    <Picker
+                                        style={styles.picker}
+                                        selectedValue={value}
+                                        onValueChange={(selectedPlayerId) => {
+                                            onChange(Number(selectedPlayerId))
+                                        }}
+                                    >
+                                        <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
+                                        {homeTeam.players.map((player) => (
+                                            <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
+                                        ))}
+                                        <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
+                                        {awayTeam.players.map((player) => (
+                                            <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
+                                        ))}
+                                    </Picker>
+                                </>
+                            )}
+                        />
 
                         <TouchableOpacity
                             style={styles.deleteButton}
@@ -80,6 +139,17 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                     <Text style={styles.sectionHeader}>{section.title}</Text>
                 )}
             />
+
+            <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSubmit(onFormSubmitted)}
+            >
+                <Text style={styles.modalButtonText}>Save</Text>
+            </TouchableOpacity>
+
+            {updateError && <Text style={styles.errorText}>{updateError}</Text>}
+            
+            {deleteError && <Text style={styles.errorText}>{deleteError}</Text>}
             
             <TouchableOpacity
                 style={styles.modalButton}
@@ -150,11 +220,10 @@ const styles = StyleSheet.create({
     },
     modalButton: {
         backgroundColor: '#007AFF',
+        height: 50,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 5,
         marginBottom: 10
     },
     modalButtonText: {
@@ -173,7 +242,8 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
+        textAlign: 'center',
         fontSize: 12,
-        marginBottom: 5,
+        marginBottom: 5
     },
 });
