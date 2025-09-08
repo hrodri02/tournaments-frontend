@@ -1,5 +1,5 @@
 import {Platform} from 'react-native'
-import {Game, GameStat, League, LeagueStatus} from "@/entities";
+import {Game, GameStat, GameStatUpdatePayload, League, LeagueStatus} from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
 const API_URL = Platform.select({
@@ -16,6 +16,11 @@ export const postGameStat = async (stat: any): Promise<GameStat> => {
 export const getGameStats = async (): Promise<GameStat[]> => {
     const url = `${API_URL}/gamestats`
     return httpRequest<GameStat[]>(url, 'GET')
+}
+
+export const batchUpdateGameStats = async (stats: GameStatUpdatePayload[]): Promise<GameStat[]> => {
+    const url = `${API_URL}/gamestats/batchUpdate`
+    return httpRequest<GameStat[]>(url, 'PUT', stats)
 }
 
 export const deleteGameStat = async (id: number): Promise<GameStat> => {
