@@ -209,10 +209,10 @@ export const selectGameStatsCreateError = (state: RootState) =>
 
 // game stat update status and error 
 export const selectGameStatsUpdateStatus = (state: RootState) =>
-  selectGameStatsState(state).createStatus
+  selectGameStatsState(state).updateStatus
 
 export const selectGameStatsUpdateError = (state: RootState) =>
-  selectGameStatsState(state).createError
+  selectGameStatsState(state).updateError
 
 // game stat state delete status and error
 export const selectGameStatsDeleteStatus = (state: RootState) =>
