@@ -1,5 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, SectionList, ViewStyle, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { 
+    View, 
+    SectionList, 
+    ViewStyle, 
+    Text, 
+    TouchableOpacity, 
+    StyleSheet, 
+    ActivityIndicator,
+    Platform
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { GameStatType, GameStat, GameStatUpdatePayload, Team, filterStats } from '@/entities';
 import { 
@@ -94,6 +103,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         view = <>
             <SectionList
                 style={styles.sectionList}
+                scrollEnabled={false}
                 sections={[
                     { title: 'Goals', data: goalStats },
                     { title: 'Yellow Cards', data: yellowCardStats },
@@ -205,14 +215,27 @@ const styles = StyleSheet.create({
     item: {
         display: 'flex',
         flexDirection: 'row',
+        columnGap: 10,
         justifyContent: 'center',
-        alignContent: 'center',
-        columnGap: '0.5em',
-        padding: 10,
+        alignItems: 'center',
+        paddingTop: 10,
+        paddingBottom: 10,
         marginVertical: 5,
+        ...Platform.select({
+            ios: {
+                height: 250,
+            },
+            android: {
+                height: 250,
+            },
+            default: {
+                height: 50
+            }
+        }),
     },
     picker: {
-        textAlign: 'center'
+        width: '70%',
+        height: '100%'
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -233,6 +256,7 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         backgroundColor: 'red',
+        height: 40,
         borderRadius: 8,
         justifyContent: 'center',
         padding: 10
