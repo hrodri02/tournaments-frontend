@@ -3,14 +3,17 @@ import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity, ActivityIn
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { selectGameById } from '@/store/games/gamesSlice';
 import { fetchGameStats, makeSelectGameStatsByGameId, selectGameStatsFetchStatus, createGameStat, selectGameStatsCreateStatus, resetCreateGameStatStatus } from '@/store/gamestats/gameStatsSlice';
 import { getStorageItemAsync, USER_KEY } from '@/store/auth/authStorage';
 import { format } from 'date-fns';
-import { GameStatType, filterStatsForTeam, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType } from '@/entities';
+import { GameStatType, filterStats, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType } from '@/entities';
 import { User } from '@/entities/auth';
 import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
+import EditGameStatForm from '@/components/EditGameStatForm';
 
 const screenHeight = Dimensions.get('window').height; 
 
@@ -18,12 +21,13 @@ export default function Game() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoadingAdminStatus, setIsLoadingAdminStatus] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
     const dispatch = useAppDispatch()
     const navigation = useNavigation(); 
-    const { id, gameId } = useLocalSearchParams();
-    const leagueId = Number(id);
+    const { gameId } = useLocalSearchParams();
     const gameID = Number(gameId);
     const game = useAppSelector(state => selectGameById(state, gameID))!
+    const { showActionSheetWithOptions } = useActionSheet();
     const homeTeam = game.homeTeam
     const awayTeam = game.awayTeam
     const date = Date.parse(game.gameDateTime)
@@ -35,9 +39,9 @@ export default function Game() {
         []
     )
     const gameStatsOfGame = useAppSelector(selectGameStatsOfGame)
-    const homeTeamGoalStats = filterStatsForTeam(gameStatsOfGame, GameStatType.goal, homeTeam)
+    const homeTeamGoalStats = filterStats(gameStatsOfGame, GameStatType.goal, homeTeam)
     const homeTeamGoalScorers = getGoalScorersForTeam(homeTeamGoalStats)
-    const awayTeamGoalStats = filterStatsForTeam(gameStatsOfGame, GameStatType.goal, awayTeam)
+    const awayTeamGoalStats = filterStats(gameStatsOfGame, GameStatType.goal, awayTeam)
     const awayTeamGoalScorers = getGoalScorersForTeam(awayTeamGoalStats)
     const homeTeamYellowCards = countStatsForTeam(gameStatsOfGame, GameStatType.yellowCard, homeTeam)
     const awayTeamYellowCards = countStatsForTeam(gameStatsOfGame, GameStatType.yellowCard, awayTeam)
@@ -85,9 +89,9 @@ export default function Game() {
                 headerRight: () => (
                     <TouchableOpacity
                         style={styles.rightNavButton}
-                        onPress={() => { setModalVisible(true) }}
+                        onPress={handlePress}
                     >
-                        <Text style={styles.rightNavButtonText}>Add</Text>
+                        <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
                     </TouchableOpacity>
                 )
             });
@@ -97,6 +101,32 @@ export default function Game() {
             });
         }
     }, [navigation, isAdmin, isLoadingAdminStatus])
+
+    const handlePress = () => {
+        const options = ['Add', 'Edit', 'Cancel'];
+        const destructiveButtonIndex = 2;
+        const cancelButtonIndex = 3;
+
+        showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+                destructiveButtonIndex,
+            },
+            (buttonIndex) => {
+                switch (buttonIndex) {
+                    case 0: 
+                        setModalVisible(true)
+                        break;
+                    case 1:
+                        setEditModalVisible(true)
+                        break;
+                    case 2: 
+                        break;
+                }
+            }
+        );
+    };
 
     const handleSaveButtonPressed = async (data: GameStatFormData) => {
         const selectedPlayerId = data.playerId
@@ -129,6 +159,10 @@ export default function Game() {
 
     const handleCancelButtonPressed = () => {
         setModalVisible(!modalVisible)
+    }
+
+    const handleCancelButtonPressedForEdit = () => {
+        setEditModalVisible(!editModalVisible)
     }
 
     let view: JSX.Element = <></>;
@@ -204,6 +238,23 @@ export default function Game() {
                     awayTeam={awayTeam} 
                     onCancel={handleCancelButtonPressed}
                     onSubmit={handleSaveButtonPressed}
+                />
+            </Modal>
+
+            <Modal
+                animationType="slide" // How the modal appears (slide, fade, none)
+                transparent={true}    // Whether the background behind the modal is transparent
+                visible={editModalVisible} // Controls the visibility of the modal
+                onRequestClose={() => { // Required for Android back button and accessibility
+                    setEditModalVisible(!editModalVisible);
+                }}
+            >
+                <EditGameStatForm 
+                    stats={gameStatsOfGame}
+                    homeTeam={homeTeam}
+                    awayTeam={awayTeam}
+                    onCancel={handleCancelButtonPressedForEdit}
+                    onSubmit={() => {}}
                 />
             </Modal>
         </View>

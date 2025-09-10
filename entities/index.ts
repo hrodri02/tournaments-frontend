@@ -18,6 +18,8 @@ export interface GameStat {
     time: string;
 }
 
+export type GameStatUpdatePayload = Omit<GameStat, 'player'> & { playerId: number };
+
 export interface GameStatPayload extends GameStat {
     leagueId: number;
     gameId: number;
@@ -55,8 +57,11 @@ export interface League {
     games: Game[];
 }
 
-export function filterStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): GameStat[] {
-    return stats.filter((stat) => stat.type === type && team.players.some(playerInTeam => playerInTeam.id === stat.player.id) )
+export function filterStats(stats: GameStat[], type: GameStatType, team: Team | undefined = undefined): GameStat[] {
+    return stats.filter((stat) => {
+        const isPlayerInTeam = team && team.players.some(playerInTeam => playerInTeam.id === stat.player.id);
+        return stat.type === type && (!team || isPlayerInTeam);
+    })
 }
 
 export function getGoalScorersForTeam(goalStats: GameStat[]): string {
