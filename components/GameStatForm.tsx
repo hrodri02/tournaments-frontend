@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, ViewStyle, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { 
+    View, 
+    ViewStyle, 
+    Text, 
+    TouchableOpacity, 
+    StyleSheet,
+    Platform
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useForm, Controller } from 'react-hook-form';
 import { GameStatType, Team } from '@/entities';
@@ -39,8 +46,10 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 rules={{ required: 'Game stat type is required' }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
+                    <Text style={styles.pickerLabel}>Select Game Stat Type</Text>
                     <Picker
                         style={styles.picker}
+                        selectedValue={value}
                         onValueChange={onChange}>
                         <Picker.Item label="Select Game Stat..." value={""} />
                         {gameStatValues.map((type) => (
@@ -58,8 +67,10 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 rules={{ required: 'Player is required' }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
+                    <Text style={styles.pickerLabel}>Select Player</Text>
                     <Picker
                         style={styles.picker}
+                        selectedValue={value}
                         onValueChange={onChange}>
                         <Picker.Item label="Select Player..." value="" />
                         <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
@@ -76,20 +87,18 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 )}
             />
             
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                    style={styles.pickerButton}
-                    onPress={handleSubmit(onFormSubmitted)}
-                >
-                    <Text style={styles.pickerButtonText}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.pickerButton}
-                    onPress={onCancel}
-                >
-                    <Text style={styles.pickerButtonText}>Cancel</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                style={styles.pickerButton}
+                onPress={handleSubmit(onFormSubmitted)}
+            >
+                <Text style={styles.pickerButtonText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.pickerButton}
+                onPress={onCancel}
+            >
+                <Text style={styles.pickerButtonText}>Cancel</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -117,20 +126,41 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     picker: {
+        width: '100%',
+        ...Platform.select({
+            ios: {
+                height: 250,
+            },
+            android: {
+                height: 250,
+            },
+            default: {
+                height: 50
+            }
+        }),
         marginBottom: 15,
         textAlign: 'center'
     },
-    buttonContainer: {
-        flexDirection: 'row',
-        columnGap: 10
+    pickerLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        ...Platform.select({
+            web: {
+                marginBottom: 10
+            },
+            default: {
+
+            }
+        })
     },
     pickerButton: {
         backgroundColor: '#007AFF',
+        height: 50,
+        width: '100%',
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 5,
+        marginBottom: 10
     },
     pickerButtonText: {
         color: '#fff',
