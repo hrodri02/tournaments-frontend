@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     image: { 
-        backgroundColor: 'yellow',
         width: screenHeight * 0.1,
         height: screenHeight * 0.1,
     },
@@ -28,20 +27,22 @@ const styles = StyleSheet.create({
         flex: 3,
     },
     teamView: { 
-        columnGap: '0.5em',
+        columnGap: 5,
         padding: 10,
         flex: 1,
-        flexDirection: 'row',    
+        flexDirection: 'row',
+        alignItems: 'center'   
     },
     date: { 
-        marginTop: 20,
-        marginBottom: 20,
-        fontSize: 16,
-        textAlign: 'center',
-        alignContent: 'center',
+        fontSize: 14,
         fontWeight: 'bold',
+    },
+    dateContainer: {
         flex: 1,
-        borderLeftWidth: 1
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderLeftWidth: 1,
+        paddingHorizontal: 10
     }
 })
 
@@ -70,7 +71,9 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
                     </View>
                 </View>
 
-                <Text style={styles.date}>{formattedDate}</Text>
+                <View style={styles.dateContainer}>
+                    <Text style={styles.date}>{formattedDate}</Text>
+                </View>
             </View>
             </Pressable>
         </Link>
