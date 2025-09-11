@@ -6,7 +6,13 @@ export default function HomeLayout() {
       headerTitleAlign: 'center',
     }}>
       <Stack.Screen name="index" options={{headerShown: false}}/>
-      <Stack.Screen name="leagues/[id]/index" options={{headerShown: true}}/>
+      <Stack.Screen 
+        name="leagues/[id]/index" 
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal'
+        }}
+      />
     </Stack>
   );
 }
