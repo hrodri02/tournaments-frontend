@@ -1,5 +1,5 @@
 import { getGameStats, postGameStat, batchUpdateGameStats, deleteGameStat } from "@/services/tournaments.service";
-import { GameStat, GameStatUpdatePayload } from "@/entities/index";
+import { GameStat, GameStatUpdatePayload, GameStatUpdateFailure } from "@/entities/index";
 import { RootState } from "@/store/store";
 
 import {
@@ -19,6 +19,8 @@ interface GameStatsState extends EntityState<GameStat, number> {
   createError: string | null;
   updateStatus: "idle" | "loading" | "succeeded" | "failed";
   updateError: string | null;
+  batchUpdateSuccesses: GameStat[];
+  batchUpdateFailures: GameStatUpdateFailure[] | null;
   deleteStatus: "idle" | "loading" | "succeeded" | "failed";
   deleteError: string | null;
 }
@@ -33,6 +35,8 @@ const initialState: GameStatsState = gameStatsAdapter.getInitialState({
   createError: null,
   updateStatus: "idle",
   updateError: null,
+  batchUpdateSuccesses: [],
+  batchUpdateFailures: null,
   deleteStatus: "idle",
   deleteError: null
 });
@@ -73,8 +77,8 @@ export const createGameStat = createAppAsyncThunk(
 export const updateGameStats = createAppAsyncThunk(
   "gameStats/updateGameStats",
   async (stats: GameStatUpdatePayload[]) => {
-    const gameStats = await batchUpdateGameStats(stats);
-    return gameStats;
+    const response = await batchUpdateGameStats(stats);
+    return response;
   },
   {
       // Only fetch if the current status is idle
@@ -151,7 +155,10 @@ const gameStatsSlice = createSlice({
       })
       .addCase(updateGameStats.fulfilled, (state, action) => {
         state.updateStatus = "succeeded";
-        const updates = action.payload.map(stat => ({
+        const { successfulUpdates, failures } = action.payload;
+        state.batchUpdateFailures = failures
+
+        const updates = successfulUpdates.map(stat => ({
             id: stat.id,
             changes: stat // 'changes' property contains the full object
         }));
@@ -160,6 +167,7 @@ const gameStatsSlice = createSlice({
       .addCase(updateGameStats.rejected, (state, action) => {
         state.updateStatus = "failed";
         state.updateError = action.error.message ?? "Unknown Error";
+        state.batchUpdateFailures = null;
       })
       .addCase(deleteGameStatFromStore.pending, (state) => {
         state.deleteStatus = "loading";
@@ -213,6 +221,9 @@ export const selectGameStatsUpdateStatus = (state: RootState) =>
 
 export const selectGameStatsUpdateError = (state: RootState) =>
   selectGameStatsState(state).updateError
+
+export const selectBatchUpdateFailures = (state: RootState) =>
+  selectGameStatsState(state).batchUpdateFailures;
 
 // game stat state delete status and error
 export const selectGameStatsDeleteStatus = (state: RootState) =>

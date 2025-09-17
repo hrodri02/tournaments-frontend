@@ -10,7 +10,7 @@ import { selectGameById } from '@/store/games/gamesSlice';
 import { fetchGameStats, makeSelectGameStatsByGameId, selectGameStatsFetchStatus, createGameStat, selectGameStatsCreateStatus, resetCreateGameStatStatus } from '@/store/gamestats/gameStatsSlice';
 import { getStorageItemAsync, USER_KEY } from '@/store/auth/authStorage';
 import { format } from 'date-fns';
-import { GameStatType, filterStats, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType } from '@/entities';
+import { GameStatType, filterStats, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType, isGameActive } from '@/entities';
 import { User } from '@/entities/auth';
 import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 import EditGameStatForm from '@/components/EditGameStatForm';
@@ -30,8 +30,7 @@ export default function Game() {
     const { showActionSheetWithOptions } = useActionSheet();
     const homeTeam = game.homeTeam
     const awayTeam = game.awayTeam
-    const date = Date.parse(game.gameDateTime)
-    const formattedDate = format(date, 'eee, MMM i')
+    const formattedDate = format(game.gameDateTime, 'eee, MMM d')
     const gameStatsStatus = useAppSelector(selectGameStatsFetchStatus)
     const createStatus = useAppSelector(selectGameStatsCreateStatus)
     const selectGameStatsOfGame = useMemo(
@@ -84,7 +83,7 @@ export default function Game() {
     }, [navigation, homeTeam, awayTeam]);
 
     useLayoutEffect(() => {
-        if (!isLoadingAdminStatus && isAdmin) {
+        if (!isLoadingAdminStatus && isAdmin && isGameActive(game)) {
             navigation.setOptions({
                 headerRight: () => (
                     <TouchableOpacity

@@ -25,6 +25,16 @@ export interface GameStatPayload extends GameStat {
     gameId: number;
 }
 
+export interface GameStatBatchUpdateResponse {
+    successfulUpdates: GameStat[];
+    failures: GameStatUpdateFailure[];
+}
+
+export interface GameStatUpdateFailure {
+    gameStatId: number;
+    message: string;
+}
+
 export enum GameStatType {
     goal = 'GOAL',
     yellowCard = 'YELLOW_CARD',
@@ -38,6 +48,7 @@ export interface Game {
     awayTeam: Team;
     address: string;
     gameDateTime: string;
+    durationInMinutes: number;
     stats: GameStat[];
 }
 
@@ -110,4 +121,12 @@ export function stringToGameStatType(typeString: string): GameStatType | undefin
     }
   }
   return undefined; // Not found
+}
+
+export function isGameActive(game: Game): boolean {
+    const currentTime = new Date()
+    const gameStartDate = new Date(game.gameDateTime)
+    const gameEndDate = new Date()
+    gameEndDate.setMinutes(gameStartDate.getMinutes() + game.durationInMinutes)
+    return gameStartDate <= currentTime && currentTime <= gameEndDate
 }
