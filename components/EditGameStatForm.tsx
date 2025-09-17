@@ -10,19 +10,21 @@ import {
     Platform
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { GameStatType, GameStat, GameStatUpdatePayload, Team, filterStats } from '@/entities';
+import { GameStatType, GameStat, GameStatUpdatePayload, Team, filterStats, GameStatUpdateFailure } from '@/entities';
 import { 
     deleteGameStatFromStore, 
     resetDeleteGameStatStatus, 
     selectGameStatsDeleteError, 
     selectGameStatsDeleteStatus,
     updateGameStats,
+    selectBatchUpdateFailures,
     selectGameStatsUpdateStatus,
     selectGameStatsUpdateError,
     resetUpdateGameStatStatus 
 } from '@/store/gamestats/gameStatsSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { useForm, Controller } from 'react-hook-form';
+import { FontAwesome6 } from "@expo/vector-icons";
 
 type EditGameStatFormProps = {
     stats: GameStat[],
@@ -45,6 +47,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
     const deleteError = useAppSelector(selectGameStatsDeleteError)
     const updateStatus = useAppSelector(selectGameStatsUpdateStatus)
     const updateError = useAppSelector(selectGameStatsUpdateError)
+    const batchUpdateFailures = useAppSelector(selectBatchUpdateFailures)
     const initialValues: {[key: string]: number} = {};
     stats.forEach(stat => {
         initialValues[stat.id.toString()] = +stat.player.id;
@@ -89,6 +92,11 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         }
     }, [updateStatus, dispatch]);
 
+    const updateFailed = (stat: GameStat): GameStatUpdateFailure | undefined => {
+        const failure = batchUpdateFailures?.filter(failure => failure.gameStatId === stat.id)
+        return failure ? failure[0] : undefined
+    }
+
     let view: JSX.Element = <></>;
     if (deleteStatus === 'loading' || updateStatus === 'loading') {
         view = <ActivityIndicator size="large" color="#0000ff" />
@@ -109,42 +117,50 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                     { title: 'Yellow Cards', data: yellowCardStats },
                     { title: 'Red Cards', data: redCardStats },
                 ]}
-                renderItem={({ item }) =>
-                    <View style={styles.item}>
-                        <Controller
-                            control={control}
-                            name={`statIdToplayerId.${item.id.toString()}`}
-                            rules={{ required: 'Player is required' }}
-                            render={({ field: { onChange, value }, fieldState: { error } }) => (
-                                <>
-                                    <Picker
-                                        style={styles.picker}
-                                        selectedValue={value}
-                                        onValueChange={(selectedPlayerId) => {
-                                            onChange(Number(selectedPlayerId))
-                                        }}
-                                    >
-                                        <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
-                                        {homeTeam.players.map((player) => (
-                                            <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
-                                        ))}
-                                        <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
-                                        {awayTeam.players.map((player) => (
-                                            <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
-                                        ))}
-                                    </Picker>
-                                </>
-                            )}
-                        />
+                renderItem={({ item }) => {
+                    const failed = updateFailed(item)
+                    return (
+                        <View style={styles.item}>
+                            <Controller
+                                control={control}
+                                name={`statIdToplayerId.${item.id.toString()}`}
+                                rules={{ required: 'Player is required' }}
+                                render={({ field: { onChange, value }, fieldState: { error } }) =>
+                                (
+                                    <>
+                                        <Picker
+                                            style={styles.picker}
+                                            selectedValue={value}
+                                            onValueChange={(selectedPlayerId) => {
+                                                onChange(Number(selectedPlayerId))
+                                            }}
+                                        >
+                                            <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
+                                            {homeTeam.players.map((player) => (
+                                                <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
+                                            ))}
+                                            <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
+                                            {awayTeam.players.map((player) => (
+                                                <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
+                                            ))}
+                                        </Picker>
+                                    </>
+                                )}
+                            />
 
-                        <TouchableOpacity
-                            style={styles.deleteButton}
-                            onPress={() => handleDeleteStatButtonPressed(item)}
-                        >
-                            <Text style={styles.deleteButtonText}>Delete</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
+                            <TouchableOpacity
+                                style={styles.deleteButton}
+                                onPress={() => handleDeleteStatButtonPressed(item)}
+                            >
+                                <Text style={styles.deleteButtonText}>Delete</Text>
+                            </TouchableOpacity>
+
+                            {updateStatus === 'succeeded' && failed && <Text style={styles.errorText}>{failed.message}</Text>}
+
+                            {updateStatus === 'succeeded' && !failed && <FontAwesome6 name="check" size={24} color="green"/>}
+                        </View>
+                    )
+                }}
                 renderSectionHeader={({ section }) => (
                     <Text style={styles.sectionHeader}>{section.title}</Text>
                 )}
