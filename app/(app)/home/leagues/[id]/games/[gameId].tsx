@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState, useEffect, useCallback, useMemo } from 'react'; 
-import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
+import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
@@ -223,14 +224,13 @@ export default function Game() {
                 <Text style={[styles.text, styles.equalWidth]}> Red Cards </Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamRedCards}</Text>
             </View>
-            
+
             <Modal
-                animationType="slide" // How the modal appears (slide, fade, none)
-                transparent={true}    // Whether the background behind the modal is transparent
-                visible={modalVisible} // Controls the visibility of the modal
-                onRequestClose={() => { // Required for Android back button and accessibility
+                isVisible={modalVisible}
+                onSwipeComplete={() => { 
                     setModalVisible(!modalVisible);
                 }}
+                swipeDirection={['down']} // 👈 Set the swipe direction to 'down'
             >
                 <GameStatForm 
                     homeTeam={homeTeam} 
@@ -239,21 +239,19 @@ export default function Game() {
                     onSubmit={handleSaveButtonPressed}
                 />
             </Modal>
-
+            
             <Modal
-                animationType="slide" // How the modal appears (slide, fade, none)
-                transparent={true}    // Whether the background behind the modal is transparent
-                visible={editModalVisible} // Controls the visibility of the modal
-                onRequestClose={() => { // Required for Android back button and accessibility
+                isVisible={editModalVisible}
+                onSwipeComplete={() => { 
                     setEditModalVisible(!editModalVisible);
                 }}
+                swipeDirection={['down']} // 👈 Set the swipe direction to 'down'
             >
                 <EditGameStatForm 
                     stats={gameStatsOfGame}
                     homeTeam={homeTeam}
                     awayTeam={awayTeam}
                     onCancel={handleCancelButtonPressedForEdit}
-                    onSubmit={() => {}}
                 />
             </Modal>
         </View>
