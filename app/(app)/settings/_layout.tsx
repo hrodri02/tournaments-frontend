@@ -8,7 +8,7 @@ export default function HomeTabLayout() {
             headerTitleAlign: 'center'
         }}>
             <Stack.Screen name="index" options={{title: "Settings"}}/>
-            {/*<Stack.Screen name="cities"/>*/}
+            <Stack.Screen name="create-team/index" options={{title: "Create Team"}}/>
         </Stack>
     );
 }
