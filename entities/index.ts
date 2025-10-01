@@ -4,10 +4,21 @@ export interface Player extends User {
     position: number;
 }
 
+export interface CreateTeamRequest {
+  name: string;
+  logoUrl?: string;
+  playersToInvite: string[];
+}
+
 export interface Team {
     id: number;
     name: string;
-    players: Player[];
+    logoUrl?: string;
+    ownerId: number;
+}
+
+export interface CreateTeamResponse extends Team {
+  invitationStatus: string;
 }
 
 export interface GameStat {
@@ -64,8 +75,6 @@ export interface League {
     durationInWeeks: number;
     name: string;
     status: LeagueStatus;
-    teams: Team[];
-    games: Game[];
 }
 
 export function filterStats(stats: GameStat[], type: GameStatType, team: Team | undefined = undefined): GameStat[] {
