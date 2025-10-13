@@ -26,6 +26,7 @@ export interface GameStatFormData {
 
 const gameStatValues = Object.values(GameStatType);
 
+// TODO: fetch players from player slice
 export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }: GameStatFormProps) {
     const { control, handleSubmit } = useForm<GameStatFormData>({
         defaultValues: {
