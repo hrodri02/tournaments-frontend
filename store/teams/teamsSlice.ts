@@ -73,7 +73,10 @@ const teamsSlice = createSlice({
     name: "teams",
     initialState,
     reducers: {
-
+        resetCreateTeamStatus: (state) => {
+            state.createStatus = 'idle'
+            state.createError = null
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -112,6 +115,7 @@ const teamsSlice = createSlice({
     }
 });
 
+export const { resetCreateTeamStatus } = teamsSlice.actions
 export default teamsSlice.reducer;
 
 export const selectTeamsState = (state: RootState) => state.teams
