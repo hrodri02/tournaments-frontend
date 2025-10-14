@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, FlatList, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+    StyleSheet, 
+    View, 
+    Text, 
+    FlatList, 
+    Pressable, 
+    ActivityIndicator 
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Team } from '@/entities/index';
-
-const DATA: Team[] = [
-    {
-        id: 1,
-        name: 'Club America',
-        ownerId: 1,
-        playerIds: []
-    },
-    {
-        id: 2,
-        name: 'Toluca FC',
-        ownerId: 1,
-        playerIds: []
-    },
-];
+import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
+import { 
+    fetchTeams, 
+    selectAllTeams, 
+    selectTeamsFetchError, 
+    selectTeamsFetchStatus 
+} from '@/store/teams/teamsSlice';
 
 type ItemProps = {
     item: Team;
@@ -33,6 +32,16 @@ const Item = ({item, onPress, backgroundColor, textColor}: ItemProps) => (
 
 export default function TeamsPage() {
     const [selectedId, setSelectedId] = useState<number>();
+    const dispatch = useAppDispatch();
+    const fetchStatus = useAppSelector(selectTeamsFetchStatus)
+    const fetchError = useAppSelector(selectTeamsFetchError)
+    const teams = useAppSelector(selectAllTeams);
+
+    useEffect(() => {
+        if (fetchStatus === 'idle') {
+            dispatch(fetchTeams());
+        }
+    }, [fetchStatus, dispatch]);
 
     const renderItem = ({item}: {item: Team}) => {
         const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
@@ -48,12 +57,29 @@ export default function TeamsPage() {
         );
     };
 
-    return (
-        <SafeAreaView style={[styles.safeAreaContainer, styles.perfectCentering]}>
+    let view: React.JSX.Element = <></>;
+    if (fetchStatus === 'idle' || fetchStatus === 'succeeded') {
+        view = <View style={styles.container}>
             <FlatList
-                data={DATA}
+                data={teams}
                 renderItem={renderItem}
             />
+        </View>
+    }
+    else if (fetchStatus === 'loading') {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+    }
+    else {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <Text>{fetchError}</Text>
+        </View>
+    }
+
+    return (
+        <SafeAreaView style={[styles.safeAreaContainer]}>
+            {view}
         </SafeAreaView>
     )
 }
@@ -61,6 +87,9 @@ export default function TeamsPage() {
 const styles = StyleSheet.create({
     safeAreaContainer: {
         flex: 1
+    },
+    container: {
+        flex: 1,
     },
     perfectCentering: {
         justifyContent: 'center',
