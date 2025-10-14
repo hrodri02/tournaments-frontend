@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { router } from 'expo-router';
+import React, { useState, useEffect } from 'react';
 import { 
     StyleSheet, 
     Text, 
@@ -14,6 +15,7 @@ import { SwipeListView, RowMap } from 'react-native-swipe-list-view';
 import { CreateTeamRequest } from '@/entities/index'
 import Modal from 'react-native-modal';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Ionicons from '@expo/vector-icons/Ionicons'; 
 import TeamInvitationForm from '@/components/TeamInvitationForm';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { 
@@ -21,7 +23,8 @@ import {
     selectTeamsCreateStatus, 
     selectTeamsCreateError,
     selectTeamIds,
-    selectTeamsById
+    selectTeamsById,
+    resetCreateTeamState
 } from '@/store/teams/teamsSlice';
 import EditEmailForm from '@/components/EditEmailForm';
 
@@ -59,6 +62,20 @@ export default function CreateTeamPage() {
     const lastTeamCreated = useAppSelector(state =>
         lastTeamId ? selectTeamsById(state, lastTeamId) : null 
     )
+
+    useEffect(() => {
+        if (createStatus === 'succeeded' && lastTeamCreated) {
+            // slight delay to show success:
+            const timer = setTimeout(() => {
+                dispatch(resetCreateTeamState())
+                router.back();
+            }, 2000);
+            return () => clearTimeout(timer);
+            
+            // Option 2: Navigate to the *newly created team's* detail page (more advanced)
+            // router.replace(`/teams/${lastTeamCreated.id}`);
+        }
+    }, [createStatus, lastTeamCreated]);
 
     const addEmail = (email: string) => {
         // Simple validation check before adding
@@ -230,6 +247,7 @@ export default function CreateTeamPage() {
     else if (createStatus === 'succeeded' && lastTeamCreated) {
         view = <View style={[styles.container, styles.perfectCentering]}>
             <Text>Team {lastTeamCreated.name} successfully created.</Text>
+            <Ionicons name="checkmark-circle" size={32} color="green" />
         </View>
     }
     else {
