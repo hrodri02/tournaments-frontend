@@ -1,6 +1,11 @@
 import { RootState } from "@/store/store";
-import { CreateTeamRequest, CreateTeamResponse, Team } from "@/entities/index";
-import { postTeam } from "@/services/tournaments.service";
+import { 
+    CreateTeamRequest, 
+    CreateTeamResponse, 
+    Team,
+    GetTeamResponse
+} from "@/entities/index";
+import { getTeams, postTeam } from "@/services/tournaments.service";
 
 import {
   createSlice,
@@ -34,6 +39,21 @@ const initialState: TeamsState = teamsAdapter.getInitialState({
     deleteError: null
 });
 
+export const fetchTeams = createAppAsyncThunk(
+    "teams/getTeams",
+    async (): Promise<GetTeamResponse[]> => {
+        const teams = await getTeams();
+        return teams;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const teamsFetchStatus = selectTeamsFetchStatus(thunkApi.getState());
+            return teamsFetchStatus === "idle";
+        },
+    }
+);
+
 export const createTeam = createAppAsyncThunk(
     "teams/createTeam",
     async (requestBody: CreateTeamRequest): Promise<CreateTeamResponse> => {
@@ -57,6 +77,25 @@ const teamsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(fetchTeams.pending, (state) => {
+                state.fetchStatus = "loading";
+                state.fetchError = null;
+            })
+            .addCase(fetchTeams.fulfilled, (state, action) => {
+                state.fetchStatus = "succeeded";
+                // map array of teams to objects that can be stored in Redux
+                const teams: CreateTeamResponse[] =
+                    action.payload.map(teamResponse => {
+                        const { playerDTOs, ...teamData } = teamResponse
+                        const playerIds = playerDTOs.map(player => player.id)
+                        return { ...teamData, playerIds }
+                    });
+                teamsAdapter.setAll(state, teams);
+            })
+            .addCase(fetchTeams.rejected, (state, action) => {
+                state.fetchStatus = "failed";
+                state.fetchError = action.error.message ?? "Unknown Error";
+            })
             .addCase(createTeam.pending, (state) => {
                 state.createStatus = "loading";
                 state.createError = null;
