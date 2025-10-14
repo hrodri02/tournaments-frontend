@@ -7,7 +7,9 @@ import {
     LeagueStatus, 
     GameStatBatchUpdateResponse,
     CreateTeamRequest,
-    CreateTeamResponse
+    CreateTeamResponse,
+    Team,
+    GetTeamResponse
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -41,6 +43,11 @@ export const getGames = async (): Promise<Game[]> => {
     const url = `${API_URL}/games`
     return httpRequest<Game[]>(url, 'GET')
 };
+
+export const getTeams = async (): Promise<GetTeamResponse[]> => {
+    const url = `${API_URL}/teams`
+    return httpRequest<GetTeamResponse[]>(url, 'GET')
+}
 
 export const postTeam = async (requestBody: CreateTeamRequest): Promise<CreateTeamResponse> => {
     const url = `${API_URL}/teams`
