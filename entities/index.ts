@@ -19,6 +19,15 @@ export interface Team {
     playerIds: number[];
 }
 
+export interface GetTeamResponse {
+    id: number;
+    name: string;
+    logoUrl?: string;
+    ownerId: number;
+    playerDTOs: Player[];
+    invitationStatus: string;
+}
+
 export interface CreateTeamResponse extends Team {
     invitationStatus: string;
 }
