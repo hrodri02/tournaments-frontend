@@ -59,12 +59,11 @@ export default function TeamsPage() {
 
     let view: React.JSX.Element = <></>;
     if (fetchStatus === 'idle' || fetchStatus === 'succeeded') {
-        view = <View style={styles.container}>
-            <FlatList
-                data={teams}
-                renderItem={renderItem}
-            />
-        </View>
+        view = <FlatList
+            data={teams}
+            renderItem={renderItem}
+            style={styles.container}
+        />
     }
     else if (fetchStatus === 'loading') {
         view = <View style={[styles.container, styles.perfectCentering]}>
@@ -78,7 +77,7 @@ export default function TeamsPage() {
     }
 
     return (
-        <SafeAreaView style={[styles.safeAreaContainer]}>
+        <SafeAreaView style={styles.safeAreaContainer}>
             {view}
         </SafeAreaView>
     )
@@ -98,8 +97,8 @@ const styles = StyleSheet.create({
     },
     item: {
         padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
+        marginVertical: 4,
+        marginHorizontal: 8,
         borderRadius: 8
     },
     title: {
