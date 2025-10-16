@@ -156,7 +156,7 @@ export default function CreateTeamPage() {
                     name="teamName"
                     rules={{ required: 'Team name is required' }}
                     render={({ field: { onChange, value }, fieldState: { error } }) => (
-                        <View>
+                        <View style={styles.marginAtBottom}>
                             <Text style={styles.text}>Team Name</Text>
                             <TextInput
                                 style={styles.input}
