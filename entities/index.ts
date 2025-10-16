@@ -4,10 +4,32 @@ export interface Player extends User {
     position: number;
 }
 
+export interface CreateTeamRequest {
+  name: string;
+  logoUrl?: string;
+  createdAt: string;
+  playersToInvite: string[];
+}
+
 export interface Team {
     id: number;
     name: string;
-    players: Player[];
+    logoUrl?: string;
+    ownerId: number;
+    playerIds: number[];
+}
+
+export interface GetTeamResponse {
+    id: number;
+    name: string;
+    logoUrl?: string;
+    ownerId: number;
+    playerDTOs: Player[];
+    invitationStatus: string;
+}
+
+export interface CreateTeamResponse extends Team {
+    invitationStatus: string;
 }
 
 export interface GameStat {
@@ -64,13 +86,13 @@ export interface League {
     durationInWeeks: number;
     name: string;
     status: LeagueStatus;
-    teams: Team[];
-    games: Game[];
 }
 
+// TODO: rethink how whether to store players as part of team as or
+// if I should store a list of player ids and add a players slice
 export function filterStats(stats: GameStat[], type: GameStatType, team: Team | undefined = undefined): GameStat[] {
     return stats.filter((stat) => {
-        const isPlayerInTeam = team && team.players.some(playerInTeam => playerInTeam.id === stat.player.id);
+        const isPlayerInTeam = team && team.playerIds.some(playerId => playerId === stat.player.id);
         return stat.type === type && (!team || isPlayerInTeam);
     })
 }
@@ -102,7 +124,7 @@ export function getGoalScorersForTeam(goalStats: GameStat[]): string {
 
 export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): number {
     return stats.reduce((count, stat) => {
-        const isPlayerInTeam = team.players.some(playerInTeam => playerInTeam.id === stat.player.id)
+        const isPlayerInTeam = team.playerIds.some(playerId => playerId === stat.player.id)
         if (stat.type === type && isPlayerInTeam)
             return count += 1
         return count

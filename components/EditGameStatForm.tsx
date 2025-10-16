@@ -38,6 +38,7 @@ export interface EditGameStatFormData {
     statIdToplayerId: {[key: string]: number}
 }
 
+// TODO: fetch players from player slice
 export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }: EditGameStatFormProps) {
     const dispatch = useAppDispatch();
     const goalStats = filterStats(stats, GameStatType.goal)
@@ -97,7 +98,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         return failure ? failure[0] : undefined
     }
 
-    let view: JSX.Element = <></>;
+    let view: React.JSX.Element = <></>;
     if (deleteStatus === 'loading' || updateStatus === 'loading') {
         view = <ActivityIndicator size="large" color="#0000ff" />
     }

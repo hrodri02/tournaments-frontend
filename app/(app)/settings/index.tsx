@@ -1,11 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { MyAccountExcerpt } from '@/components/MyAccountExcerpt';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function SettingsScreen() {
   const { logout, isLoading } = useAuth();
-  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account'];
+  const myAccountSectionItems = ['Become an Admin', 'Teams', 'Change City (Puebla)', 'Delete Account'];
+  const pathnames = ['', '/(app)/settings/teams', '', ''];
 
   return (
     <SafeAreaProvider>
@@ -15,8 +17,8 @@ export default function SettingsScreen() {
           sections={[
             {title: 'My Account', data: myAccountSectionItems},
           ]}
-          renderItem={({item}) => 
-            <Text style={styles.item}>{item}</Text>
+          renderItem={({item, index}) => 
+            <MyAccountExcerpt style={styles.item} pathname={pathnames[index]}>{item}</MyAccountExcerpt>
           }
           renderSectionHeader={({section}) => (
             <Text style={styles.sectionHeader}>{section.title}</Text>
@@ -55,7 +57,8 @@ const styles = StyleSheet.create({
   item: {
     fontSize: 12,
     padding: 10,
-    marginVertical: 5,
+    marginVertical: 2,
+    marginHorizontal: 4
   },
   button: {
     marginHorizontal: 20,
