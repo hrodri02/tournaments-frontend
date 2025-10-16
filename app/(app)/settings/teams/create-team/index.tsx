@@ -163,6 +163,7 @@ export default function CreateTeamPage() {
                                 onChangeText={onChange}
                                 value={value}
                                 placeholder="Enter team name"
+                                placeholderTextColor="#AAAAAA"
                             />
                             {error && <Text style={styles.errorText}>{error.message}</Text>}
                         </View>
@@ -176,7 +177,7 @@ export default function CreateTeamPage() {
                 <View style={styles.horizontalFlexContainer}>
                     <Text style={styles.subtext}>You can have up {MAX_PLAYERS} players in your team.</Text>
                     <Pressable onPress={showInviteFriendModal}>
-                        <FontAwesome6 name="user-plus" size={24} color="black" /> 
+                        <FontAwesome6 name="user-plus" size={16} color="black" /> 
                     </Pressable>
                     
                 </View>
