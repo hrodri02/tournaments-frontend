@@ -44,7 +44,7 @@ export default function TeamsPage() {
     }, [fetchStatus, dispatch]);
 
     const renderItem = ({item}: {item: Team}) => {
-        const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
+        const backgroundColor = item.id === selectedId ? '#424242' : '#E0E0E0';
         const color = item.id === selectedId ? 'white' : 'black';
 
         return (
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        padding: 10,
     },
     perfectCentering: {
         justifyContent: 'center',
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
+        borderRadius: 8
     },
     title: {
         fontSize: 16
