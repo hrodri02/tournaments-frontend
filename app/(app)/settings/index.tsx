@@ -57,7 +57,8 @@ const styles = StyleSheet.create({
   item: {
     fontSize: 12,
     padding: 10,
-    marginVertical: 5,
+    marginVertical: 2,
+    marginHorizontal: 4
   },
   button: {
     marginHorizontal: 20,
