@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'expo-router';
 import { 
     StyleSheet, 
     View, 
@@ -25,9 +26,14 @@ type ItemProps = {
 };
 
 const Item = ({item, onPress, backgroundColor, textColor}: ItemProps) => (
-    <Pressable onPress={onPress} style={[styles.item, {backgroundColor}]}>
-        <Text style={[styles.title, {color: textColor}]}>{item.name}</Text>
-    </Pressable>
+    <Link href={{
+                pathname: '/(app)/settings/teams/[id]',
+                params: {id: item.id}
+              }} asChild>
+        <Pressable onPress={onPress} style={styles.item}>
+            <Text style={[styles.title, {color: textColor}]}>{item.name}</Text>
+        </Pressable>              
+    </Link>
 );
 
 export default function TeamsPage() {
@@ -99,7 +105,8 @@ const styles = StyleSheet.create({
         padding: 20,
         marginVertical: 4,
         marginHorizontal: 8,
-        borderRadius: 8
+        borderRadius: 8,
+        backgroundColor: '#E0E0E0'
     },
     title: {
         fontSize: 16
