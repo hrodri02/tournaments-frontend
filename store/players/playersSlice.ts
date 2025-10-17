@@ -6,7 +6,8 @@ import {
   createSlice,
   createEntityAdapter,
   EntityState,
-  PayloadAction
+  PayloadAction,
+  createSelector
 } from "@reduxjs/toolkit";
 
 import { createAppAsyncThunk } from "@/hooks/useStore";
@@ -89,3 +90,8 @@ export const selectPlayersDeleteStatus = (state: RootState) =>
 
 export const selectPlayersDeleteError = (state: RootState) =>
     selectPlayersState(state).deleteError;
+
+export const makeSelectPlayersByIds = (ids: number[]) =>
+  createSelector([selectAllPlayers], (players) =>
+    players.filter((player) => ids.includes(player.id))
+);
