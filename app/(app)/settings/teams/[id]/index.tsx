@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppSelector } from '@/hooks/useStore';
-import { selectTeamsById } from '@/store/teams/teamsSlice';
+import { selectTeamById } from '@/store/teams/teamsSlice';
 
 
 export default function TeamDetailPage() {
     const { id } = useLocalSearchParams();
     const teamId = Number(id);
-    const team = useAppSelector(state => selectTeamsById(state, teamId));
+    const team = useAppSelector(state => selectTeamById(state, teamId));
     const navigation = useNavigation();
 
     useLayoutEffect(() => {
