@@ -3,16 +3,16 @@ import {
     CreateTeamRequest, 
     CreateTeamResponse, 
     Team,
-    GetTeamResponse
+    GetTeamResponse,
+    Player
 } from "@/entities/index";
+import { upsertManyPlayers } from "@/store/players/playersSlice";
 import { getTeams, postTeam } from "@/services/tournaments.service";
-
 import {
   createSlice,
   createEntityAdapter,
   EntityState
 } from "@reduxjs/toolkit";
-
 import { createAppAsyncThunk } from "@/hooks/useStore";
 
 interface TeamsState extends EntityState<Team, number> {
@@ -41,8 +41,21 @@ const initialState: TeamsState = teamsAdapter.getInitialState({
 
 export const fetchTeams = createAppAsyncThunk(
     "teams/getTeams",
-    async (): Promise<GetTeamResponse[]> => {
+    async (_, thunkApi): Promise<GetTeamResponse[]> => {
         const teams = await getTeams();
+        // put the players from each team into a single player array
+        const allPlayers = teams.flatMap(teamResponse => teamResponse.playerDTOs);
+        // create a map of id to player that contains the unique players
+        const uniquePlayersMap = new Map<number, Player>();
+        allPlayers.forEach(player => {
+            uniquePlayersMap.set(player.id, player);
+        });
+        // create an array of the unique players using the map
+        const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
+        if (playersToStore.length > 0) {
+            // store the unique players in the players slice
+            thunkApi.dispatch(upsertManyPlayers({ players: playersToStore }));
+        }
         return teams;
     },
     {
@@ -122,7 +135,7 @@ export const selectTeamsState = (state: RootState) => state.teams
 
 export const {
   selectAll: selectAllTeams,
-  selectById: selectTeamsById,
+  selectById: selectTeamById,
   selectIds: selectTeamIds,
 } = teamsAdapter.getSelectors(selectTeamsState);
 
