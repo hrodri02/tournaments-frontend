@@ -3,11 +3,13 @@ import leaguesSlice from "@/store/leagues/leaguesSlice";
 import gamesSlice from "@/store/games/gamesSlice";
 import gameStatsSlice from "@/store/gamestats/gameStatsSlice";
 import teamsSlice from "@/store/teams/teamsSlice";
+import playersSlice from "@/store/players/playersSlice";
 
 const store = configureStore({
   reducer: {
     leagues: leaguesSlice,
     teams: teamsSlice,
+    players: playersSlice,
     games: gamesSlice,
     gameStats: gameStatsSlice
   },
