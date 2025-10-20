@@ -1,9 +1,8 @@
 import { RootState } from "@/store/store";
 import { 
     CreateTeamRequest, 
-    CreateTeamResponse, 
+    TeamResponse, 
     Team,
-    GetTeamResponse,
     Player
 } from "@/entities/index";
 import { upsertManyPlayers } from "@/store/players/playersSlice";
@@ -41,7 +40,7 @@ const initialState: TeamsState = teamsAdapter.getInitialState({
 
 export const fetchTeams = createAppAsyncThunk(
     "teams/getTeams",
-    async (_, thunkApi): Promise<GetTeamResponse[]> => {
+    async (_, thunkApi): Promise<TeamResponse[]> => {
         const teams = await getTeams();
         // put the players from each team into a single player array
         const allPlayers = teams.flatMap(teamResponse => teamResponse.playerDTOs);
@@ -69,7 +68,7 @@ export const fetchTeams = createAppAsyncThunk(
 
 export const createTeam = createAppAsyncThunk(
     "teams/createTeam",
-    async (requestBody: CreateTeamRequest): Promise<CreateTeamResponse> => {
+    async (requestBody: CreateTeamRequest): Promise<TeamResponse> => {
         const team = await postTeam(requestBody);
         return team;
     },
@@ -100,9 +99,9 @@ const teamsSlice = createSlice({
             .addCase(fetchTeams.fulfilled, (state, action) => {
                 state.fetchStatus = "succeeded";
                 // map array of teams to objects that can be stored in Redux
-                const teams: CreateTeamResponse[] =
+                const teams: Team[] =
                     action.payload.map(teamResponse => {
-                        const { playerDTOs, ...teamData } = teamResponse
+                        const { playerDTOs, invites, ...teamData } = teamResponse
                         const playerIds = playerDTOs.map(player => player.id)
                         return { ...teamData, playerIds }
                     });
@@ -118,8 +117,9 @@ const teamsSlice = createSlice({
             })
             .addCase(createTeam.fulfilled, (state, action) => {
                 state.createStatus = "succeeded";
-                const { invitationStatus, ...teamData } = action.payload;
-                teamsAdapter.addOne(state, teamData);
+                const { playerDTOs, invites, ...teamData } = action.payload;
+                const playerIds = playerDTOs.map(player => player.id)
+                teamsAdapter.addOne(state, {...teamData, playerIds});
             })
             .addCase(createTeam.rejected, (state, action) => {
                 state.createStatus = "failed";
