@@ -6,6 +6,7 @@ import {
     Player
 } from "@/entities/index";
 import { upsertManyPlayers } from "@/store/players/playersSlice";
+import { UpsertManyTeamInvitesAction } from "@/store/team-invites/teamInvitesSlice";
 import { getTeams, postTeam } from "@/services/tournaments.service";
 import {
   createSlice,
@@ -54,6 +55,16 @@ export const fetchTeams = createAppAsyncThunk(
         if (playersToStore.length > 0) {
             // store the unique players in the players slice
             thunkApi.dispatch(upsertManyPlayers({ players: playersToStore }));
+        }
+
+        const inviteResponses = teams.flatMap(teamResponse => teamResponse.invites);
+        const invitesToStore = inviteResponses.map(inviteResponse => {
+            const {player, ...inviteData} = inviteResponse
+            const playerId = player.id
+            return {playerId, ...inviteData}
+        })
+        if (invitesToStore.length > 0) {
+            thunkApi.dispatch(UpsertManyTeamInvitesAction({ invites: invitesToStore }))
         }
         return teams;
     },
