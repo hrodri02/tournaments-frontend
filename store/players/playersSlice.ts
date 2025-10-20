@@ -10,8 +10,6 @@ import {
   createSelector
 } from "@reduxjs/toolkit";
 
-import { createAppAsyncThunk } from "@/hooks/useStore";
-
 interface PlayersState extends EntityState<Player, number> {
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
     fetchError: string | null;
