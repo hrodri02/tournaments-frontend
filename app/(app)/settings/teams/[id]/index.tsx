@@ -7,10 +7,12 @@ import {
     SectionList
 } from 'react-native';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
+import { InviteeExcerpt }  from '@/components/InviteeExcerpt';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppSelector } from '@/hooks/useStore';
 import { selectTeamById } from '@/store/teams/teamsSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
+import { makeSelectInviteByPlayerIdOrTeamId } from '@/store/team-invites/teamInvitesSlice';
 
 export default function TeamDetailPage() {
     const { id } = useLocalSearchParams();
@@ -21,7 +23,25 @@ export default function TeamDetailPage() {
         () => makeSelectPlayersByIds(team.playerIds),
         []
     );
-    const playersInTeam = useAppSelector(selectPlayersInTeam);
+    const playersInTeam = useAppSelector(selectPlayersInTeam)
+    const selectInvitesForTeam = useMemo(
+        () => makeSelectInviteByPlayerIdOrTeamId(team.id),
+        []
+    );
+    const teamInvites = useAppSelector(selectInvitesForTeam)
+    const inviteeIds = teamInvites.map(invite => invite.playerId)
+    const selectInvitees = useMemo(
+        () => makeSelectPlayersByIds(inviteeIds),
+        []
+    );
+    const invitees = useAppSelector(selectInvitees)
+    const sectionsWithIndex = [
+        { title: 'Players', data: playersInTeam },
+        { title: 'Invited Players', data: invitees },
+    ].map((section, index) => ({
+        ...section,
+        sectionIndex: index,
+    }));
 
     useLayoutEffect(() => {
         if (team?.name) {
@@ -33,13 +53,21 @@ export default function TeamDetailPage() {
         <SafeAreaView style={styles.safeAreaContainer}>
             <SectionList
                 style={styles.sectionList}
-                sections={[
-                    { title: 'Players', data: playersInTeam },
-                    { title: 'Invited Players', data: [] },
-                ]}
-                renderItem={({ item }) =>
-                    <PlayerExcerpt style={styles.item} player={item}/>
-                }
+                sections={sectionsWithIndex}
+                renderItem={({ item, section }) => {
+                    if (section.sectionIndex < playersInTeam.length) {
+                        return (
+                            <PlayerExcerpt style={styles.item} player={item}/>
+                        );
+                    }
+                    return (
+                        <InviteeExcerpt 
+                            style={styles.item} 
+                            invite={teamInvites.find(invite => invite.playerId === item.id)!} 
+                            player={item}
+                        />
+                    );
+                }}
                 renderSectionHeader={({ section }) => (
                     <Text style={styles.sectionHeader}>{section.title}</Text>
                 )}
