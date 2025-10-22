@@ -3,7 +3,8 @@ import {
   createSlice,
   createEntityAdapter,
   EntityState,
-  PayloadAction
+  PayloadAction,
+  createSelector
 } from "@reduxjs/toolkit";
 
 import { 
@@ -43,7 +44,7 @@ const teamInvitesSlice = createSlice({
     name: "teamInvites",
     initialState,
     reducers: {
-        UpsertManyTeamInvitesAction: (state, action: PayloadAction<UpsertManyTeamInvitesAction>) => {
+        upsertManyTeamInvites: (state, action: PayloadAction<UpsertManyTeamInvitesAction>) => {
             teamInvitesAdapter.upsertMany(state, action.payload.invites);
         },
     },
@@ -51,7 +52,7 @@ const teamInvitesSlice = createSlice({
     }
 });
 
-export const { UpsertManyTeamInvitesAction } = teamInvitesSlice.actions;
+export const { upsertManyTeamInvites } = teamInvitesSlice.actions;
 
 export default teamInvitesSlice.reducer;
 
@@ -86,3 +87,10 @@ export const selectTeamsDeleteStatus = (state: RootState) =>
 
 export const selectTeamsDeleteError = (state: RootState) =>
     selectTeamInvitesState(state).deleteError;
+
+export const makeSelectInviteByPlayerIdOrTeamId = (teamId: number | undefined = undefined, playerId: number | undefined = undefined) =>
+    createSelector([selectAllTeamInvites], (invites) => invites.filter((invite) =>
+        (!teamId || invite.teamId === teamId) &&
+        (!playerId || invite.playerId === playerId)
+    )
+);
