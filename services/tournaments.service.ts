@@ -8,6 +8,8 @@ import {
     GameStatBatchUpdateResponse,
     CreateTeamRequest,
     TeamResponse,
+    CreateTeamInviteRequest,
+    TeamInviteResponse
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -50,6 +52,11 @@ export const getTeams = async (): Promise<TeamResponse[]> => {
 export const postTeam = async (requestBody: CreateTeamRequest): Promise<TeamResponse> => {
     const url = `${API_URL}/teams`
     return httpRequest<TeamResponse>(url, 'POST', requestBody)
+}
+
+export const postTeamInvite = async (teamId: number, requestBody: CreateTeamInviteRequest): Promise<TeamInviteResponse> => {
+    const url = `${API_URL}/teams/${teamId}/invites`
+    return httpRequest<TeamInviteResponse>(url, 'POST', requestBody)
 }
 
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
