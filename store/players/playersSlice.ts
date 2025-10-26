@@ -38,6 +38,10 @@ interface UpsertManyPlayersAction {
     players: Player[];
 }
 
+interface AddPlayerAction {
+    player: Player;
+}
+
 const playersSlice = createSlice({
     name: "players",
     initialState,
@@ -45,7 +49,11 @@ const playersSlice = createSlice({
         // action to handle players data from other thunks/slices
         upsertManyPlayers: (state, action: PayloadAction<UpsertManyPlayersAction>) => {
             playersAdapter.upsertMany(state, action.payload.players);
+    
         },
+        addPlayer: (state, action: PayloadAction<AddPlayerAction>) => {
+            playersAdapter.addOne(state, action.payload.player);
+        }
     },
     extraReducers: (builder) => {
 
@@ -53,7 +61,7 @@ const playersSlice = createSlice({
 });
 
 // Export the actions
-export const { upsertManyPlayers } = playersSlice.actions;
+export const { upsertManyPlayers, addPlayer } = playersSlice.actions;
 
 export default playersSlice.reducer;
 
