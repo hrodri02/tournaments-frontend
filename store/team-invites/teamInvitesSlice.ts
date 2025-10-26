@@ -1,4 +1,5 @@
 import { RootState } from "@/store/store";
+import { createAppAsyncThunk } from "@/hooks/useStore";
 import {
   createSlice,
   createEntityAdapter,
@@ -6,11 +7,13 @@ import {
   PayloadAction,
   createSelector
 } from "@reduxjs/toolkit";
-
 import { 
-    TeamInvite, 
+    TeamInvite,
+    CreateTeamInviteRequest, 
     TeamInviteResponse, 
 } from "@/entities/index";
+import { postTeamInvite } from "@/services/tournaments.service"
+import { addPlayer } from '@/store/players/playersSlice';
 
 interface TeamInvitesState extends EntityState<TeamInvite, number> {
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -40,19 +43,63 @@ interface UpsertManyTeamInvitesAction {
     invites: TeamInvite[];
 }
 
+interface CreateTeamInvitePayload {
+    teamId: number;
+    requestBody: CreateTeamInviteRequest;
+}
+
+export const createTeamInvite = createAppAsyncThunk(
+    "teamInvites/createTeamInvite",
+    async (payload: CreateTeamInvitePayload, thunkApi): Promise<TeamInviteResponse> => {
+        const { teamId, requestBody } = payload;
+        const teamInvite = await postTeamInvite(teamId, requestBody);
+        const { player } = teamInvite
+        thunkApi.dispatch(addPlayer({player: player}))
+        return teamInvite;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const teamInvitesCreateStatus = selectTeamInvitesCreateStatus(thunkApi.getState());
+            return teamInvitesCreateStatus === "idle";
+        },
+    }
+);
+
 const teamInvitesSlice = createSlice({
     name: "teamInvites",
     initialState,
     reducers: {
+        resetCreateTeamInviteStatus: (state) => {
+            state.createStatus = 'idle'
+            state.createError = null
+        },
         upsertManyTeamInvites: (state, action: PayloadAction<UpsertManyTeamInvitesAction>) => {
             teamInvitesAdapter.upsertMany(state, action.payload.invites);
         },
     },
     extraReducers: (builder) => {
+        builder
+            .addCase(createTeamInvite.pending, (state) => {
+                state.createStatus = "loading";
+                state.createError = null;
+            })
+            .addCase(createTeamInvite.fulfilled, (state, action) => {
+                state.createStatus = "succeeded";
+                const teamInviteResponse = action.payload
+                const {player, ...teamInviteData} = teamInviteResponse
+                const playerId = player.id
+                const inviteToStore = { playerId, ...teamInviteData }
+                teamInvitesAdapter.addOne(state, inviteToStore);
+            })
+            .addCase(createTeamInvite.rejected, (state, action) => {
+                state.createStatus = "failed";
+                state.createError = action.error.message ?? "Unknown Error";
+            })
     }
 });
 
-export const { upsertManyTeamInvites } = teamInvitesSlice.actions;
+export const { resetCreateTeamInviteStatus, upsertManyTeamInvites } = teamInvitesSlice.actions;
 
 export default teamInvitesSlice.reducer;
 
@@ -64,28 +111,28 @@ export const {
   selectIds: selectTeamInviteIds,
 } = teamInvitesAdapter.getSelectors(selectTeamInvitesState);
 
-export const selectTeamsFetchStatus = (state: RootState) =>
+export const selectTeamInvitesFetchStatus = (state: RootState) =>
     selectTeamInvitesState(state).fetchStatus;
 
-export const selectTeamsFetchError = (state: RootState) =>
+export const selectTeamInvitesFetchError = (state: RootState) =>
     selectTeamInvitesState(state).fetchError;
 
-export const selectTeamsCreateStatus = (state: RootState) =>
+export const selectTeamInvitesCreateStatus = (state: RootState) =>
     selectTeamInvitesState(state).createStatus;
 
-export const selectTeamsCreateError = (state: RootState) =>
+export const selectTeamInvitesCreateError = (state: RootState) =>
     selectTeamInvitesState(state).createError;
 
-export const selectTeamsUpdateStatus = (state: RootState) =>
+export const selectTeamInvitesUpdateStatus = (state: RootState) =>
     selectTeamInvitesState(state).updateStatus;
 
-export const selectTeamsUpdateError = (state: RootState) =>
+export const selectTeamInvitesUpdateError = (state: RootState) =>
     selectTeamInvitesState(state).updateError;
 
-export const selectTeamsDeleteStatus = (state: RootState) =>
+export const selectTeamInvitesDeleteStatus = (state: RootState) =>
     selectTeamInvitesState(state).deleteStatus;
 
-export const selectTeamsDeleteError = (state: RootState) =>
+export const selectTeamInvitesDeleteError = (state: RootState) =>
     selectTeamInvitesState(state).deleteError;
 
 export const makeSelectInviteByPlayerIdOrTeamId = (teamId: number | undefined = undefined, playerId: number | undefined = undefined) =>
