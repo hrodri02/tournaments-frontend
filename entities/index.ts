@@ -30,6 +30,11 @@ export interface TeamResponse {
 
 export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVOKED';
 
+export interface CreateTeamInviteRequest {
+    email: string;
+    createdAt: string;
+}
+
 export interface TeamInviteResponse {
     id: number;
     status: TeamInviteStatus;
