@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect, useCallback, useMemo } from 'react'; 
+import React, { useLayoutEffect, useState, useEffect, useMemo } from 'react'; 
 import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
@@ -9,18 +9,16 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { selectGameById } from '@/store/games/gamesSlice';
 import { fetchGameStats, makeSelectGameStatsByGameId, selectGameStatsFetchStatus, createGameStat, selectGameStatsCreateStatus, resetCreateGameStatStatus } from '@/store/gamestats/gameStatsSlice';
-import { getStorageItemAsync, USER_KEY } from '@/store/auth/authStorage';
 import { format } from 'date-fns';
 import { GameStatType, filterStats, countStatsForTeam, getGoalScorersForTeam, stringToGameStatType, isGameActive } from '@/entities';
-import { User } from '@/entities/auth';
 import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 import EditGameStatForm from '@/components/EditGameStatForm';
+import { useAuth } from "@/contexts/AuthContext";
 
 const screenHeight = Dimensions.get('window').height; 
 
 export default function Game() {
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [isLoadingAdminStatus, setIsLoadingAdminStatus] = useState(true);
+    const { user, isLoading } = useAuth();
     const [modalVisible, setModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const dispatch = useAppDispatch()
@@ -47,24 +45,6 @@ export default function Game() {
     const awayTeamYellowCards = countStatsForTeam(gameStatsOfGame, GameStatType.yellowCard, awayTeam)
     const homeTeamRedCards = countStatsForTeam(gameStatsOfGame, GameStatType.redCard, homeTeam)
     const awayTeamRedCards = countStatsForTeam(gameStatsOfGame, GameStatType.redCard, awayTeam)
-    
-    const checkAdminStatus = useCallback(async () => {
-        try {
-            setIsLoadingAdminStatus(true);
-            const userJSON = await getStorageItemAsync(USER_KEY);
-            if (userJSON) {
-                const user = JSON.parse(userJSON) as User;
-                setIsAdmin(user.appUserRole === 'ADMIN');
-            } else {
-                setIsAdmin(false); // No user found
-            }
-        } catch (error) {
-            console.error("Failed to get user role from storage:", error);
-            setIsAdmin(false); // Assume not admin on error
-        } finally {
-            setIsLoadingAdminStatus(false);
-        }
-    }, []);
 
     useEffect(() => {
         if (gameStatsStatus === 'idle') {
@@ -72,35 +52,12 @@ export default function Game() {
         }
     }, [dispatch, gameStatsStatus]);
 
-    useEffect(() => {
-        checkAdminStatus();
-    }, [checkAdminStatus]);
-
     useLayoutEffect(() => { 
         navigation.setOptions({
             title: `${homeTeam.name} vs ${awayTeam.name}`,
             headerTitleAlign: 'center'
         });
     }, [navigation, homeTeam, awayTeam]);
-
-    useLayoutEffect(() => {
-        if (!isLoadingAdminStatus && isAdmin && isGameActive(game)) {
-            navigation.setOptions({
-                headerRight: () => (
-                    <TouchableOpacity
-                        style={styles.rightNavButton}
-                        onPress={handlePress}
-                    >
-                        <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
-                    </TouchableOpacity>
-                )
-            });
-        } else if (!isLoadingAdminStatus && !isAdmin) {
-            navigation.setOptions({
-                headerRight: undefined
-            });
-        }
-    }, [navigation, isAdmin, isLoadingAdminStatus])
 
     const handlePress = () => {
         const options = ['Add', 'Edit', 'Cancel'];
@@ -127,6 +84,28 @@ export default function Game() {
             }
         );
     };
+
+    useLayoutEffect(() => {
+        if (user && !isLoading) {
+            if (user.appUserRole === 'ADMIN' && isGameActive(game)) {
+                navigation.setOptions({
+                    headerRight: () => (
+                        <TouchableOpacity
+                            style={styles.rightNavButton}
+                            onPress={handlePress}
+                        >
+                            <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
+                        </TouchableOpacity>
+                    )
+                });
+            }
+            else {
+                navigation.setOptions({
+                    headerRight: undefined
+                });
+            }
+        }
+    }, [navigation, user, isLoading, game, handlePress, isGameActive])
 
     const handleSaveButtonPressed = async (data: GameStatFormData) => {
         const selectedPlayerId = data.playerId
