@@ -59,6 +59,11 @@ export const postTeamInvite = async (teamId: number, requestBody: CreateTeamInvi
     return httpRequest<TeamInviteResponse>(url, 'POST', requestBody)
 }
 
+export const postRevokeTeamInvite = async (inviteId: number): Promise<TeamInviteResponse> => {
+    const url = `${API_URL}/team-invites/${inviteId}/revoke`
+    return httpRequest<TeamInviteResponse>(url, 'POST')
+}
+
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
     const url = new URL(`${API_URL}/leagues`);
 
