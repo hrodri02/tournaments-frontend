@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View, ViewStyle, Text, StyleSheet } from 'react-native';
-import { Player, TeamInvite } from '@/entities/index';
+import { Player, TeamInvite, TeamInviteStatusDisplay } from '@/entities/index';
 
 type InviteeExcerptProps = {
     invite: TeamInvite;
@@ -12,7 +12,7 @@ export function InviteeExcerpt({ invite, player, style }: InviteeExcerptProps) {
     return (
         <View style={style}>
             <Text style={styles.title}>{player.firstName} {player.lastName}</Text>
-            <Text>{invite.status}</Text>
+            <Text>{TeamInviteStatusDisplay[invite.status]}</Text>
         </View>
     );
 }
@@ -20,6 +20,7 @@ export function InviteeExcerpt({ invite, player, style }: InviteeExcerptProps) {
 const styles = StyleSheet.create({
     title: {
         fontSize: 16,
+        fontWeight: 'bold'
     },
     subtitle: {
         fontSize: 14
