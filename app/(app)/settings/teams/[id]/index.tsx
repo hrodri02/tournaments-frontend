@@ -9,11 +9,12 @@ import { useLocalSearchParams } from 'expo-router';
 import { 
     StyleSheet,
     View,
-    Text, 
-    SectionList,
+    Text,
     Pressable,
-    ActivityIndicator
+    ActivityIndicator,
+    ListRenderItemInfo
 } from 'react-native';
+import { SwipeListView, RowMap, SwipeRow } from 'react-native-swipe-list-view';
 import Modal from 'react-native-modal';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
 import { InviteeExcerpt }  from '@/components/InviteeExcerpt';
@@ -28,10 +29,28 @@ import {
     createTeamInvite,
     selectTeamInvitesCreateStatus,
     selectTeamInvitesCreateError,
-    resetCreateTeamInviteStatus
+    resetCreateTeamInviteStatus,
+    revokeTeamInvite,
+    selectTeamInvitesUpdateStatus,
+    selectTeamInvitesUpdateError,
+    resetUpdateTeamInivteStatus
 } from '@/store/team-invites/teamInvitesSlice';
-import { CreateTeamInviteRequest } from '@/entities/index';
+import { CreateTeamInviteRequest, Player } from '@/entities/index';
 import { useAuth } from '@/contexts/AuthContext';
+
+interface TeamDetailSection {
+    title: string | null;
+    isSectionHeader: boolean;
+    isSwipeable: boolean;
+    sectionIndex: number | null;
+    data: Player[];
+}
+
+interface PlayerIdToInviteIdMap {
+    [playerId: number] : number;
+}
+
+type TeamDetailFlattenedSection = Omit<TeamDetailSection, 'data'> & { player: Player | null, key: string; };
 
 export default function TeamDetailPage() {
     const MAX_PLAYERS = 24;
@@ -39,6 +58,8 @@ export default function TeamDetailPage() {
     const { user, isLoading } = useAuth();
     const createStatus = useAppSelector(selectTeamInvitesCreateStatus)
     const createError = useAppSelector(selectTeamInvitesCreateError)
+    const updateStatus = useAppSelector(selectTeamInvitesUpdateStatus)
+    const updateError = useAppSelector(selectTeamInvitesUpdateError)
     const { id } = useLocalSearchParams();
     const teamId = Number(id);
     const team = useAppSelector(state => selectTeamById(state, teamId));
@@ -60,13 +81,16 @@ export default function TeamDetailPage() {
         [inviteeIds]
     );
     const invitees = useAppSelector(selectInvitees)
-    const sectionsWithIndex = [
-        { title: 'Players', data: playersInTeam },
-        { title: 'Invited Players', data: invitees },
+    const playerIdToInviteId: PlayerIdToInviteIdMap = {}
+    teamInvites.forEach(invite => playerIdToInviteId[invite.playerId] = invite.id);
+    const sectionsWithIndex: TeamDetailSection[] = [
+        { title: 'Players', data: playersInTeam, isSectionHeader: true, isSwipeable: false },
+        { title: 'Invited Players', data: invitees, isSectionHeader: true, isSwipeable: false },
     ].map((section, index) => ({
         ...section,
         sectionIndex: index,
     }));
+    const dataList = flattenSections(sectionsWithIndex);
 
     useLayoutEffect(() => {
         if (team?.name) {
@@ -122,29 +146,117 @@ export default function TeamDetailPage() {
         }
     }, [createStatus]);
 
-    let view: React.JSX.Element = <></>;
-    if (createStatus === 'idle' || createStatus === 'succeeded') {
-        view = <View style={styles.container}>
-            <SectionList
-                style={styles.sectionList}
-                sections={sectionsWithIndex}
-                renderItem={({ item, section }) => {
-                    if (section.sectionIndex < playersInTeam.length) {
-                        return (
-                            <PlayerExcerpt style={styles.item} player={item}/>
-                        );
-                    }
-                    return (
+    function flattenSections(sections: TeamDetailSection[]): TeamDetailFlattenedSection[] {
+        let flatList: TeamDetailFlattenedSection[] = [];
+        sections.forEach((section) => {
+            flatList.push({
+                key: `header-${section.title}`,
+                title: section.title,
+                isSectionHeader: section.isSectionHeader,
+                isSwipeable: section.isSwipeable,
+                sectionIndex: section.sectionIndex,
+                player: null
+            });
+            const players = section.data
+            flatList.push(...players.map(player => (
+                {
+                    key: `item-${player.email}`,
+                    title: null,
+                    isSectionHeader: false,
+                    isSwipeable: section.sectionIndex === 1,
+                    sectionIndex: section.sectionIndex,
+                    player: player
+                }
+            )));
+        });
+        return flatList;
+    }
+
+    const closeRow = (rowMap: RowMap<TeamDetailFlattenedSection>, rowKey: string) => {
+        if (rowMap[rowKey]) {
+            rowMap[rowKey].closeRow();
+        }
+    };
+
+    const deleteRow = (rowMap: RowMap<TeamDetailFlattenedSection>, rowKey: string) => {
+        closeRow(rowMap, rowKey);
+        const index = dataList.findIndex(item => item.key === rowKey);
+        if (index > -1) {
+            const item = dataList[index];
+            const playerId = item.player?.id;
+            if (playerId) {
+                const inviteId = playerIdToInviteId[playerId];
+                dispatch(revokeTeamInvite(inviteId))
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (updateStatus === 'succeeded' || updateStatus === 'failed') {
+            const timer = setTimeout(() => {
+                dispatch(resetUpdateTeamInivteStatus())
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [updateStatus]);
+
+    const renderItem = ({ item, index }: ListRenderItemInfo<TeamDetailFlattenedSection>, rowMap: RowMap<TeamDetailFlattenedSection>) => {
+        if (item.isSectionHeader) {
+            return (
+                <SwipeRow
+                    disableLeftSwipe={!item.isSwipeable}
+                >
+                    <View />
+                    <View>
+                        <Text style={styles.sectionHeader}>{item.title}</Text>
+                    </View>
+                </SwipeRow>
+            );
+        }
+
+        return (
+            <SwipeRow
+                // Disable swiping for non-swipeable items (though headers are already filtered out)
+                disableLeftSwipe={!item.isSwipeable} 
+                rightOpenValue={-75}
+            >
+                {renderHiddenRevoke(rowMap, item.key)}
+                <View style={styles.rowFront}>
+                    {index <= playersInTeam.length? (
+                        <PlayerExcerpt style={styles.item} player={item.player!}/>
+                    ) : (
                         <InviteeExcerpt 
                             style={styles.item} 
-                            invite={teamInvites.find(invite => invite.playerId === item.id)!} 
-                            player={item}
+                            invite={teamInvites.find(invite => invite.playerId === item.player?.id)!} 
+                            player={item.player!}
                         />
-                    );
-                }}
-                renderSectionHeader={({ section }) => (
-                    <Text style={styles.sectionHeader}>{section.title}</Text>
-                )}
+                    )
+                    }
+                </View>
+            </SwipeRow>
+        );
+    };
+
+    const renderHiddenRevoke = (rowMap: RowMap<TeamDetailFlattenedSection>, rowKey: string) => (
+        <View style={styles.rowBack}>
+            <Pressable
+                style={[styles.backRightBtn, styles.backRightBtnRight]}
+                onPress={() => deleteRow(rowMap, rowKey)} 
+            >
+                <Text style={styles.backTextWhite}>Revoke</Text>
+            </Pressable>
+        </View>
+    );
+
+    let view: React.JSX.Element = <></>;
+    if ((createStatus === 'idle' || createStatus === 'succeeded') && 
+        (updateStatus === 'idle' || updateStatus === 'succeeded'))
+    {
+        view = <View style={styles.container}>
+            <SwipeListView
+                style={styles.sectionList}
+                data={dataList}
+                renderItem={renderItem}
             />
 
             <Modal
@@ -158,14 +270,19 @@ export default function TeamDetailPage() {
             </Modal>
         </View>
     }
-    else if (createStatus === 'loading') {
+    else if (createStatus === 'loading' || updateStatus === 'loading') {
         view = <View style={[styles.container, styles.perfectCentering]}>
             <ActivityIndicator size="large" color="#0000ff" />
         </View>
     }
-    else {
+    else if (createStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
             <Text>{createError}</Text>
+        </View>
+    }
+    else if (updateStatus === 'failed') {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <Text>{updateError}</Text>
         </View>
     }
 
@@ -211,5 +328,39 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16
-    }
+    },
+    rowFront: {
+        backgroundColor: '#CCC',
+        borderBottomColor: 'black',
+        borderBottomWidth: 1,
+        justifyContent: 'center',
+        height: 50,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: '#DDD',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backRightBtn: {
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        width: 75,
+    },
+    backRightBtnLeft: {
+        backgroundColor: 'blue',
+        right: 75,
+    },
+    backRightBtnRight: {
+        backgroundColor: 'red',
+        right: 0,
+    },
+    backTextWhite: {
+        color: '#FFF',
+    },
 });
