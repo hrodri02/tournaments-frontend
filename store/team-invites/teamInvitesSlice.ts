@@ -12,7 +12,7 @@ import {
     CreateTeamInviteRequest, 
     TeamInviteResponse, 
 } from "@/entities/index";
-import { postTeamInvite } from "@/services/tournaments.service"
+import { postTeamInvite, postRevokeTeamInvite } from "@/services/tournaments.service"
 import { addPlayer } from '@/store/players/playersSlice';
 
 interface TeamInvitesState extends EntityState<TeamInvite, number> {
@@ -66,6 +66,21 @@ export const createTeamInvite = createAppAsyncThunk(
     }
 );
 
+export const revokeTeamInvite = createAppAsyncThunk(
+    "teamInvites/revokeTeamInvite",
+    async (inviteId: number, thunkApi): Promise<TeamInviteResponse> => {
+        const teamInvite = await postRevokeTeamInvite(inviteId);
+        return teamInvite;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const selectTeamInvitesUpdateStatus = selectTeamInvitesCreateStatus(thunkApi.getState());
+            return selectTeamInvitesUpdateStatus === "idle";
+        },
+    }
+);
+
 const teamInvitesSlice = createSlice({
     name: "teamInvites",
     initialState,
@@ -77,6 +92,10 @@ const teamInvitesSlice = createSlice({
         upsertManyTeamInvites: (state, action: PayloadAction<UpsertManyTeamInvitesAction>) => {
             teamInvitesAdapter.upsertMany(state, action.payload.invites);
         },
+        resetUpdateTeamInivteStatus: (state) => {
+            state.updateStatus = 'idle',
+            state.updateError = null
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -96,10 +115,23 @@ const teamInvitesSlice = createSlice({
                 state.createStatus = "failed";
                 state.createError = action.error.message ?? "Unknown Error";
             })
+            .addCase(revokeTeamInvite.pending, (state) => {
+                state.updateStatus = "loading";
+                state.updateError = null;
+            })
+            .addCase(revokeTeamInvite.fulfilled, (state, action) => {
+                state.updateStatus = "succeeded";
+                const teamInviteResponse = action.payload
+                teamInvitesAdapter.removeOne(state, teamInviteResponse.id)
+            })
+            .addCase(revokeTeamInvite.rejected, (state, action) => {
+                state.updateStatus = "failed";
+                state.updateError = action.error.message ?? "Unknown Error";
+            })
     }
 });
 
-export const { resetCreateTeamInviteStatus, upsertManyTeamInvites } = teamInvitesSlice.actions;
+export const { resetCreateTeamInviteStatus, upsertManyTeamInvites, resetUpdateTeamInivteStatus } = teamInvitesSlice.actions;
 
 export default teamInvitesSlice.reducer;
 
