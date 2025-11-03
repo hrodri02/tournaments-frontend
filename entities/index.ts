@@ -1,7 +1,17 @@
 import {User} from "@/entities/auth";
 
+export type Position = 'GOAL_KEEPER' | 'DEFENDER' | 'MIDFIELDER' | 'STRIKER' | 'WINGER';
+
+export const PositionDisplay: Record<Position, string> = {
+    'GOAL_KEEPER': 'Goal keeper',
+    'DEFENDER': 'Defender',
+    'MIDFIELDER': 'Midfielder',
+    'STRIKER': 'Striker',
+    'WINGER': 'Winger'
+};
+
 export interface Player extends User {
-    position: number;
+    position: Position;
 }
 
 export interface CreateTeamRequest {
@@ -29,6 +39,13 @@ export interface TeamResponse {
 }
 
 export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVOKED';
+
+export const TeamInviteStatusDisplay: Record<TeamInviteStatus, string> = {
+    'PENDING': 'Pending',
+    'ACCEPTED': 'Accepted',
+    'REJECTED': 'Rejected',
+    'REVOKED': 'Revoked',
+};
 
 export interface CreateTeamInviteRequest {
     email: string;
