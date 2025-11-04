@@ -41,7 +41,7 @@ const Item = ({item, onPress, backgroundColor, textColor}: ItemProps) => (
 export default function TeamsPage() {
     const [selectedId, setSelectedId] = useState<number>();
     const dispatch = useAppDispatch();
-    const { user, isLoading } = useAuth();
+    const { user } = useAuth();
     const fetchStatus = useAppSelector(selectTeamsFetchStatus)
     const fetchError = useAppSelector(selectTeamsFetchError)
     const teams = useAppSelector(selectAllTeams);
