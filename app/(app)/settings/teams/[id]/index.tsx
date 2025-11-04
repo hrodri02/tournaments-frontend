@@ -163,7 +163,7 @@ export default function TeamDetailPage() {
                     key: `item-${player.email}`,
                     title: null,
                     isSectionHeader: false,
-                    isSwipeable: section.sectionIndex === 1,
+                    isSwipeable: section.sectionIndex === 1 && user!.id === team.ownerId,
                     sectionIndex: section.sectionIndex,
                     player: player
                 }
