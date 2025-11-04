@@ -1,7 +1,17 @@
 import {User} from "@/entities/auth";
 
+export type Position = 'GOAL_KEEPER' | 'DEFENDER' | 'MIDFIELDER' | 'STRIKER' | 'WINGER';
+
+export const PositionDisplay: Record<Position, string> = {
+    'GOAL_KEEPER': 'Goal keeper',
+    'DEFENDER': 'Defender',
+    'MIDFIELDER': 'Midfielder',
+    'STRIKER': 'Striker',
+    'WINGER': 'Winger'
+};
+
 export interface Player extends User {
-    position: number;
+    position: Position;
 }
 
 export interface CreateTeamRequest {
@@ -19,17 +29,43 @@ export interface Team {
     playerIds: number[];
 }
 
-export interface GetTeamResponse {
+export interface TeamResponse {
     id: number;
     name: string;
     logoUrl?: string;
     ownerId: number;
     playerDTOs: Player[];
-    invitationStatus: string;
+    invites: TeamInviteResponse[];
 }
 
-export interface CreateTeamResponse extends Team {
-    invitationStatus: string;
+export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVOKED';
+
+export const TeamInviteStatusDisplay: Record<TeamInviteStatus, string> = {
+    'PENDING': 'Pending',
+    'ACCEPTED': 'Accepted',
+    'REJECTED': 'Rejected',
+    'REVOKED': 'Revoked',
+};
+
+export interface CreateTeamInviteRequest {
+    email: string;
+    createdAt: string;
+}
+
+export interface TeamInviteResponse {
+    id: number;
+    status: TeamInviteStatus;
+    teamId: number;
+    player: Player;
+    createdAt: string;
+}
+
+export interface TeamInvite {
+    id: number;
+    status: TeamInviteStatus;
+    teamId: number;
+    playerId: number;
+    createdAt: string;
 }
 
 export interface GameStat {

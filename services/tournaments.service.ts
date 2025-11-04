@@ -7,9 +7,9 @@ import {
     LeagueStatus, 
     GameStatBatchUpdateResponse,
     CreateTeamRequest,
-    CreateTeamResponse,
-    Team,
-    GetTeamResponse
+    TeamResponse,
+    CreateTeamInviteRequest,
+    TeamInviteResponse
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -36,7 +36,7 @@ export const batchUpdateGameStats = async (stats: GameStatUpdatePayload[]): Prom
 
 export const deleteGameStat = async (id: number): Promise<GameStat> => {
     const url = `${API_URL}/gamestats/${id}`
-    return httpRequest<GameStat[]>(url, 'DELETE')
+    return httpRequest<GameStat>(url, 'DELETE')
 }
 
 export const getGames = async (): Promise<Game[]> => {
@@ -44,14 +44,24 @@ export const getGames = async (): Promise<Game[]> => {
     return httpRequest<Game[]>(url, 'GET')
 };
 
-export const getTeams = async (): Promise<GetTeamResponse[]> => {
+export const getTeams = async (): Promise<TeamResponse[]> => {
     const url = `${API_URL}/teams`
-    return httpRequest<GetTeamResponse[]>(url, 'GET')
+    return httpRequest<TeamResponse[]>(url, 'GET')
 }
 
-export const postTeam = async (requestBody: CreateTeamRequest): Promise<CreateTeamResponse> => {
+export const postTeam = async (requestBody: CreateTeamRequest): Promise<TeamResponse> => {
     const url = `${API_URL}/teams`
-    return httpRequest<CreateTeamResponse>(url, 'POST', requestBody)
+    return httpRequest<TeamResponse>(url, 'POST', requestBody)
+}
+
+export const postTeamInvite = async (teamId: number, requestBody: CreateTeamInviteRequest): Promise<TeamInviteResponse> => {
+    const url = `${API_URL}/teams/${teamId}/invites`
+    return httpRequest<TeamInviteResponse>(url, 'POST', requestBody)
+}
+
+export const postRevokeTeamInvite = async (inviteId: number): Promise<TeamInviteResponse> => {
+    const url = `${API_URL}/team-invites/${inviteId}/revoke`
+    return httpRequest<TeamInviteResponse>(url, 'POST')
 }
 
 export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {

@@ -23,7 +23,7 @@ import {
     selectTeamsCreateStatus, 
     selectTeamsCreateError,
     selectTeamIds,
-    selectTeamsById,
+    selectTeamById,
     resetCreateTeamState
 } from '@/store/teams/teamsSlice';
 import EditEmailForm from '@/components/EditEmailForm';
@@ -60,7 +60,7 @@ export default function CreateTeamPage() {
     const teamIds = useAppSelector(selectTeamIds)
     const lastTeamId = (teamIds.length > 0)? teamIds[teamIds.length - 1] : null
     const lastTeamCreated = useAppSelector(state =>
-        lastTeamId ? selectTeamsById(state, lastTeamId) : null 
+        lastTeamId ? selectTeamById(state, lastTeamId) : null 
     )
 
     useEffect(() => {
