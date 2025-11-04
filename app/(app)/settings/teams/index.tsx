@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'expo-router';
 import { 
     StyleSheet, 
@@ -15,8 +15,10 @@ import {
     fetchTeams, 
     selectAllTeams, 
     selectTeamsFetchError, 
-    selectTeamsFetchStatus 
+    selectTeamsFetchStatus,
 } from '@/store/teams/teamsSlice';
+import { makeSelectInviteByPlayerIdOrTeamId } from '@/store/team-invites/teamInvitesSlice';
+import { useAuth } from '@/contexts/AuthContext';
 
 type ItemProps = {
     item: Team;
@@ -39,9 +41,15 @@ const Item = ({item, onPress, backgroundColor, textColor}: ItemProps) => (
 export default function TeamsPage() {
     const [selectedId, setSelectedId] = useState<number>();
     const dispatch = useAppDispatch();
+    const { user, isLoading } = useAuth();
     const fetchStatus = useAppSelector(selectTeamsFetchStatus)
     const fetchError = useAppSelector(selectTeamsFetchError)
     const teams = useAppSelector(selectAllTeams);
+    const selectInvitesForPlayer = useMemo(
+        () => makeSelectInviteByPlayerIdOrTeamId(undefined, user? user.id : undefined),
+        []
+    );
+    const invites = useAppSelector(selectInvitesForPlayer);
 
     useEffect(() => {
         if (fetchStatus === 'idle') {
