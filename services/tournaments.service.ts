@@ -9,7 +9,9 @@ import {
     CreateTeamRequest,
     TeamResponse,
     CreateTeamInviteRequest,
-    TeamInviteResponse
+    TeamInviteResponse,
+    GetTeamsResponse,
+    AcceptInviteResponse
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -44,9 +46,9 @@ export const getGames = async (): Promise<Game[]> => {
     return httpRequest<Game[]>(url, 'GET')
 };
 
-export const getTeams = async (): Promise<TeamResponse[]> => {
+export const getTeams = async (): Promise<GetTeamsResponse> => {
     const url = `${API_URL}/teams`
-    return httpRequest<TeamResponse[]>(url, 'GET')
+    return httpRequest<GetTeamsResponse>(url, 'GET')
 }
 
 export const postTeam = async (requestBody: CreateTeamRequest): Promise<TeamResponse> => {
@@ -61,6 +63,16 @@ export const postTeamInvite = async (teamId: number, requestBody: CreateTeamInvi
 
 export const postRevokeTeamInvite = async (inviteId: number): Promise<TeamInviteResponse> => {
     const url = `${API_URL}/team-invites/${inviteId}/revoke`
+    return httpRequest<TeamInviteResponse>(url, 'POST')
+}
+
+export const postAcceptTeamInvite = async (inviteId: number): Promise<AcceptInviteResponse> => {
+    const url = `${API_URL}/team-invites/${inviteId}/accept`
+    return httpRequest<AcceptInviteResponse>(url, 'POST')
+}
+
+export const postDeclineTeamInvite = async (inviteId: number): Promise<TeamInviteResponse> => {
+    const url = `${API_URL}/team-invites/${inviteId}/decline`
     return httpRequest<TeamInviteResponse>(url, 'POST')
 }
 
