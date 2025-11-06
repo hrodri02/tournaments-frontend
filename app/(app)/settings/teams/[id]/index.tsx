@@ -71,7 +71,7 @@ export default function TeamDetailPage() {
     );
     const playersInTeam = useAppSelector(selectPlayersInTeam)
     const selectInvitesForTeam = useMemo(
-        () => makeSelectInviteByPlayerIdOrTeamId(team.id),
+        () => makeSelectInviteByPlayerIdOrTeamId(team.id, undefined, 'PENDING'),
         []
     );
     const teamInvites = useAppSelector(selectInvitesForTeam)
