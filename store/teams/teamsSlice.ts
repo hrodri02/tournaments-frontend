@@ -1,9 +1,11 @@
 import { RootState } from "@/store/store";
 import { 
     CreateTeamRequest, 
-    TeamResponse, 
+    TeamResponse,
+    GetTeamsResponse, 
     Team,
-    Player
+    Player,
+    TeamInvite
 } from "@/entities/index";
 import { upsertManyPlayers } from "@/store/players/playersSlice";
 import { upsertManyTeamInvites } from "@/store/team-invites/teamInvitesSlice";
@@ -11,7 +13,9 @@ import { getTeams, postTeam } from "@/services/tournaments.service";
 import {
   createSlice,
   createEntityAdapter,
-  EntityState
+  EntityState,
+  createSelector,
+  PayloadAction
 } from "@reduxjs/toolkit";
 import { createAppAsyncThunk } from "@/hooks/useStore";
 
@@ -41,31 +45,19 @@ const initialState: TeamsState = teamsAdapter.getInitialState({
 
 export const fetchTeams = createAppAsyncThunk(
     "teams/getTeams",
-    async (_, thunkApi): Promise<TeamResponse[]> => {
-        const teams = await getTeams();
-        // put the players from each team into a single player array
-        const allPlayers = teams.flatMap(teamResponse => teamResponse.playerDTOs);
-        // create a map of id to player that contains the unique players
-        const uniquePlayersMap = new Map<number, Player>();
-        allPlayers.forEach(player => {
-            uniquePlayersMap.set(player.id, player);
-        });
-        // create an array of the unique players using the map
-        const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
+    async (_, thunkApi): Promise<GetTeamsResponse> => {
+        const response = await getTeams();
+        const teams = response.teams.concat(response.teamsInvitedTo);
+        const playersToStore = getAllPlayersOfTeams(teams);
         if (playersToStore.length > 0) {
             // store the unique players in the players slice
             thunkApi.dispatch(upsertManyPlayers({ players: playersToStore }));
         }
-        const inviteResponses = teams.flatMap(teamResponse => teamResponse.invites);
-        const invitesToStore = inviteResponses.map(inviteResponse => {
-            const {player, ...inviteData} = inviteResponse
-            const playerId = player.id
-            return {playerId, ...inviteData}
-        })
+        const invitesToStore = getAllTeamInvitesOfTeams(teams);
         if (invitesToStore.length > 0) {
             thunkApi.dispatch(upsertManyTeamInvites({ invites: invitesToStore }))
         }
-        return teams;
+        return response;
     },
     {
         // Only fetch if the current status is idle
@@ -75,6 +67,29 @@ export const fetchTeams = createAppAsyncThunk(
         },
     }
 );
+
+const getAllPlayersOfTeams = (teams: TeamResponse[]): Player[] => {
+    // put the players from each team into a single player array
+    const allPlayers = teams.flatMap(teamResponse => teamResponse.playerDTOs);
+    // create a map of id to player that contains the unique players
+    const uniquePlayersMap = new Map<number, Player>();
+    allPlayers.forEach(player => {
+        uniquePlayersMap.set(player.id, player);
+    });
+    // create an array of the unique players using the map
+    const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
+    return playersToStore;
+}
+
+const getAllTeamInvitesOfTeams = (teams: TeamResponse[]): TeamInvite[] => {
+    const inviteResponses = teams.flatMap(teamResponse => teamResponse.invites);
+    const invitesToStore = inviteResponses.map(inviteResponse => {
+        const {player, ...inviteData} = inviteResponse
+        const playerId = player.id
+        return {playerId, ...inviteData}
+    });
+    return invitesToStore;
+} 
 
 export const createTeam = createAppAsyncThunk(
     "teams/createTeam",
@@ -100,14 +115,26 @@ export const createTeam = createAppAsyncThunk(
     }
 );
 
+interface UpdateTeamAction {
+    team: Team;
+}
+
 const teamsSlice = createSlice({
     name: "teams",
     initialState,
     reducers: {
+        resetFetchState: (state) => {
+            state.fetchStatus = 'idle';
+            state.fetchError = null
+        },
         resetCreateTeamState: (state) => {
             state.createStatus = 'idle'
             state.createError = null
         },
+        updateTeam: (state, action: PayloadAction<UpdateTeamAction>) => {
+            const updatedTeam = action.payload.team
+            teamsAdapter.updateOne(state, {id: updatedTeam.id, changes: updatedTeam})
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -118,13 +145,24 @@ const teamsSlice = createSlice({
             .addCase(fetchTeams.fulfilled, (state, action) => {
                 state.fetchStatus = "succeeded";
                 // map array of teams to objects that can be stored in Redux
+                const response = action.payload;
+                const teamResponses = response.teams;
                 const teams: Team[] =
-                    action.payload.map(teamResponse => {
+                    teamResponses.map(teamResponse => {
                         const { playerDTOs, invites, ...teamData } = teamResponse
                         const playerIds = playerDTOs.map(player => player.id)
                         return { ...teamData, playerIds }
                     });
-                teamsAdapter.setAll(state, teams);
+                
+                const teamsInvitedToResponses = response.teams;
+                const teamsInvitedTo: Team[] =
+                    teamsInvitedToResponses.map(teamResponse => {
+                        const { playerDTOs, invites, ...teamData } = teamResponse
+                        const playerIds = playerDTOs.map(player => player.id)
+                        return { ...teamData, playerIds }
+                    });
+                const allTeams = teams.concat(teamsInvitedTo);
+                teamsAdapter.addMany(state, allTeams);
             })
             .addCase(fetchTeams.rejected, (state, action) => {
                 state.fetchStatus = "failed";
@@ -147,7 +185,7 @@ const teamsSlice = createSlice({
     }
 });
 
-export const { resetCreateTeamState } = teamsSlice.actions
+export const { resetCreateTeamState, resetFetchState, updateTeam } = teamsSlice.actions
 export default teamsSlice.reducer;
 
 export const selectTeamsState = (state: RootState) => state.teams
@@ -181,3 +219,14 @@ export const selectTeamsDeleteStatus = (state: RootState) =>
 
 export const selectTeamsDeleteError = (state: RootState) =>
     selectTeamsState(state).deleteError;
+
+
+export const makeSelectTeamsByPlayerId = (id: number) =>
+  createSelector([selectAllTeams], (teams) =>
+    teams.filter((team) => team.playerIds.includes(id))
+);
+
+export const makeSelectTeamsByIds = (ids: number[]) =>
+  createSelector([selectAllTeams], (teams) =>
+    teams.filter((team) => ids.includes(team.id))
+);
