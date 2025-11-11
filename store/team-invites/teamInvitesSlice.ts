@@ -21,7 +21,6 @@ import {
     postDeclineTeamInvite
 } from "@/services/tournaments.service"
 import { addPlayer } from '@/store/players/playersSlice';
-import { updateTeam } from '@/store/teams/teamsSlice';
 
 interface TeamInvitesState extends EntityState<TeamInvite, number> {
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -93,11 +92,6 @@ export const acceptTeamInvite = createAppAsyncThunk(
     "teamInvites/acceptTeamInvite",
     async (inviteId: number, thunkApi): Promise<AcceptInviteResponse> => {
         const response = await postAcceptTeamInvite(inviteId);
-        const teamResponse = response.updatedTeam;
-        const { playerDTOs, invites, ...teamData } = teamResponse
-        const playerIds = playerDTOs.map(player => player.id)
-        const team = { ...teamData, playerIds }
-        thunkApi.dispatch(updateTeam({team: team}))
         return response;
     },
     {
