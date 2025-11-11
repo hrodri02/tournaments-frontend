@@ -20,6 +20,8 @@ import {
   USER_KEY,
   clearStoredAuth,
 } from "@/store/auth/authStorage";
+import { useAppDispatch } from "@/hooks/useStore";
+import { resetFetchState } from "@/store/teams/teamsSlice";
 
 // TODO: Change to the API_URL from the .env file
 // Platform-specific API URL
@@ -43,6 +45,7 @@ const initialState: AuthState = {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const dispatch = useAppDispatch();
   const [state, setState] = useState<AuthState>(initialState);
 
   // Load stored authentication on mount
@@ -170,6 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isLoading: false,
         error: null
       });
+      dispatch(resetFetchState())
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -177,7 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         error: error instanceof Error ? error.message : "Logout failed"
       }));
     }
-  }, []);
+  }, [dispatch]);
 
   const clearError = useCallback(() => {
     setState((prev) => ({ ...prev, error: null }));

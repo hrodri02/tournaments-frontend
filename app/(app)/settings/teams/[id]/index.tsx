@@ -71,7 +71,7 @@ export default function TeamDetailPage() {
     );
     const playersInTeam = useAppSelector(selectPlayersInTeam)
     const selectInvitesForTeam = useMemo(
-        () => makeSelectInviteByPlayerIdOrTeamId(team.id),
+        () => makeSelectInviteByPlayerIdOrTeamId(team.id, undefined, 'PENDING'),
         []
     );
     const teamInvites = useAppSelector(selectInvitesForTeam)
@@ -113,8 +113,8 @@ export default function TeamDetailPage() {
             if (user.id === team.ownerId) {
                 navigation.setOptions({
                 headerRight: () => (
-                    <Pressable style={styles.topNavigationButton} onPress={showInviteFriendModal}>
-                        <FontAwesome6 name="user-plus" size={16} color="black" /> 
+                    <Pressable onPress={showInviteFriendModal}>
+                        <FontAwesome6 name="user-plus" size={24} color="black" /> 
                     </Pressable>
                 )
             });
@@ -304,9 +304,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    topNavigationButton: {
-        padding: 20
-    },
     sectionList: {
         flex: 1,
         paddingTop: 22,
@@ -321,7 +318,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(247,247,247,1.0)',
     },
     item: {
-        padding: 20,
+        padding: 10,
         marginVertical: 4,
         marginHorizontal: 8,
         borderRadius: 8

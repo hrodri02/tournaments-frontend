@@ -29,6 +29,11 @@ export interface Team {
     playerIds: number[];
 }
 
+export interface GetTeamsResponse {
+    teams: TeamResponse[];
+    teamsInvitedTo: TeamResponse[];
+}
+
 export interface TeamResponse {
     id: number;
     name: string;
@@ -58,6 +63,11 @@ export interface TeamInviteResponse {
     teamId: number;
     player: Player;
     createdAt: string;
+}
+
+export interface AcceptInviteResponse {
+    teamInvite: TeamInviteResponse;
+    updatedTeam: TeamResponse;
 }
 
 export interface TeamInvite {

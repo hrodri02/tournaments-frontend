@@ -10,9 +10,16 @@ import {
 import { 
     TeamInvite,
     CreateTeamInviteRequest, 
-    TeamInviteResponse, 
+    TeamInviteResponse,
+    TeamInviteStatus, 
+    AcceptInviteResponse
 } from "@/entities/index";
-import { postTeamInvite, postRevokeTeamInvite } from "@/services/tournaments.service"
+import { 
+    postTeamInvite, 
+    postRevokeTeamInvite, 
+    postAcceptTeamInvite,
+    postDeclineTeamInvite
+} from "@/services/tournaments.service"
 import { addPlayer } from '@/store/players/playersSlice';
 
 interface TeamInvitesState extends EntityState<TeamInvite, number> {
@@ -68,15 +75,45 @@ export const createTeamInvite = createAppAsyncThunk(
 
 export const revokeTeamInvite = createAppAsyncThunk(
     "teamInvites/revokeTeamInvite",
-    async (inviteId: number, thunkApi): Promise<TeamInviteResponse> => {
+    async (inviteId: number): Promise<TeamInviteResponse> => {
         const teamInvite = await postRevokeTeamInvite(inviteId);
         return teamInvite;
     },
     {
         // Only fetch if the current status is idle
         condition(arg, thunkApi) {
-            const selectTeamInvitesUpdateStatus = selectTeamInvitesCreateStatus(thunkApi.getState());
-            return selectTeamInvitesUpdateStatus === "idle";
+            const teamInvitesUpdateStatus = selectTeamInvitesUpdateStatus(thunkApi.getState());
+            return teamInvitesUpdateStatus === "idle";
+        },
+    }
+);
+
+export const acceptTeamInvite = createAppAsyncThunk(
+    "teamInvites/acceptTeamInvite",
+    async (inviteId: number, thunkApi): Promise<AcceptInviteResponse> => {
+        const response = await postAcceptTeamInvite(inviteId);
+        return response;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const teamInvitesUpdateStatus = selectTeamInvitesUpdateStatus(thunkApi.getState());
+            return teamInvitesUpdateStatus === "idle";
+        },
+    }
+);
+
+export const declineTeamInvite = createAppAsyncThunk(
+    "teamInvites/declineTeamInvite",
+    async (inviteId: number): Promise<TeamInviteResponse> => {
+        const teamInvite = await postDeclineTeamInvite(inviteId);
+        return teamInvite;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const teamInvitesUpdateStatus = selectTeamInvitesUpdateStatus(thunkApi.getState());
+            return teamInvitesUpdateStatus === "idle";
         },
     }
 );
@@ -128,10 +165,44 @@ const teamInvitesSlice = createSlice({
                 state.updateStatus = "failed";
                 state.updateError = action.error.message ?? "Unknown Error";
             })
+            .addCase(acceptTeamInvite.pending, (state) => {
+                state.updateStatus = "loading";
+                state.updateError = null;
+            })
+            .addCase(acceptTeamInvite.fulfilled, (state, action) => {
+                state.updateStatus = "succeeded";
+                const response = action.payload;
+                const teamInviteResponse = response.teamInvite
+                const {player, ...teamIniviteData} = teamInviteResponse;
+                const playerId = player.id;
+                const teamInvite = {playerId, ...teamIniviteData};
+                teamInvitesAdapter.updateOne(state, {id: teamInvite.id, changes: teamInvite});
+            })
+            .addCase(acceptTeamInvite.rejected, (state, action) => {
+                state.updateStatus = "failed";
+                state.updateError = action.error.message ?? "Unknown Error";
+            })
+            .addCase(declineTeamInvite.pending, (state) => {
+                state.updateStatus = "loading";
+                state.updateError = null;
+            })
+            .addCase(declineTeamInvite.fulfilled, (state, action) => {
+                state.updateStatus = "succeeded";
+                const teamInviteResponse = action.payload
+                teamInvitesAdapter.removeOne(state, teamInviteResponse.id)
+            })
+            .addCase(declineTeamInvite.rejected, (state, action) => {
+                state.updateStatus = "failed";
+                state.updateError = action.error.message ?? "Unknown Error";
+            })
     }
 });
 
-export const { resetCreateTeamInviteStatus, upsertManyTeamInvites, resetUpdateTeamInivteStatus } = teamInvitesSlice.actions;
+export const { 
+    resetCreateTeamInviteStatus, 
+    upsertManyTeamInvites, 
+    resetUpdateTeamInivteStatus 
+} = teamInvitesSlice.actions;
 
 export default teamInvitesSlice.reducer;
 
@@ -167,9 +238,13 @@ export const selectTeamInvitesDeleteStatus = (state: RootState) =>
 export const selectTeamInvitesDeleteError = (state: RootState) =>
     selectTeamInvitesState(state).deleteError;
 
-export const makeSelectInviteByPlayerIdOrTeamId = (teamId: number | undefined = undefined, playerId: number | undefined = undefined) =>
+export const makeSelectInviteByPlayerIdOrTeamId = 
+    (teamId: number | undefined = undefined, 
+    playerId: number | undefined = undefined,
+    status: TeamInviteStatus) =>
     createSelector([selectAllTeamInvites], (invites) => invites.filter((invite) =>
         (!teamId || invite.teamId === teamId) &&
-        (!playerId || invite.playerId === playerId)
+        (!playerId || invite.playerId === playerId) &&
+        status === invite.status
     )
 );
