@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { 
     StyleSheet,
     View,
@@ -56,6 +57,7 @@ export default function TeamDetailPage() {
     const MAX_PLAYERS = 24;
     const dispatch = useAppDispatch();
     const { user, isLoading } = useAuth();
+    const { showActionSheetWithOptions } = useActionSheet();
     const createStatus = useAppSelector(selectTeamInvitesCreateStatus)
     const createError = useAppSelector(selectTeamInvitesCreateError)
     const updateStatus = useAppSelector(selectTeamInvitesUpdateStatus)
@@ -108,13 +110,36 @@ export default function TeamDetailPage() {
         }
     }
 
+    const handleMenuButtonPressed = () => {
+        const options = ['Send Invite', 'Pending Invites', 'Cancel'];
+        const cancelButtonIndex = 2;
+
+        showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+            },
+            (buttonIndex) => {
+                switch (buttonIndex) {
+                    case 0: 
+                        showInviteFriendModal();
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                }
+            }
+        );
+    };
+
     useLayoutEffect(() => {
         if (user && !isLoading) {
             if (user.id === team.ownerId) {
                 navigation.setOptions({
                 headerRight: () => (
-                    <Pressable onPress={showInviteFriendModal}>
-                        <FontAwesome6 name="user-plus" size={24} color="black" /> 
+                    <Pressable style={styles.topRightNavButton} onPress={handleMenuButtonPressed}>
+                        <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
                     </Pressable>
                 )
             });
@@ -124,7 +149,7 @@ export default function TeamDetailPage() {
                 });
             }
         }
-    }, [navigation, user, isLoading, teamId, showInviteFriendModal]);
+    }, [navigation, user, isLoading, teamId, handleMenuButtonPressed]);
 
     const sendInvite = (email: string) => {
         const now: Date = new Date();
@@ -294,6 +319,9 @@ export default function TeamDetailPage() {
 }
 
 const styles = StyleSheet.create({
+    topRightNavButton: {
+        marginHorizontal: 20
+    },
     safeAreaContainer: {
         flex: 1
     },
