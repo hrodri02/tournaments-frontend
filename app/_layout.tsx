@@ -48,12 +48,12 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <Provider store={store}>
+    <Provider store={store}>
+      <AuthProvider>
         <ActionSheetProvider>
           <RootLayoutContent />
         </ActionSheetProvider>
-      </Provider>
-    </AuthProvider>
+      </AuthProvider>
+    </Provider>
   );
 }
