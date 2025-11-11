@@ -28,11 +28,11 @@ import {
 } from '@/store/teams/teamsSlice';
 import { 
     makeSelectInviteByPlayerIdOrTeamId,
-    acceptTeamInvite,
     declineTeamInvite,
     selectTeamInvitesUpdateStatus,
     selectTeamInvitesUpdateError
 } from '@/store/team-invites/teamInvitesSlice';
+import { handleAcceptTeamInvite } from '@/store/thunks/teamOrchestratorThunks';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface TeamIdToInviteIdMap {
@@ -57,7 +57,7 @@ type TeamsFlattenedSection = Omit<TeamsSection, 'data'> & { team: Team | null, k
 
 const Item = ({item, backgroundColor, textColor}: ItemProps) => (
     <View style={styles.item}>
-        <Text style={[styles.title, {color: textColor}]}>{item.name}</Text>
+        <Text style={[styles.text, {color: textColor}]}>{item.name}</Text>
     </View>
 );
 
@@ -245,7 +245,7 @@ export default function TeamsPage() {
             const teamId = item.team?.id;
             if (teamId) {
                 const inviteId = teamIdToInviteId[teamId];
-                dispatch(acceptTeamInvite(inviteId));
+                dispatch(handleAcceptTeamInvite(inviteId));
             }
         }
     };
@@ -308,9 +308,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(247,247,247,1.0)',
     },
     item: {
-        padding: 20,
+        padding: 10,
     },
-    title: {
+    text: {
         fontSize: 16
     },
     rowFront: {
