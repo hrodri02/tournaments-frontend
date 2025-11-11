@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(247,247,247,1.0)',
     },
     item: {
-        padding: 20,
+        padding: 10,
         marginVertical: 4,
         marginHorizontal: 8,
         borderRadius: 8
