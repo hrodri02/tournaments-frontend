@@ -2,10 +2,9 @@ import React,
 { 
     useState, 
     useMemo,
-    useCallback
+    useEffect
 } from 'react';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { 
     StyleSheet, 
     View, 
@@ -23,8 +22,7 @@ import {
     selectTeamsFetchError, 
     selectTeamsFetchStatus,
     makeSelectTeamsByIds,
-    makeSelectTeamsByPlayerId,
-    resetFetchState
+    makeSelectTeamsByPlayerId
 } from '@/store/teams/teamsSlice';
 import { 
     makeSelectInviteByPlayerIdOrTeamId,
@@ -123,17 +121,11 @@ export default function TeamsPage() {
         return flatList;
     }
 
-    useFocusEffect(
-        useCallback(() => {
-            if (fetchStatus === 'idle') {
-                dispatch(fetchTeams());
-            }
-
-            return () => {
-                dispatch(resetFetchState());
-            };
-        }, [dispatch])
-    );
+    useEffect(() => {
+        if (fetchStatus === 'idle') {
+            dispatch(fetchTeams());
+        }
+    }, [dispatch, fetchStatus]);
 
     const renderItem = ({ item, index }: ListRenderItemInfo<TeamsFlattenedSection>, rowMap: RowMap<TeamsFlattenedSection>) => {
         const team = item.team!
