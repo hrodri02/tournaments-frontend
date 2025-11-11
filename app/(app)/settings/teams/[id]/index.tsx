@@ -113,8 +113,8 @@ export default function TeamDetailPage() {
             if (user.id === team.ownerId) {
                 navigation.setOptions({
                 headerRight: () => (
-                    <Pressable style={styles.topNavigationButton} onPress={showInviteFriendModal}>
-                        <FontAwesome6 name="user-plus" size={16} color="black" /> 
+                    <Pressable onPress={showInviteFriendModal}>
+                        <FontAwesome6 name="user-plus" size={24} color="black" /> 
                     </Pressable>
                 )
             });
@@ -303,9 +303,6 @@ const styles = StyleSheet.create({
     perfectCentering: {
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    topNavigationButton: {
-        padding: 20
     },
     sectionList: {
         flex: 1,
