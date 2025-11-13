@@ -5,7 +5,7 @@ import React, {
     useMemo, 
 } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { 
     StyleSheet,
@@ -55,6 +55,7 @@ type TeamDetailFlattenedSection = Omit<TeamDetailSection, 'data'> & { player: Pl
 
 export default function TeamDetailPage() {
     const MAX_PLAYERS = 24;
+    const router = useRouter();
     const dispatch = useAppDispatch();
     const { user, isLoading } = useAuth();
     const { showActionSheetWithOptions } = useActionSheet();
@@ -125,6 +126,7 @@ export default function TeamDetailPage() {
                         showInviteFriendModal();
                         break;
                     case 1:
+                        router.push(`./${teamId}/pending-invites`);
                         break;
                     case 2:
                         break;
