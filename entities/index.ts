@@ -27,6 +27,7 @@ export interface Team {
     logoUrl?: string;
     ownerId: number;
     playerIds: number[];
+    inviteeIds: number[];
 }
 
 export interface GetTeamsResponse {
@@ -41,6 +42,7 @@ export interface TeamResponse {
     ownerId: number;
     playerDTOs: Player[];
     invites: TeamInviteResponse[];
+    invitees: Player[];
 }
 
 export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVOKED';
