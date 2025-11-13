@@ -23,6 +23,21 @@ export default function HomeTabLayout() {
                     )
                 }}
             />
+            <Stack.Screen 
+                name="teams/[id]/index"
+                options={{
+                    headerShown: true,
+                    headerBackButtonDisplayMode: 'minimal'
+                }}
+            />
+            <Stack.Screen 
+                name="teams/[id]/pending-invites/index"
+                options={{
+                    title: "Pending Invites",
+                    headerShown: true,
+                    headerBackButtonDisplayMode: 'minimal'
+                }}
+            />
             <Stack.Screen name="teams/create-team/index" options={{title: "Create Team"}}/>
         </Stack>
     );
