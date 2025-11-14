@@ -31,9 +31,9 @@ export default function HomeTabLayout() {
                 }}
             />
             <Stack.Screen 
-                name="teams/[id]/pending-invites/index"
+                name="teams/[id]/invites/index"
                 options={{
-                    title: "Pending Invites",
+                    title: "Invites",
                     headerShown: true,
                     headerBackButtonDisplayMode: 'minimal'
                 }}
