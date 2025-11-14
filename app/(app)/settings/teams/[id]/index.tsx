@@ -68,8 +68,8 @@ export default function TeamDetailPage() {
     }
 
     const handleMenuButtonPressed = () => {
-        const options = ['Send Invite', 'Pending Invites', 'Cancel'];
-        const cancelButtonIndex = 2;
+        const options = ['Invites', 'Cancel'];
+        const cancelButtonIndex = 1;
 
         showActionSheetWithOptions(
             {
@@ -78,13 +78,10 @@ export default function TeamDetailPage() {
             },
             (buttonIndex) => {
                 switch (buttonIndex) {
-                    case 0: 
-                        showInviteFriendModal();
+                    case 0:
+                        router.push(`./${teamId}/invites`);
                         break;
                     case 1:
-                        router.push(`./${teamId}/pending-invites`);
-                        break;
-                    case 2:
                         break;
                 }
             }
