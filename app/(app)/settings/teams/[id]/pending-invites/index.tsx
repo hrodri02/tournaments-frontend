@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
     View, 
     Text, 
     StyleSheet, 
     ListRenderItemInfo,
-    Pressable
+    Pressable,
+    ActivityIndicator
 } from 'react-native';
 import { InviteeExcerpt } from '@/components/InviteeExcerpt';
 import { SwipeListView, RowMap } from 'react-native-swipe-list-view';
@@ -12,7 +14,9 @@ import { Player } from '@/entities/index';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
     makeSelectInviteByPlayerIdOrTeamId, 
-    revokeTeamInvite 
+    revokeTeamInvite,
+    selectTeamInvitesUpdateStatus,
+    selectTeamInvitesUpdateError,
 } from '@/store/team-invites/teamInvitesSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
 
@@ -26,19 +30,21 @@ interface PlayerIdToInviteIdMap {
 
 export default function PendingInvites({ teamId }: PendingInvitesProps) {
     const dispatch = useAppDispatch();
+    const updateStatus = useAppSelector(selectTeamInvitesUpdateStatus);
+    const updateError = useAppSelector(selectTeamInvitesUpdateError);
     const selectInvitesForTeam = useMemo(
         () => makeSelectInviteByPlayerIdOrTeamId(teamId, undefined, 'PENDING'),
         []
     );
     const teamInvites = useAppSelector(selectInvitesForTeam);
-    const playerIdToInviteId: PlayerIdToInviteIdMap = {}
+    const playerIdToInviteId: PlayerIdToInviteIdMap = {};
     teamInvites.forEach(invite => playerIdToInviteId[invite.playerId] = invite.id);
-    const inviteeIds = teamInvites.map(invite => invite.playerId)
+    const inviteeIds = teamInvites.map(invite => invite.playerId);
     const selectInvitees = useMemo(
         () => makeSelectPlayersByIds(inviteeIds),
         [inviteeIds]
     );
-    const players = useAppSelector(selectInvitees)
+    const players = useAppSelector(selectInvitees);
 
     const renderItem = ({ item, index }: ListRenderItemInfo<Player>, rowMap: RowMap<Player>) => {
         const invite = teamInvites.find(invite => invite.playerId === item.id)!
@@ -85,8 +91,9 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
         }
     };
 
-    return (
-        <View style={styles.modalContainer}>
+    let view: React.JSX.Element = <></>;
+    if (updateStatus === 'idle' || updateStatus === 'succeeded') {
+        view = <View style={styles.container}>
             <SwipeListView
                 style={styles.sectionList}
                 data={players}
@@ -96,12 +103,31 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
                 rightOpenValue={-75}
             />
         </View>
+    }
+    else if (updateStatus === 'loading') {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+    }
+    else {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <Text>{updateError}</Text>
+        </View>
+    }
+    return (
+        <SafeAreaView style={styles.container}>
+            {view}
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    modalContainer: {
+    container: {
         flex: 1,
+    },
+    perfectCentering: {
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     modalTitle: {
         fontSize: 16,
