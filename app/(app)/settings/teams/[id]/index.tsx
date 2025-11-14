@@ -1,9 +1,4 @@
-import React, { 
-    useState, 
-    useEffect, 
-    useLayoutEffect, 
-    useMemo, 
-} from 'react';
+import React, { useLayoutEffect, useMemo, } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -12,38 +7,23 @@ import {
     View,
     Text,
     Pressable,
-    ActivityIndicator,
     FlatList
 } from 'react-native';
-import Modal from 'react-native-modal';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
-import TeamInvitationForm from '@/components/TeamInvitationForm';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
+import { useAppSelector } from '@/hooks/useStore';
 import { selectTeamById } from '@/store/teams/teamsSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
-import { 
-    createTeamInvite,
-    selectTeamInvitesCreateStatus,
-    selectTeamInvitesCreateError,
-    resetCreateTeamInviteStatus,
-} from '@/store/team-invites/teamInvitesSlice';
-import { CreateTeamInviteRequest } from '@/entities/index';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function TeamDetailPage() {
-    const MAX_PLAYERS = 24;
     const router = useRouter();
-    const dispatch = useAppDispatch();
     const { user, isLoading } = useAuth();
     const { showActionSheetWithOptions } = useActionSheet();
-    const createStatus = useAppSelector(selectTeamInvitesCreateStatus)
-    const createError = useAppSelector(selectTeamInvitesCreateError)
     const { id } = useLocalSearchParams();
     const teamId = Number(id);
     const team = useAppSelector(state => selectTeamById(state, teamId));
-    const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const navigation = useNavigation();
     const selectPlayersInTeam = useMemo(
         () => makeSelectPlayersByIds(team.playerIds),
@@ -56,16 +36,6 @@ export default function TeamDetailPage() {
             navigation.setOptions({ title: team.name });
         }
     }, [navigation, team?.name]);
-
-    function showInviteFriendModal() {
-        const count = team.playerIds.length
-        if (count < MAX_PLAYERS) {
-            setInviteModalVisible(true)
-        }
-        else {
-            alert('You can have up to ' + MAX_PLAYERS + ' players in your team.');
-        }
-    }
 
     const handleMenuButtonPressed = () => {
         const options = ['Invites', 'Cancel'];
@@ -106,30 +76,8 @@ export default function TeamDetailPage() {
         }
     }, [navigation, user, isLoading, teamId, handleMenuButtonPressed]);
 
-    const sendInvite = (email: string) => {
-        const now: Date = new Date();
-        const isoString: string = now.toISOString();
-        const requestBody: CreateTeamInviteRequest = {
-            email: email,
-            createdAt: isoString
-        }
-        setInviteModalVisible(false)
-        dispatch(createTeamInvite({teamId, requestBody}))
-    };
-
-    useEffect(() => {
-        if (createStatus === 'succeeded' || createStatus === 'failed') {
-            const timer = setTimeout(() => {
-                dispatch(resetCreateTeamInviteStatus())
-            }, 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [createStatus]);
-
-    let view: React.JSX.Element = <></>;
-    if (createStatus === 'idle' || createStatus === 'succeeded')
-    {
-        view = <View style={styles.container}>
+    return (
+        <SafeAreaView style={styles.safeAreaContainer}>
             <FlatList
                 ItemSeparatorComponent={() => <View style={styles.itemSeparator}/>}
                 ListHeaderComponent={<View><Text style={styles.sectionHeader}>Players</Text></View>}
@@ -137,32 +85,6 @@ export default function TeamDetailPage() {
                 renderItem={({item}) => <PlayerExcerpt style={styles.item} player={item}/>}
                 keyExtractor={item => String(item.id)}
             />
-
-            <Modal
-                isVisible={inviteModalVisible}
-                onSwipeComplete={() => { 
-                    setInviteModalVisible(!inviteModalVisible);
-                }}
-                swipeDirection={['down']} // 👈 Set the swipe direction to 'down'
-            >
-                <TeamInvitationForm onInvite={sendInvite} onClose={() => {}}/>
-            </Modal>
-        </View>
-    }
-    else if (createStatus === 'loading') {
-        view = <View style={[styles.container, styles.perfectCentering]}>
-            <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-    }
-    else {
-        view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{createError}</Text>
-        </View>
-    }
-
-    return (
-        <SafeAreaView style={styles.safeAreaContainer}>
-            {view}
         </SafeAreaView>
     );
 }

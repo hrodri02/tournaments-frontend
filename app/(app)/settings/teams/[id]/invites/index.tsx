@@ -1,4 +1,11 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { 
+    useState, 
+    useMemo, 
+    useEffect,
+    useLayoutEffect
+} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
     View, 
@@ -8,29 +15,41 @@ import {
     Pressable,
     ActivityIndicator
 } from 'react-native';
+import TeamInvitationForm from '@/components/TeamInvitationForm';
 import { InviteeExcerpt } from '@/components/InviteeExcerpt';
 import { SwipeListView, RowMap } from 'react-native-swipe-list-view';
-import { Player } from '@/entities/index';
+import Modal from 'react-native-modal';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Player, CreateTeamInviteRequest } from '@/entities/index';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
     makeSelectInviteByPlayerIdOrTeamId, 
     revokeTeamInvite,
+    selectTeamInvitesCreateStatus,
+    selectTeamInvitesCreateError,
     selectTeamInvitesUpdateStatus,
     selectTeamInvitesUpdateError,
-    resetUpdateTeamInivteStatus
+    resetUpdateTeamInivteStatus,
+    createTeamInvite,
+    resetCreateTeamInviteStatus
 } from '@/store/team-invites/teamInvitesSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
-
-interface PendingInvitesProps {
-    teamId: number;
-}
+import { selectTeamById } from '@/store/teams/teamsSlice';
 
 interface PlayerIdToInviteIdMap {
     [playerId: number] : number;
 }
 
-export default function PendingInvites({ teamId }: PendingInvitesProps) {
+export default function Invites() {
+    const MAX_PLAYERS = 24;
+    const [inviteModalVisible, setInviteModalVisible] = useState(false);
+    const navigation = useNavigation();
     const dispatch = useAppDispatch();
+    const { id } = useLocalSearchParams();
+    const teamId = Number(id);
+    const team = useAppSelector(state => selectTeamById(state, teamId))
+    const createStatus = useAppSelector(selectTeamInvitesCreateStatus);
+    const createError = useAppSelector(selectTeamInvitesCreateError);
     const updateStatus = useAppSelector(selectTeamInvitesUpdateStatus);
     const updateError = useAppSelector(selectTeamInvitesUpdateError);
     const selectInvitesForTeam = useMemo(
@@ -46,6 +65,16 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
         [inviteeIds]
     );
     const players = useAppSelector(selectInvitees);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Pressable style={styles.topRightNavButton} onPress={showInviteFriendModal}>
+                    <FontAwesome6 name="user-plus" size={16} color="black" />
+                </Pressable>
+            )
+        });
+    }, [navigation, showInviteFriendModal]);
 
     const renderItem = ({ item, index }: ListRenderItemInfo<Player>, rowMap: RowMap<Player>) => {
         const invite = teamInvites.find(invite => invite.playerId === item.id)!
@@ -101,8 +130,40 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
         }
     }, [updateStatus]);
 
+    function showInviteFriendModal() {
+        const count = team.playerIds.length
+        if (count < MAX_PLAYERS) {
+            setInviteModalVisible(true)
+        }
+        else {
+            alert('You can have up to ' + MAX_PLAYERS + ' players in your team.');
+        }
+    }
+
+    const sendInvite = (email: string) => {
+        const now: Date = new Date();
+        const isoString: string = now.toISOString();
+        const requestBody: CreateTeamInviteRequest = {
+            email: email,
+            createdAt: isoString
+        }
+        setInviteModalVisible(false)
+        dispatch(createTeamInvite({teamId, requestBody}))
+    };
+
+    useEffect(() => {
+        if (createStatus === 'succeeded' || createStatus === 'failed') {
+            const timer = setTimeout(() => {
+                dispatch(resetCreateTeamInviteStatus())
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [createStatus]);
+
     let view: React.JSX.Element = <></>;
-    if (updateStatus === 'idle' || updateStatus === 'succeeded') {
+    if ((updateStatus === 'idle' || updateStatus === 'succeeded') &&
+        (createStatus === 'idle' || createStatus === 'succeeded')) 
+    {
         view = <View style={styles.container}>
             <SwipeListView
                 style={styles.sectionList}
@@ -112,18 +173,34 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
                 keyExtractor={(item, index) => String(item.id)}
                 rightOpenValue={-75}
             />
+
+            <Modal
+                isVisible={inviteModalVisible}
+                onSwipeComplete={() => { 
+                    setInviteModalVisible(!inviteModalVisible);
+                }}
+                swipeDirection={['down']} // 👈 Set the swipe direction to 'down'
+            >
+                <TeamInvitationForm onInvite={sendInvite} onClose={() => {}}/>
+            </Modal>
         </View>
     }
-    else if (updateStatus === 'loading') {
+    else if (updateStatus === 'loading' || createStatus == 'loading') {
         view = <View style={[styles.container, styles.perfectCentering]}>
             <ActivityIndicator size="large" color="#0000ff" />
         </View>
     }
-    else {
+    else if (updateStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
             <Text>{updateError}</Text>
         </View>
     }
+    else if (createStatus === 'failed') {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <Text>{createError}</Text>
+        </View>
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             {view}
@@ -132,6 +209,9 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
 }
 
 const styles = StyleSheet.create({
+    topRightNavButton: {
+        marginHorizontal: 10
+    },
     container: {
         flex: 1,
     },
