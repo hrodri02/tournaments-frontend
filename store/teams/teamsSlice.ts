@@ -70,7 +70,11 @@ export const fetchTeams = createAppAsyncThunk(
 
 const getAllPlayersOfTeams = (teams: TeamResponse[]): Player[] => {
     // put the players from each team into a single player array
-    const allPlayers = teams.flatMap(teamResponse => teamResponse.playerDTOs);
+    let allPlayers = teams.flatMap(teamResponse => teamResponse.playerDTOs);
+    const invitedPlayers = teams.flatMap(teamResponse => teamResponse.invitees || []);
+    if (invitedPlayers && invitedPlayers.length > 0) {
+        allPlayers = allPlayers.concat(invitedPlayers);
+    }
     // create a map of id to player that contains the unique players
     const uniquePlayersMap = new Map<number, Player>();
     allPlayers.forEach(player => {
@@ -82,7 +86,7 @@ const getAllPlayersOfTeams = (teams: TeamResponse[]): Player[] => {
 }
 
 const getAllTeamInvitesOfTeams = (teams: TeamResponse[]): TeamInvite[] => {
-    const inviteResponses = teams.flatMap(teamResponse => teamResponse.invites);
+    const inviteResponses = teams.flatMap(teamResponse => teamResponse.invites || []);
     const invitesToStore = inviteResponses.map(inviteResponse => {
         const {player, ...inviteData} = inviteResponse
         const playerId = player.id
@@ -149,17 +153,19 @@ const teamsSlice = createSlice({
                 const teamResponses = response.teams;
                 const teams: Team[] =
                     teamResponses.map(teamResponse => {
-                        const { playerDTOs, invites, ...teamData } = teamResponse
+                        const { playerDTOs, invites, invitees, ...teamData } = teamResponse
                         const playerIds = playerDTOs.map(player => player.id)
-                        return { ...teamData, playerIds }
+                        const inviteeIds = (invitees)? invitees.map(player => player.id) : [];
+                        return { ...teamData, playerIds, inviteeIds };
                     });
                 
                 const teamsInvitedToResponses = response.teams;
                 const teamsInvitedTo: Team[] =
                     teamsInvitedToResponses.map(teamResponse => {
-                        const { playerDTOs, invites, ...teamData } = teamResponse
-                        const playerIds = playerDTOs.map(player => player.id)
-                        return { ...teamData, playerIds }
+                        const { playerDTOs, invites, invitees, ...teamData } = teamResponse;
+                        const playerIds = playerDTOs.map(player => player.id);
+                        const inviteeIds = (invitees)? invitees.map(player => player.id) : [];
+                        return { ...teamData, playerIds, inviteeIds };
                     });
                 const allTeams = teams.concat(teamsInvitedTo);
                 teamsAdapter.addMany(state, allTeams);
