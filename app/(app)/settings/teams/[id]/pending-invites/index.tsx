@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
     View, 
@@ -17,6 +17,7 @@ import {
     revokeTeamInvite,
     selectTeamInvitesUpdateStatus,
     selectTeamInvitesUpdateError,
+    resetUpdateTeamInivteStatus
 } from '@/store/team-invites/teamInvitesSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
 
@@ -90,6 +91,15 @@ export default function PendingInvites({ teamId }: PendingInvitesProps) {
             }
         }
     };
+
+    useEffect(() => {
+        if (updateStatus === 'succeeded' || updateStatus === 'failed') {
+            const timer = setTimeout(() => {
+                dispatch(resetUpdateTeamInivteStatus())
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [updateStatus]);
 
     let view: React.JSX.Element = <></>;
     if (updateStatus === 'idle' || updateStatus === 'succeeded') {
