@@ -88,7 +88,7 @@ export const getLeagues = async (status: LeagueStatus | undefined = undefined): 
     return httpRequest<League[]>(url.toString(), 'GET'); 
 };
 
-export const postApplytoLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {
+export const postApplyToLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {
     const url = `${API_URL}/leagues/${leagueId}/applications`;
     return httpRequest<ApplicationResponse>(url, 'POST', requestBody);
 }
