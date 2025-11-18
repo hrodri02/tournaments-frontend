@@ -1,11 +1,13 @@
 import { getLeagues } from "@/services/tournaments.service";
-import { League, LeagueStatus, GameStat, GameStatPayload } from "@/entities/index";
+import { 
+  League, 
+  LeagueStatus, 
+} from "@/entities/index";
 import {
   createSlice,
   createEntityAdapter,
   EntityState,
   createSelector,
-  PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "@/store/store";
 import { createAppAsyncThunk } from "@/hooks/useStore";
@@ -49,19 +51,6 @@ const leaguesSlice = createSlice({
     resetLeaguesState: (state) => {
       state.status = "idle";
       state.error = null;
-    },
-    gameStatAdded: (state, action: PayloadAction<GameStatPayload>) => {
-      const leagueId = action.payload.leagueId
-      const games = state.entities[leagueId].games
-      const gameId = action.payload.gameId
-      const game = games.find((currGame) => currGame.id === gameId)
-      const newGameStat: GameStat = {
-        id: action.payload.id,
-        type: action.payload.type,
-        player: action.payload.player,
-        time: action.payload.time
-      }
-      game?.stats.push(newGameStat)
     },
   },
   extraReducers: (builder) => {
