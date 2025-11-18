@@ -8,13 +8,14 @@ const screenHeight = Dimensions.get('window').height;
 type LeagueExcerptProps = {
     league: League;
     style?: ViewStyle;
+    clickable?: boolean;
+    imageSideLength?: number
 }
 
 const styles = StyleSheet.create({
     image: {
         borderRadius: 10,
-        height: screenHeight * 0.1,
-        width: screenHeight * 0.1,
+        backgroundColor: 'blue'
     },
     itemHeader: {
         fontWeight: 'bold',
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
+export function LeagueExcerpt({ league, style, clickable = false, imageSideLength = screenHeight * 0.1 }: LeagueExcerptProps) {
     if (!league) {
         return null;
     }
@@ -38,7 +39,7 @@ export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
     const formattedStartDate = format(startDate, 'MMMM d y');
     const formattedEndDate = format(endDate, 'MMMM d y')
 
-    const renderLeagueDateText = (league: League): JSX.Element | null => {
+    const renderLeagueDateText = (league: League): React.JSX.Element | null => {
         switch (league.status) {
             case LeagueStatus.notStarted:
                 return <Text style={styles.itemSubheader}>Starts {formattedStartDate}</Text>
@@ -50,21 +51,32 @@ export function LeagueExcerpt({ league, style }: LeagueExcerptProps) {
                 return null;
         }
     }
-    
-    return(
-        <Link href={{
-            pathname: '/(app)/home/leagues/[id]',
-            params: {id: league.id}
-          }} asChild>
-            <Pressable>
-                <View style={style}>
-                    <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <View style={styles.leagueDetails}>
-                        <Text style={styles.itemHeader}>{league.name}</Text>
-                        {renderLeagueDateText(league)}
-                    </View>
-                </View>
-            </Pressable>
-        </Link>
+
+    const content = (
+        <View style={style}>
+            <Image 
+                style={[styles.image, {width: imageSideLength, height: imageSideLength } ]} 
+                source={require('@/assets/images/liga_mx_logo.jpeg')}
+            />
+            <View style={styles.leagueDetails}>
+                <Text style={styles.itemHeader}>{league.name}</Text>
+                {renderLeagueDateText(league)}
+            </View>
+        </View>
     );
+    
+    if (clickable) {
+        return (
+            <Link href={{
+                pathname: '/(app)/home/leagues/[id]',
+                params: {id: league.id}
+            }} asChild>
+                <Pressable>
+                    {content}
+                </Pressable>
+            </Link>
+        );
+    }
+    
+    return content;
 }
