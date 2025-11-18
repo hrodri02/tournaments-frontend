@@ -5,6 +5,7 @@ import gameStatsSlice from "@/store/gamestats/gameStatsSlice";
 import teamsSlice from "@/store/teams/teamsSlice";
 import teamInvitesSlice from "@/store/team-invites/teamInvitesSlice";
 import playersSlice from "@/store/players/playersSlice";
+import applicationsSlice from "@/store/league-applications/applicationsSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ const store = configureStore({
     teamInvites: teamInvitesSlice,
     players: playersSlice,
     games: gamesSlice,
-    gameStats: gameStatsSlice
+    gameStats: gameStatsSlice,
+    applications: applicationsSlice,
   },
 });
 
