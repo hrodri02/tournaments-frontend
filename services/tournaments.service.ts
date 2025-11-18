@@ -11,7 +11,9 @@ import {
     CreateTeamInviteRequest,
     TeamInviteResponse,
     GetTeamsResponse,
-    AcceptInviteResponse
+    AcceptInviteResponse,
+    ApplicationResponse,
+    CreateApplicationRequest
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -85,6 +87,11 @@ export const getLeagues = async (status: LeagueStatus | undefined = undefined): 
     
     return httpRequest<League[]>(url.toString(), 'GET'); 
 };
+
+export const postApplytoLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {
+    const url = `${API_URL}/leagues/${leagueId}/applications`;
+    return httpRequest<ApplicationResponse>(url, 'POST');
+}
 
 const httpRequest = async<T> (url: string, httpMethod: string, resBody: any | undefined = undefined): Promise<T> => {
     try {
