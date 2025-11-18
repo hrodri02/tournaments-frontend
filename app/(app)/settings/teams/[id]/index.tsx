@@ -52,7 +52,7 @@ export default function TeamDetailPage() {
                         router.push(`./${teamId}/invites`);
                         break;
                     case 1:
-                        console.log('show upcoming leagues');
+                        router.push(`./${teamId}/join-league`);
                         break;
                     case 2:
                         break;
