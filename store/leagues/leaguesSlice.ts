@@ -70,7 +70,7 @@ const leaguesSlice = createSlice({
   },
 });
 
-export const { resetLeaguesState, gameStatAdded } = leaguesSlice.actions;
+export const { resetLeaguesState } = leaguesSlice.actions;
 export default leaguesSlice.reducer;
 
 //
