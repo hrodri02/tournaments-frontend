@@ -38,6 +38,14 @@ export default function HomeTabLayout() {
                     headerBackButtonDisplayMode: 'minimal'
                 }}
             />
+            <Stack.Screen 
+                name="teams/[id]/join-league/index"
+                options={{
+                    title: "Join League",
+                    headerShown: true,
+                    headerBackButtonDisplayMode: 'minimal'
+                }}
+            />
             <Stack.Screen name="teams/create-team/index" options={{title: "Create Team"}}/>
         </Stack>
     );
