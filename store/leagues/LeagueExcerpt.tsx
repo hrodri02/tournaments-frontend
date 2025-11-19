@@ -15,7 +15,6 @@ type LeagueExcerptProps = {
 const styles = StyleSheet.create({
     image: {
         borderRadius: 10,
-        backgroundColor: 'blue'
     },
     itemHeader: {
         fontWeight: 'bold',
