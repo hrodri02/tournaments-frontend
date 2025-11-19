@@ -139,6 +139,10 @@ const applicationsSlice = createSlice({
             state.createStatus = 'idle'
             state.createError = null
         },
+        resetApplicationsUpdatetate: (state) => {
+            state.updateStatus = 'idle'
+            state.updateError = null
+        },
     },
     extraReducers(builder) {
         builder
@@ -222,7 +226,8 @@ const applicationsSlice = createSlice({
 export const { 
     resetApplicationsFetchState,
     resetLeagueApplicationsFetchState, 
-    resetApplicationsCreateState
+    resetApplicationsCreateState,
+    resetApplicationsUpdatetate
 } = applicationsSlice.actions
 export default applicationsSlice.reducer;
 
