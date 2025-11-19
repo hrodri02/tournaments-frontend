@@ -10,7 +10,6 @@ import {
     Application,
     CreateApplicationRequest, 
     UpdateApplicationRequest,
-    ApplicationStatus
 } from "@/entities/index";
 import { 
     getApplications, 
