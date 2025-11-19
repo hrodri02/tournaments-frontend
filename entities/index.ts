@@ -87,6 +87,10 @@ export interface CreateApplicationRequest {
 
 export type ApplicationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
+export interface UpdateApplicationRequest {
+    status: ApplicationStatus;
+}
+
 export interface ApplicationResponse {
     id: number;
     status: ApplicationStatus;
