@@ -93,6 +93,11 @@ export const postApplyToLeague = async (leagueId: number, requestBody: CreateApp
     return httpRequest<ApplicationResponse>(url, 'POST', requestBody);
 }
 
+export const getTeamApplications = async(teamId: number): Promise<ApplicationResponse[]> => {
+    const url = `${API_URL}/applications?teamId=${teamId}`;
+    return httpRequest<ApplicationResponse[]>(url, 'GET');
+} 
+
 const httpRequest = async<T> (url: string, httpMethod: string, reqBody: any | undefined = undefined): Promise<T> => {
     try {
         const jwt = await getStorageItemAsync(TOKEN_KEY)
