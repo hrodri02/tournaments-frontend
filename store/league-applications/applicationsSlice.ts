@@ -10,6 +10,8 @@ import { Application, CreateApplicationRequest } from "@/entities/index";
 import { getApplications, postApplyToLeague } from "@/services/tournaments.service";
 
 interface ApplicationsState extends EntityState<Application, number> {
+    fetchLeaugeApplicationsStatus: "idle" | "loading" | "succeeded" | "failed";
+    fetchLeaugeApplicationsError: string | null;
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
     fetchError: string | null;
     createStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -23,6 +25,8 @@ interface ApplicationsState extends EntityState<Application, number> {
 const applicationsAdapter = createEntityAdapter<Application>();
 
 const initialState: ApplicationsState = applicationsAdapter.getInitialState({
+    fetchLeaugeApplicationsStatus: "idle",
+    fetchLeaugeApplicationsError: null,
     fetchStatus: "idle",
     fetchError: null,
     createStatus: "idle",
@@ -53,6 +57,21 @@ export const fetchTeamApplications = createAppAsyncThunk(
     }
 );
 
+export const fetchLeagueApplications = createAppAsyncThunk(
+    "applications/fetchLeagueApplications",
+    async (leagueId: number) => {
+        const applications = await getApplications(leagueId);
+        return applications;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const fetchLeaugeApplicationsStatus = selectLeagueApplicationsFetchStatus(thunkApi.getState());
+            return fetchLeaugeApplicationsStatus === "idle";
+        },
+    }
+);
+
 export const createApplication = createAppAsyncThunk(
     "applications/createApplication",
     async (payload: CreateApplicationPayload) => {
@@ -76,6 +95,10 @@ const applicationsSlice = createSlice({
         resetApplicationsFetchState: (state) => {
             state.fetchStatus = 'idle'
             state.fetchError = null
+        },
+        resetLeagueApplicationsFetchState: (state) => {
+            state.fetchLeaugeApplicationsStatus = 'idle'
+            state.fetchLeaugeApplicationsError = null
         },
         resetApplicationsCreateState: (state) => {
             state.createStatus = 'idle'
@@ -104,6 +127,26 @@ const applicationsSlice = createSlice({
                 state.fetchStatus = "failed";
                 state.fetchError = action.error.message ?? "Unknown Error";
             })
+            .addCase(fetchLeagueApplications.pending, (state) => {
+                state.fetchLeaugeApplicationsStatus = "loading";
+                state.fetchLeaugeApplicationsError = null;
+            })
+            .addCase(fetchLeagueApplications.fulfilled, (state, action) => {
+                state.fetchLeaugeApplicationsStatus = "succeeded";
+                const applicationResponses = action.payload;
+                const applicationsToStore: Application[] = applicationResponses.map(applicationResponse => {
+                    const {team, league, ...applicationData} = applicationResponse;
+                    const teamId = team.id;
+                    const leagueId = league.id;
+                    const applicationToStore = { teamId, leagueId, ...applicationData };
+                    return applicationToStore;
+                })
+                applicationsAdapter.addMany(state, applicationsToStore);
+            })
+            .addCase(fetchLeagueApplications.rejected, (state, action) => {
+                state.fetchLeaugeApplicationsStatus = "failed";
+                state.fetchLeaugeApplicationsError = action.error.message ?? "Unknown Error";
+            })
             .addCase(createApplication.pending, (state) => {
                 state.createStatus = "loading";
                 state.createError = null;
@@ -124,7 +167,11 @@ const applicationsSlice = createSlice({
     },
 });
 
-export const { resetApplicationsFetchState, resetApplicationsCreateState } = applicationsSlice.actions
+export const { 
+    resetApplicationsFetchState,
+    resetLeagueApplicationsFetchState, 
+    resetApplicationsCreateState
+} = applicationsSlice.actions
 export default applicationsSlice.reducer;
 
 export const selectApplicationsState = (state: RootState) => state.applications
@@ -140,6 +187,12 @@ export const selectApplicationsFetchStatus = (state: RootState) =>
 
 export const selectApplicationsFetchError = (state: RootState) =>
     selectApplicationsState(state).fetchError;
+
+export const selectLeagueApplicationsFetchStatus = (state: RootState) =>
+    selectApplicationsState(state).fetchLeaugeApplicationsStatus;
+
+export const selectLeagueApplicationsFetchError = (state: RootState) =>
+    selectApplicationsState(state).fetchLeaugeApplicationsError;
 
 export const selectApplicationsCreateStatus = (state: RootState) =>
     selectApplicationsState(state).createStatus;
