@@ -13,7 +13,8 @@ import {
     GetTeamsResponse,
     AcceptInviteResponse,
     ApplicationResponse,
-    CreateApplicationRequest
+    CreateApplicationRequest,
+    UpdateApplicationRequest
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -102,7 +103,12 @@ export const getApplications = async(teamId: number | undefined = undefined, lea
         url.searchParams.append('leagueId', String(leagueId));
     }
     return httpRequest<ApplicationResponse[]>(url.toString(), 'GET');
-} 
+}
+
+export const updateApplication = async (applicationId: number, requestBody: UpdateApplicationRequest): Promise<ApplicationResponse> => {
+    const url = `${API_URL}/applications/${applicationId}`;
+    return httpRequest<ApplicationResponse>(url, 'PUT', requestBody);
+}
 
 const httpRequest = async<T> (url: string, httpMethod: string, reqBody: any | undefined = undefined): Promise<T> => {
     try {
