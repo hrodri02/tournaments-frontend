@@ -43,6 +43,13 @@ export const fetchTeamApplications = createAppAsyncThunk(
     async (teamId: number) => {
         const applications = await getApplications(teamId);
         return applications;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const fetchStatus = selectApplicationsFetchStatus(thunkApi.getState());
+            return fetchStatus === "idle";
+        },
     }
 );
 
@@ -52,6 +59,13 @@ export const createApplication = createAppAsyncThunk(
         const { leagueId, requestBody } = payload;
         const application = await postApplyToLeague(leagueId, requestBody);
         return application;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const createStatus = selectApplicationsCreateStatus(thunkApi.getState());
+            return createStatus === "idle";
+        },
     }
 );
 
