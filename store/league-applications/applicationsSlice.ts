@@ -6,8 +6,18 @@ import {
     EntityState,
     createSelector
 } from "@reduxjs/toolkit";
-import { Application, CreateApplicationRequest } from "@/entities/index";
-import { getApplications, postApplyToLeague } from "@/services/tournaments.service";
+import { 
+    Application,
+    CreateApplicationRequest, 
+    UpdateApplicationRequest,
+    ApplicationStatus
+} from "@/entities/index";
+import { 
+    getApplications, 
+    postApplyToLeague, 
+    putApplication 
+} from "@/services/tournaments.service";
+import { updateLeague } from "../leagues/leaguesSlice";
 
 interface ApplicationsState extends EntityState<Application, number> {
     fetchLeaugeApplicationsStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -40,6 +50,11 @@ const initialState: ApplicationsState = applicationsAdapter.getInitialState({
 interface CreateApplicationPayload {
     leagueId: number;
     requestBody: CreateApplicationRequest;
+}
+
+interface UpdateApplicationPayload {
+    applicationId: number;
+    requestBody: UpdateApplicationRequest;
 }
 
 export const fetchTeamApplications = createAppAsyncThunk(
@@ -84,6 +99,26 @@ export const createApplication = createAppAsyncThunk(
         condition(arg, thunkApi) {
             const createStatus = selectApplicationsCreateStatus(thunkApi.getState());
             return createStatus === "idle";
+        },
+    }
+);
+
+export const updateApplication = createAppAsyncThunk(
+    "applications/updateApplication",
+    async (payload: UpdateApplicationPayload, thunkApi) => {
+        const { applicationId, requestBody } = payload;
+        const application = await putApplication(applicationId, requestBody);
+        if (application.status === 'ACCEPTED') {
+            const { league } = application;
+            thunkApi.dispatch(updateLeague({league: league}));
+        }
+        return application;
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const updateStatus = selectApplicationsUpdateStatus(thunkApi.getState());
+            return updateStatus === "idle";
         },
     }
 );
@@ -163,6 +198,23 @@ const applicationsSlice = createSlice({
             .addCase(createApplication.rejected, (state, action) => {
                 state.createStatus = "failed";
                 state.createError = action.error.message ?? "Unknown Error";
+            })
+            .addCase(updateApplication.pending, (state) => {
+                state.updateStatus = "loading";
+                state.updateError = null;
+            })
+            .addCase(updateApplication.fulfilled, (state, action) => {
+                state.updateStatus = "succeeded";
+                const applicationResponse = action.payload;
+                const {team, league, ...applicationData} = applicationResponse;
+                const teamId = team.id;
+                const leagueId = league.id;
+                const applicationToStore = { teamId, leagueId, ...applicationData };
+                applicationsAdapter.updateOne(state, {id: applicationToStore.id, changes: applicationToStore});
+            })
+            .addCase(updateApplication.rejected, (state, action) => {
+                state.updateStatus = "failed";
+                state.updateError = action.error.message ?? "Unknown Error";
             })
     },
 });
