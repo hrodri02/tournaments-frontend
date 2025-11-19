@@ -13,6 +13,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { SwipeListView, RowMap } from 'react-native-swipe-list-view';
+import Ionicons from '@expo/vector-icons/Ionicons'; 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import {
     makeSelectLeaguesByStatus 
@@ -107,9 +108,19 @@ export default function JoinLeague() {
         }
     };
 
+    useEffect(() => {
+        if (createStatus === 'succeeded') {
+            // slight delay to show success:
+            const timer = setTimeout(() => {
+                dispatch(resetApplicationsCreateState())
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [createStatus]);
+
     let view: React.JSX.Element = <></>;
     if ((fetchStatus === 'idle' || fetchStatus === 'succeeded') &&
-    (createStatus === 'idle' || createStatus === 'succeeded')) {
+        createStatus === 'idle') {
         view = <SwipeListView
                     style={styles.sectionList}
                     data={leagues}
@@ -118,6 +129,12 @@ export default function JoinLeague() {
                     keyExtractor={(item, index) => String(item.id)}
                     rightOpenValue={-75}
                 />
+    }
+    else if (createStatus === 'succeeded') {
+        view = <View style={[styles.container, styles.perfectCentering]}>
+            <Text>Application successfully sent.</Text>
+            <Ionicons name="checkmark-circle" size={32} color="green" />
+        </View>
     }
     else if (fetchStatus === 'loading' || createStatus === 'loading') {
         view = <View style={[styles.container, styles.perfectCentering]}>
