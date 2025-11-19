@@ -7,7 +7,7 @@ import {
     createSelector
 } from "@reduxjs/toolkit";
 import { Application, CreateApplicationRequest } from "@/entities/index";
-import { getTeamApplications, postApplyToLeague } from "@/services/tournaments.service";
+import { getApplications, postApplyToLeague } from "@/services/tournaments.service";
 
 interface ApplicationsState extends EntityState<Application, number> {
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -41,7 +41,7 @@ interface CreateApplicationPayload {
 export const fetchTeamApplications = createAppAsyncThunk(
     "applications/fetchTeamApplications",
     async (teamId: number) => {
-        const applications = await getTeamApplications(teamId);
+        const applications = await getApplications(teamId);
         return applications;
     }
 );

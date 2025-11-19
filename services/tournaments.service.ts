@@ -93,9 +93,15 @@ export const postApplyToLeague = async (leagueId: number, requestBody: CreateApp
     return httpRequest<ApplicationResponse>(url, 'POST', requestBody);
 }
 
-export const getTeamApplications = async(teamId: number): Promise<ApplicationResponse[]> => {
-    const url = `${API_URL}/applications?teamId=${teamId}`;
-    return httpRequest<ApplicationResponse[]>(url, 'GET');
+export const getApplications = async(teamId: number | undefined = undefined, leagueId: number | undefined = undefined): Promise<ApplicationResponse[]> => {
+    const url = new URL(`${API_URL}/applications`);
+    if (teamId) {
+        url.searchParams.append('teamId', String(teamId));
+    }
+    if (leagueId) {
+        url.searchParams.append('leagueId', String(leagueId));
+    }
+    return httpRequest<ApplicationResponse[]>(url.toString(), 'GET');
 } 
 
 const httpRequest = async<T> (url: string, httpMethod: string, reqBody: any | undefined = undefined): Promise<T> => {
