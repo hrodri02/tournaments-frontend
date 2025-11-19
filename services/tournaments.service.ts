@@ -105,7 +105,7 @@ export const getApplications = async(teamId: number | undefined = undefined, lea
     return httpRequest<ApplicationResponse[]>(url.toString(), 'GET');
 }
 
-export const updateApplication = async (applicationId: number, requestBody: UpdateApplicationRequest): Promise<ApplicationResponse> => {
+export const putApplication = async (applicationId: number, requestBody: UpdateApplicationRequest): Promise<ApplicationResponse> => {
     const url = `${API_URL}/applications/${applicationId}`;
     return httpRequest<ApplicationResponse>(url, 'PUT', requestBody);
 }
