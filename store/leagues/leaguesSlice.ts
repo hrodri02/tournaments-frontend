@@ -8,6 +8,7 @@ import {
   createEntityAdapter,
   EntityState,
   createSelector,
+  PayloadAction
 } from "@reduxjs/toolkit";
 import { RootState } from "@/store/store";
 import { createAppAsyncThunk } from "@/hooks/useStore";
@@ -43,6 +44,10 @@ export const fetchLeagues = createAppAsyncThunk(
   }
 );
 
+interface UpdateLeagueAction {
+  league: League;
+}
+
 // Slice definition
 const leaguesSlice = createSlice({
   name: "leagues",
@@ -52,6 +57,10 @@ const leaguesSlice = createSlice({
       state.status = "idle";
       state.error = null;
     },
+    updateLeague: (state, action: PayloadAction<UpdateLeagueAction>) {
+      const updatedLeague = action.payload.league;
+      leaguesAdapter.updateOne(state, {id: updatedLeague.id, changes: updatedLeague});
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -70,7 +79,7 @@ const leaguesSlice = createSlice({
   },
 });
 
-export const { resetLeaguesState } = leaguesSlice.actions;
+export const { resetLeaguesState, updateLeague } = leaguesSlice.actions;
 export default leaguesSlice.reducer;
 
 //
