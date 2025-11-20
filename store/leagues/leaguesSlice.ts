@@ -57,7 +57,7 @@ const leaguesSlice = createSlice({
       state.status = "idle";
       state.error = null;
     },
-    updateLeague: (state, action: PayloadAction<UpdateLeagueAction>) {
+    updateLeague: (state, action: PayloadAction<UpdateLeagueAction>) => {
       const updatedLeague = action.payload.league;
       leaguesAdapter.updateOne(state, {id: updatedLeague.id, changes: updatedLeague});
     }
