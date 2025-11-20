@@ -19,12 +19,13 @@ import {
   selectGamesError
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function LeagueScreen() {
   const { user, isLoading } = useAuth();
+  const router = useRouter();
   const { showActionSheetWithOptions } = useActionSheet();
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -64,7 +65,7 @@ export default function LeagueScreen() {
       (buttonIndex) => {
         switch (buttonIndex) {
           case 0: 
-            console.log('display applications page');
+            router.push(`./${leagueId}/applications`);
             break;
           case 1:
             break;
