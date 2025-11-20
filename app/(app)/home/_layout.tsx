@@ -13,6 +13,14 @@ export default function HomeLayout() {
           headerBackButtonDisplayMode: 'minimal'
         }}
       />
+      <Stack.Screen 
+        name="leagues/[id]/applications/index"
+        options={{
+          title: "Applications",
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal'
+        }}
+      />
     </Stack>
   );
 }
