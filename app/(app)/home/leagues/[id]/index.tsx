@@ -8,14 +8,15 @@ import {
   Pressable 
 } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
   selectGamesStatus, 
   fetchGames, 
-  makeSelectGamesByLeagueId 
+  makeSelectGamesByLeagueId, 
+  selectGamesError
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { useLocalSearchParams } from 'expo-router';
@@ -31,6 +32,7 @@ export default function LeagueScreen() {
   const leagueId = Number(id);
   const league = useAppSelector(state => selectLeagueById(state, leagueId));
   const gamesStatus = useAppSelector(selectGamesStatus);
+  const gamesError = useAppSelector(selectGamesError);
   const selectGamesOfLeague = useMemo(
     () => makeSelectGamesByLeagueId(leagueId),
     []
@@ -93,39 +95,32 @@ export default function LeagueScreen() {
     }
   }, [navigation, user, isLoading, handlePress])
 
-  if (gamesStatus === 'loading') {
-    return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </SafeAreaView>
-      </SafeAreaProvider>
-    );
+  let view: React.JSX.Element = <></>;
+  if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
+    view = <FlatList
+      ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      data={gamesOfLeague}
+      renderItem={({ item }) => (
+        <GameExcerpt game={item} style={styles.item} />
+      )}
+    />
   }
-
-  if (!gamesOfLeague) {
-    return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.loadingContainer}>
-          <Text>Games not found</Text>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    );
+  else if (gamesStatus === 'loading') {
+    view = <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  }
+  else {
+    view = <View style={styles.loadingContainer}>
+      <Text>{gamesError}</Text>
+    </View>
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <FlatList
-          ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          data={gamesOfLeague}
-          renderItem={({ item }) => (
-            <GameExcerpt game={item} style={styles.item} />
-          )}
-        />
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
+      {view}
+    </SafeAreaView>
   );
 }
 
