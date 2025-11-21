@@ -95,7 +95,7 @@ export default function HomeScreen() {
             { title: 'Previous Leagues', data: previousLeagues },
           ]}
           renderItem={({ item }) =>
-            <LeagueExcerpt style={styles.item} league={item} />
+            <LeagueExcerpt style={styles.item} league={item} clickable={true}/>
           }
           renderSectionHeader={({ section }) => (
             <Text style={styles.sectionHeader}>{section.title}</Text>

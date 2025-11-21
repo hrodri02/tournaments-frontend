@@ -38,8 +38,8 @@ export default function TeamDetailPage() {
     }, [navigation, team?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = ['Invites', 'Cancel'];
-        const cancelButtonIndex = 1;
+        const options = ['Invites', 'Join League', 'Cancel'];
+        const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(
             {
@@ -52,6 +52,9 @@ export default function TeamDetailPage() {
                         router.push(`./${teamId}/invites`);
                         break;
                     case 1:
+                        router.push(`./${teamId}/join-league`);
+                        break;
+                    case 2:
                         break;
                 }
             }

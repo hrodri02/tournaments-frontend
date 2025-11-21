@@ -45,12 +45,12 @@ export interface TeamResponse {
     invitees: Player[];
 }
 
-export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVOKED';
+export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'REVOKED';
 
 export const TeamInviteStatusDisplay: Record<TeamInviteStatus, string> = {
     'PENDING': 'Pending',
     'ACCEPTED': 'Accepted',
-    'REJECTED': 'Rejected',
+    'DECLINED': 'Declined',
     'REVOKED': 'Revoked',
 };
 
@@ -77,6 +77,33 @@ export interface TeamInvite {
     status: TeamInviteStatus;
     teamId: number;
     playerId: number;
+    createdAt: string;
+}
+
+export interface CreateApplicationRequest {
+    teamId: number;
+    createdAt: string;
+}
+
+export type ApplicationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+
+export interface UpdateApplicationRequest {
+    status: ApplicationStatus;
+}
+
+export interface ApplicationResponse {
+    id: number;
+    status: ApplicationStatus;
+    team: TeamResponse;
+    league: League;
+    createdAt: string;
+}
+
+export interface Application {
+    id: number;
+    status: ApplicationStatus;
+    teamId: number;
+    leagueId: number;
     createdAt: string;
 }
 

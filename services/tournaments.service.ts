@@ -11,7 +11,10 @@ import {
     CreateTeamInviteRequest,
     TeamInviteResponse,
     GetTeamsResponse,
-    AcceptInviteResponse
+    AcceptInviteResponse,
+    ApplicationResponse,
+    CreateApplicationRequest,
+    UpdateApplicationRequest
 } from "@/entities";
 import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
 
@@ -86,7 +89,28 @@ export const getLeagues = async (status: LeagueStatus | undefined = undefined): 
     return httpRequest<League[]>(url.toString(), 'GET'); 
 };
 
-const httpRequest = async<T> (url: string, httpMethod: string, resBody: any | undefined = undefined): Promise<T> => {
+export const postApplyToLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {
+    const url = `${API_URL}/leagues/${leagueId}/applications`;
+    return httpRequest<ApplicationResponse>(url, 'POST', requestBody);
+}
+
+export const getApplications = async(teamId: number | undefined = undefined, leagueId: number | undefined = undefined): Promise<ApplicationResponse[]> => {
+    const url = new URL(`${API_URL}/applications`);
+    if (teamId) {
+        url.searchParams.append('teamId', String(teamId));
+    }
+    if (leagueId) {
+        url.searchParams.append('leagueId', String(leagueId));
+    }
+    return httpRequest<ApplicationResponse[]>(url.toString(), 'GET');
+}
+
+export const putApplication = async (applicationId: number, requestBody: UpdateApplicationRequest): Promise<ApplicationResponse> => {
+    const url = `${API_URL}/applications/${applicationId}`;
+    return httpRequest<ApplicationResponse>(url, 'PUT', requestBody);
+}
+
+const httpRequest = async<T> (url: string, httpMethod: string, reqBody: any | undefined = undefined): Promise<T> => {
     try {
         const jwt = await getStorageItemAsync(TOKEN_KEY)
 
@@ -101,7 +125,7 @@ const httpRequest = async<T> (url: string, httpMethod: string, resBody: any | un
         const response = await fetch(url, {
             method: httpMethod,
             headers: headers,
-            body: resBody ? JSON.stringify(resBody) : undefined
+            body: reqBody ? JSON.stringify(reqBody) : undefined
         });
 
         const data: T = await response.json()

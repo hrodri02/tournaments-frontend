@@ -123,10 +123,17 @@ interface UpdateTeamAction {
     team: Team;
 }
 
+interface AddTeamsAction {
+    teams: Team[];
+}
+
 const teamsSlice = createSlice({
     name: "teams",
     initialState,
     reducers: {
+        addTeams: (state, action: PayloadAction<AddTeamsAction>) => {
+            teamsAdapter.addMany(state, action.payload.teams);
+        },
         resetFetchState: (state) => {
             state.fetchStatus = 'idle';
             state.fetchError = null
@@ -191,7 +198,12 @@ const teamsSlice = createSlice({
     }
 });
 
-export const { resetCreateTeamState, resetFetchState, updateTeam } = teamsSlice.actions
+export const { 
+    resetCreateTeamState, 
+    resetFetchState, 
+    updateTeam,
+    addTeams
+} = teamsSlice.actions
 export default teamsSlice.reducer;
 
 export const selectTeamsState = (state: RootState) => state.teams

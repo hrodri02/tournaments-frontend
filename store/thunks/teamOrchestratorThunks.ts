@@ -14,8 +14,8 @@ export const handleAcceptTeamInvite = createAppAsyncThunk(
 
             const { playerDTOs, invites, ...teamData } = teamResponse;
             const playerIds = playerDTOs.map(player => player.id);
-            const team = { ...teamData, playerIds };
-            
+            const inviteeIds = invites.map(invite => invite.player.id);
+            const team = { ...teamData, playerIds, inviteeIds };
             thunkApi.dispatch(updateTeam({ team: team }));
         }
 
