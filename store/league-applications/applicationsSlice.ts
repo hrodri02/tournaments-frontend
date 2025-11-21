@@ -17,6 +17,7 @@ import {
     putApplication 
 } from "@/services/tournaments.service";
 import { updateLeague } from "../leagues/leaguesSlice";
+import { addTeams } from "../teams/teamsSlice";
 
 interface ApplicationsState extends EntityState<Application, number> {
     fetchLeaugeApplicationsStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -73,8 +74,18 @@ export const fetchTeamApplications = createAppAsyncThunk(
 
 export const fetchLeagueApplications = createAppAsyncThunk(
     "applications/fetchLeagueApplications",
-    async (leagueId: number) => {
-        const applications = await getApplications(leagueId);
+    async (leagueId: number, thunkApi) => {
+        const applications = await getApplications(undefined, leagueId);
+        const teams = applications.map(app => {
+            const teamResponse = app.team;
+            const { playerDTOs, invites, invitees, ...teamData } = teamResponse;
+            const playerIds = playerDTOs? playerDTOs.map(player => player.id) : [];
+            const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
+            return {playerIds, inviteeIds, ...teamData};
+        });
+        if (teams && teams.length > 0) {
+            thunkApi.dispatch(addTeams({teams: teams}));
+        }
         return applications;
     },
     {
@@ -272,4 +283,9 @@ export const selectApplicationsDeleteError = (state: RootState) =>
 export const makeSelectApplicationsByTeamId = (teamId: number) =>
   createSelector([selectAllApplications], (applications) =>
     applications.filter((application) => application.teamId === teamId)
+);
+
+export const makeSelectPendingApplicationsByLeagueId = (leagueId: number) =>
+  createSelector([selectAllApplications], (applications) =>
+    applications.filter((application) => application.leagueId === leagueId && application.status === 'PENDING')
 );
