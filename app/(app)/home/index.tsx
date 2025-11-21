@@ -6,7 +6,6 @@ import {
   Text, 
   ActivityIndicator,
   SectionListRenderItemInfo,
-  SectionListData
 } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
