@@ -14,8 +14,14 @@ import {
   makeSelectLeaguesByStatus 
 } from '@/store/leagues/leaguesSlice'
 import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
-import { LeagueStatus } from '@/entities';
+import { LeagueStatus, League } from '@/entities';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+interface LeagueSection {
+    title: string | null;
+    sectionIndex: number | null;
+    data: League[];
+}
 
 export default function HomeScreen() {
   const dispatch = useAppDispatch();
@@ -44,22 +50,37 @@ export default function HomeScreen() {
   const upcomingLeagues = useAppSelector(selectUpcomingLeagues);
   const currentLeagues = useAppSelector(selectCurrentLeagues);
   const previousLeagues = useAppSelector(selectPreviousLeagues);
+  const sectionsWithIndex: LeagueSection[] = [
+    { title: 'Upcoming Leagues', data: upcomingLeagues },
+    { title: 'Current Leagues', data: currentLeagues },
+    { title: 'Previous Leagues', data: previousLeagues },
+  ].map((section, index) => ({
+    ...section,
+    sectionIndex: index,
+  }));
 
   let view: React.JSX.Element = <></>
   if (leaguesStatus === "idle" || leaguesStatus === "succeeded") {
     view = <SectionList
             style={styles.sectionList}
-            sections={[
-              { title: 'Upcoming Leagues', data: upcomingLeagues },
-              { title: 'Current Leagues', data: currentLeagues },
-              { title: 'Previous Leagues', data: previousLeagues },
-            ]}
-            renderItem={({ item }) =>
-              <LeagueExcerpt 
-                style={styles.item} 
-                pathname={`/(app)/home/leagues/${item.id}`} 
-                league={item} clickable={true}/>
-            }
+            sections={sectionsWithIndex}
+            renderItem={({ section, item }) => {
+              const sectionIndex = section.sectionIndex;
+              let pathname: string = "";
+              if (sectionIndex === 0) {
+                pathname = `/(app)/home/leagues/${item.id}/upcoming-league`;
+              }
+              else {
+                pathname = `/(app)/home/leagues/${item.id}`;
+              }
+              return (
+                <LeagueExcerpt 
+                  style={styles.item} 
+                  pathname={pathname} 
+                  league={item} clickable={true}
+                />
+              );
+            }}
             renderSectionHeader={({ section }) => (
               <Text style={styles.sectionHeader}>{section.title}</Text>
             )}
