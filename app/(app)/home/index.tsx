@@ -4,7 +4,9 @@ import {
   StyleSheet, 
   View, 
   Text, 
-  ActivityIndicator 
+  ActivityIndicator,
+  SectionListRenderItemInfo,
+  SectionListData
 } from 'react-native';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
@@ -59,31 +61,33 @@ export default function HomeScreen() {
     sectionIndex: index,
   }));
 
+  const renderItem = ({ item, section }: SectionListRenderItemInfo<League, LeagueSection>) => {
+    const sectionIndex = section.sectionIndex;
+    let pathname: string = "";
+    if (sectionIndex === 0) {
+      pathname = `/(app)/home/leagues/${item.id}/upcoming-league`;
+    }
+    else {
+      pathname = `/(app)/home/leagues/${item.id}`;
+    }
+    return (
+      <LeagueExcerpt 
+        style={styles.item} 
+        pathname={pathname} 
+        league={item} clickable={true}
+      />
+    );
+  }
+
   let view: React.JSX.Element = <></>
   if (leaguesStatus === "idle" || leaguesStatus === "succeeded") {
     view = <SectionList
             style={styles.sectionList}
             sections={sectionsWithIndex}
-            renderItem={({ section, item }) => {
-              const sectionIndex = section.sectionIndex;
-              let pathname: string = "";
-              if (sectionIndex === 0) {
-                pathname = `/(app)/home/leagues/${item.id}/upcoming-league`;
-              }
-              else {
-                pathname = `/(app)/home/leagues/${item.id}`;
-              }
-              return (
-                <LeagueExcerpt 
-                  style={styles.item} 
-                  pathname={pathname} 
-                  league={item} clickable={true}
-                />
-              );
-            }}
-            renderSectionHeader={({ section }) => (
+            renderItem={renderItem}
+            renderSectionHeader={({ section }) => 
               <Text style={styles.sectionHeader}>{section.title}</Text>
-            )}
+            }
           />
   }
   else if (leaguesStatus === "loading") {
