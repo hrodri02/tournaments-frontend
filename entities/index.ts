@@ -155,12 +155,22 @@ export enum LeagueStatus {
     ended = 'ENDED'
 }
 
+export interface LeagueResponse {
+    id: number;
+    startDate: string;
+    durationInWeeks: number;
+    name: string;
+    status: LeagueStatus;
+    teams: TeamResponse[];
+}
+
 export interface League {
     id: number;
     startDate: string;
     durationInWeeks: number;
     name: string;
     status: LeagueStatus;
+    teamIds: number[];
 }
 
 // TODO: rethink how whether to store players as part of team as or
