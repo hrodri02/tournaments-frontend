@@ -1,15 +1,13 @@
 import React, { useEffect, useLayoutEffect, useMemo } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { 
   FlatList, 
   StyleSheet, 
   View, 
   Text, 
   ActivityIndicator, 
-  Pressable 
 } from 'react-native';
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
@@ -19,16 +17,11 @@ import {
   selectGamesError
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from "@/contexts/AuthContext";
+import { useLocalSearchParams } from 'expo-router';
 
 export default function LeagueScreen() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
-  const { showActionSheetWithOptions } = useActionSheet();
-  const { id } = useLocalSearchParams();
   const navigation = useNavigation();
+  const { id } = useLocalSearchParams();
   const dispatch = useAppDispatch();
   const leagueId = Number(id);
   const league = useAppSelector(state => selectLeagueById(state, leagueId));
@@ -43,7 +36,7 @@ export default function LeagueScreen() {
   // fetch games if they haven't already
   useEffect(() => {
     if (gamesStatus === 'idle') {
-      dispatch(fetchGames(leagueId));
+      dispatch(fetchGames());
     }
   }, [dispatch, gamesStatus]);
 
@@ -52,49 +45,6 @@ export default function LeagueScreen() {
       navigation.setOptions({ title: league.name });
     }
   }, [navigation, league?.name]);
-
-  const handlePress = () => {
-    const options = ['Applications', 'Cancel'];
-    const cancelButtonIndex = options.length - 1;
-
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-      },
-      (buttonIndex) => {
-        switch (buttonIndex) {
-          case 0: 
-            router.push(`./${leagueId}/applications`);
-            break;
-          case 1:
-            break;
-        }
-      }
-    );
-  };
-
-  useLayoutEffect(() => {
-    if (user && !isLoading) {
-      if (user.appUserRole === 'ADMIN') {
-        navigation.setOptions({
-          headerRight: () => (
-            <Pressable
-              style={styles.topRightNavButton}
-              onPress={handlePress}
-            >
-              <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
-            </Pressable>
-            )
-        });
-      }
-      else {
-        navigation.setOptions({
-          headerRight: undefined
-        });
-      }
-    }
-  }, [navigation, user, isLoading, handlePress])
 
   let view: React.JSX.Element = <></>;
   if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
@@ -126,9 +76,6 @@ export default function LeagueScreen() {
 }
 
 const styles = StyleSheet.create({
-  topRightNavButton: {
-    marginHorizontal: 20,
-  },
   container: {
     flex: 1,
   },

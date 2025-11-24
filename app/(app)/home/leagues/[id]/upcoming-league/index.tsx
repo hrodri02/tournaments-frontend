@@ -1,22 +1,27 @@
 import React, { useLayoutEffect, useMemo } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { 
     View, 
     Text, 
     StyleSheet,
-    FlatList
+    FlatList,
+    Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector } from '@/hooks/useStore';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectTeamsByIds } from '@/store/teams/teamsSlice';
 import { TeamExcerpt } from '@/components/TeamExcerpt';
 
-// TODO: in addition to displaying the teams that are part of the league
-// show the menu button in this page to view the applications to the league
 export default function UpcomingLeaguePage() {
+    const router = useRouter();
     const navigation = useNavigation();
+    const { user, isLoading } = useAuth();
+    const { showActionSheetWithOptions } = useActionSheet();
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
     const league = useAppSelector(state => selectLeagueById(state, leagueId));
@@ -28,9 +33,52 @@ export default function UpcomingLeaguePage() {
     
     useLayoutEffect(() => {
         if (league?.name) {
-          navigation.setOptions({ title: league.name });
+            navigation.setOptions({ title: league.name });
         }
-      }, [navigation, league?.name]);
+    }, [navigation, league?.name]);
+
+    const handleMenuButtonPressed = () => {
+        const options = ['Applications', 'Cancel'];
+        const cancelButtonIndex = options.length - 1;
+
+        showActionSheetWithOptions(
+        {
+            options,
+            cancelButtonIndex,
+        },
+        (buttonIndex) => {
+            switch (buttonIndex) {
+                case 0: 
+                    router.push(`./applications`);
+                    break;
+                case 1:
+                    break;
+                }
+            }
+        );
+    };
+
+    useLayoutEffect(() => {
+        if (user && !isLoading) {
+            if (user.appUserRole === 'ADMIN') {
+                navigation.setOptions({
+                headerRight: () => (
+                    <Pressable
+                        style={styles.topRightNavButton}
+                        onPress={handleMenuButtonPressed}
+                    >
+                        <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
+                    </Pressable>
+                )
+                });
+            }
+            else {
+                navigation.setOptions({
+                headerRight: undefined
+                });
+            }
+        }
+  }, [navigation, user, isLoading, handleMenuButtonPressed]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -46,6 +94,9 @@ export default function UpcomingLeaguePage() {
 }
 
 const styles = StyleSheet.create({
+    topRightNavButton: {
+        marginHorizontal: 20,
+    },
     container: {
         flex: 1
     },
