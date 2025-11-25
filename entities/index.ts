@@ -95,7 +95,7 @@ export interface ApplicationResponse {
     id: number;
     status: ApplicationStatus;
     team: TeamResponse;
-    league: League;
+    league: LeagueResponse;
     createdAt: string;
 }
 
