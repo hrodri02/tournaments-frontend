@@ -2,7 +2,8 @@ import {Platform} from 'react-native'
 import {
     Game, 
     GameStat, 
-    GameStatUpdatePayload, 
+    GameStatUpdatePayload,
+    LeagueResponse, 
     League, 
     LeagueStatus, 
     GameStatBatchUpdateResponse,
@@ -79,14 +80,14 @@ export const postDeclineTeamInvite = async (inviteId: number): Promise<TeamInvit
     return httpRequest<TeamInviteResponse>(url, 'POST')
 }
 
-export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<League[]> => {
+export const getLeagues = async (status: LeagueStatus | undefined = undefined): Promise<LeagueResponse[]> => {
     const url = new URL(`${API_URL}/leagues`);
 
     if (status) {
         url.searchParams.append('status', status);
     }
     
-    return httpRequest<League[]>(url.toString(), 'GET'); 
+    return httpRequest<LeagueResponse[]>(url.toString(), 'GET'); 
 };
 
 export const postApplyToLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {

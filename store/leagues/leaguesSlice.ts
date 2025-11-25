@@ -12,6 +12,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "@/store/store";
 import { createAppAsyncThunk } from "@/hooks/useStore";
+import { addTeams } from "../teams/teamsSlice";
 
 // Define the shape of our leagues state
 interface LeaguesState extends EntityState<League, number> {
@@ -31,8 +32,18 @@ const initialState: LeaguesState = leaguesAdapter.getInitialState({
 // Thunk for async fetching leagues
 export const fetchLeagues = createAppAsyncThunk(
   "leagues/fetchLeagues",
-  async (status: LeagueStatus | undefined) => {
+  async (status: LeagueStatus | undefined, thunkApi) => {
     const leagues = await getLeagues(status);
+    const teamResponses = leagues.flatMap(league => league.teams);
+    const teams = teamResponses.map(response => {
+      const { playerDTOs, invites, invitees, ...teamData } = response;
+      const playerIds = playerDTOs? playerDTOs.map(player => player.id): [];
+      const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
+      return { playerIds, inviteeIds, ...teamData};
+    });
+    if (teams.length > 0) {
+      thunkApi.dispatch(addTeams({teams: teams}));
+    }
     return leagues;
   },
   {
@@ -70,7 +81,13 @@ const leaguesSlice = createSlice({
       })
       .addCase(fetchLeagues.fulfilled, (state, action) => {
         state.status = "succeeded";
-        leaguesAdapter.setAll(state, action.payload);
+        const leagueResponses = action.payload;
+        const leagues = leagueResponses.map(response => {
+          const { teams, ...leagueData } = response;
+          const teamIds = teams.map(team => team.id);
+          return { teamIds, ...leagueData};
+        });
+        leaguesAdapter.setAll(state, leagues);
       })
       .addCase(fetchLeagues.rejected, (state, action) => {
         state.status = "failed";

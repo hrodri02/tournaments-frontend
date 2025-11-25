@@ -3,13 +3,16 @@ import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 
 import { Link } from 'expo-router';
 import { League, LeagueStatus } from '@/entities/index';
 import { parseISO, format, addWeeks } from 'date-fns';
+import { type Href } from 'expo-router'; 
+
 const screenHeight = Dimensions.get('window').height;
 
 type LeagueExcerptProps = {
     league: League;
+    pathname: string;
     style?: ViewStyle;
     clickable?: boolean;
-    imageSideLength?: number
+    imageSideLength?: number;
 }
 
 const styles = StyleSheet.create({
@@ -28,7 +31,9 @@ const styles = StyleSheet.create({
     }
 });
 
-export function LeagueExcerpt({ league, style, clickable = false, imageSideLength = screenHeight * 0.1 }: LeagueExcerptProps) {
+export function LeagueExcerpt({ league, pathname, style, clickable = false, imageSideLength = screenHeight * 0.1 }: LeagueExcerptProps) {
+    const linkHref: Href = { pathname: pathname } as Href;
+
     if (!league) {
         return null;
     }
@@ -66,10 +71,7 @@ export function LeagueExcerpt({ league, style, clickable = false, imageSideLengt
     
     if (clickable) {
         return (
-            <Link href={{
-                pathname: '/(app)/home/leagues/[id]',
-                params: {id: league.id}
-            }} asChild>
+            <Link href={linkHref} asChild>
                 <Pressable>
                     {content}
                 </Pressable>
