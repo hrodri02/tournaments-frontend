@@ -27,7 +27,7 @@ export default function UpcomingLeaguePage() {
     const league = useAppSelector(state => selectLeagueById(state, leagueId));
     const selectTeamsByIds = useMemo(
         () => makeSelectTeamsByIds(league.teamIds),
-        []
+        [league]
     );
     const teams = useAppSelector(selectTeamsByIds);
     
