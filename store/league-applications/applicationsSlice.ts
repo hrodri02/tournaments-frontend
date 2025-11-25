@@ -120,7 +120,10 @@ export const updateApplication = createAppAsyncThunk(
         const application = await putApplication(applicationId, requestBody);
         if (application.status === 'ACCEPTED') {
             const { league } = application;
-            thunkApi.dispatch(updateLeague({league: league}));
+            const { teams, ...leagueData } = league;
+            const teamIds = teams.map(team => team.id);
+            const leagueToStore = {teamIds, ...leagueData};
+            thunkApi.dispatch(updateLeague({league: leagueToStore}));
         }
         return application;
     },
