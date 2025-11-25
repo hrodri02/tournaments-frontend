@@ -16,6 +16,7 @@ import { useAppSelector } from '@/hooks/useStore';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectTeamsByIds } from '@/store/teams/teamsSlice';
 import { TeamExcerpt } from '@/components/TeamExcerpt';
+import { LeagueDetail, LeagueDetailExcerpt } from '@/components/LeagueDetailExcerpt';
 
 export default function UpcomingLeaguePage() {
     const router = useRouter();
@@ -30,6 +31,19 @@ export default function UpcomingLeaguePage() {
         [league]
     );
     const teams = useAppSelector(selectTeamsByIds);
+    const leagueDetails: LeagueDetail[] = [
+        {
+            id: 1, 
+            iconName: "calendar-outline", 
+            description: 'Start Date', 
+            text: `${league.startDate}`},
+        {
+            id: 2, 
+            iconName: "time-outline", 
+            description: 'Duration', 
+            text: `${league.durationInWeeks} weeks`
+        },
+    ];
     
     useLayoutEffect(() => {
         if (league?.name) {
@@ -74,15 +88,25 @@ export default function UpcomingLeaguePage() {
             }
             else {
                 navigation.setOptions({
-                headerRight: undefined
+                    headerRight: undefined
                 });
             }
         }
-  }, [navigation, user, isLoading, handleMenuButtonPressed]);
+    }, [navigation, user, isLoading, handleMenuButtonPressed]);
 
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
+                style={styles.topFlatList}
+                ListHeaderComponent={<View><Text style={styles.sectionHeader}>League Details</Text></View>}
+                data={leagueDetails}
+                renderItem={({item}) => 
+                    <LeagueDetailExcerpt detail={item} style={styles.item}/>
+                }
+                keyExtractor={item => String(item.id)}
+            />
+            <FlatList
+                style={styles.bottomFlatList}
                 ItemSeparatorComponent={() => <View style={styles.itemSeparator}/>}
                 ListHeaderComponent={<View><Text style={styles.sectionHeader}>Teams</Text></View>}
                 data={teams}
@@ -99,6 +123,12 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1
+    },
+    topFlatList: {
+        flexGrow: 0,
+    },
+    bottomFlatList: {
+        flex: 1,
     },
     perfectCentering: {
         justifyContent: 'center',
