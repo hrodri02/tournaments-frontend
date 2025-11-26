@@ -4,11 +4,14 @@ import { Link } from 'expo-router';
 import { Game } from '@/entities/index';
 import { format } from 'date-fns';
 import { useLocalSearchParams } from 'expo-router';
+import { Team } from '@/entities';
 
 const screenHeight = Dimensions.get('window').height;
 
 type GameExcerptProps = {
     game: Game;
+    homeTeam: Team;
+    awayTeam: Team;
     style?: ViewStyle;
 }
 
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
     }
 })
 
-export function GameExcerpt({ game, style }: GameExcerptProps) {
+export function GameExcerpt({ game, homeTeam, awayTeam, style }: GameExcerptProps) {
     const date = Date.parse(game.gameDateTime);
     const formattedDate = format(date, 'eee, MMM d pp');
     const { id } = useLocalSearchParams();
@@ -62,12 +65,12 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
                 <View style={styles.teamViews}>
                 <View style={styles.teamView}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <Text style={styles.text}>{game.homeTeam.name}</Text>
+                    <Text style={styles.text}>{homeTeam.name}</Text>
                 </View>
 
                 <View style={styles.teamView}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <Text style={styles.text}>{game.awayTeam.name}</Text>
+                    <Text style={styles.text}>{awayTeam.name}</Text>
                     </View>
                 </View>
 
