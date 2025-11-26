@@ -257,3 +257,15 @@ export const makeSelectGameStatsByGameId = (gameId: number) =>
   createSelector([selectAllGameStats], (games) =>
     games.filter((game) => game.gameId === gameId)
 );
+
+export const selectStatIdToStatMap = createSelector(
+  [selectAllGameStats], // Input: array of all teams
+  (stats: GameStat[]) => {
+    // Output: a Record<number, Team> map
+    const statMap: Record<number, GameStat> = {};
+    stats.forEach(stat => {
+      statMap[stat.id] = stat;
+    });
+    return statMap;
+  }
+);
