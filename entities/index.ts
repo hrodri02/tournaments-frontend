@@ -138,7 +138,7 @@ export enum GameStatType {
     redCard = 'RED_CARD'
 }
 
-export interface Game {
+export interface GameResponse {
     id: number;
     leagueId: number;
     homeTeam: Team;
@@ -147,6 +147,17 @@ export interface Game {
     gameDateTime: string;
     durationInMinutes: number;
     stats: GameStat[];
+}
+
+export interface Game {
+    id: number;
+    leagueId: number;
+    homeTeamId: number;
+    awayTeamId: number;
+    address: string;
+    gameDateTime: string;
+    durationInMinutes: number;
+    statIds: number[];
 }
 
 export enum LeagueStatus {
