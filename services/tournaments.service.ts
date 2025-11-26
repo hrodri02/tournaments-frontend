@@ -1,10 +1,9 @@
 import {Platform} from 'react-native'
 import {
-    Game, 
+    GameResponse, 
     GameStat, 
     GameStatUpdatePayload,
     LeagueResponse, 
-    League, 
     LeagueStatus, 
     GameStatBatchUpdateResponse,
     CreateTeamRequest,
@@ -45,9 +44,9 @@ export const deleteGameStat = async (id: number): Promise<GameStat> => {
     return httpRequest<GameStat>(url, 'DELETE')
 }
 
-export const getGames = async (): Promise<Game[]> => {
+export const getGames = async (): Promise<GameResponse[]> => {
     const url = `${API_URL}/games`
-    return httpRequest<Game[]>(url, 'GET')
+    return httpRequest<GameResponse[]>(url, 'GET')
 };
 
 export const getTeams = async (): Promise<GetTeamsResponse> => {
