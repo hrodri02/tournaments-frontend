@@ -107,11 +107,19 @@ export interface Application {
     createdAt: string;
 }
 
-export interface GameStat {
+export interface GameStatResponse {
     id: number;
     gameId: number;
     type: GameStatType;
     player: Player;
+    time: string;
+}
+
+export interface GameStat {
+    id: number;
+    gameId: number;
+    type: GameStatType;
+    playerId: number;
     time: string;
 }
 
@@ -146,7 +154,7 @@ export interface GameResponse {
     address: string;
     gameDateTime: string;
     durationInMinutes: number;
-    stats: GameStat[];
+    stats: GameStatResponse[];
 }
 
 export interface Game {
