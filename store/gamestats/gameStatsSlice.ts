@@ -1,15 +1,23 @@
-import { getGameStats, postGameStat, batchUpdateGameStats, deleteGameStat } from "@/services/tournaments.service";
-import { GameStat, GameStatUpdatePayload, GameStatUpdateFailure } from "@/entities/index";
 import { RootState } from "@/store/store";
-
 import {
   createSlice,
   createEntityAdapter,
   EntityState,
-  createSelector
+  createSelector,
+  PayloadAction
 } from "@reduxjs/toolkit";
-
 import { createAppAsyncThunk } from "@/hooks/useStore";
+import { 
+  GameStat, 
+  GameStatUpdatePayload, 
+  GameStatUpdateFailure 
+} from "@/entities/index";
+import { 
+  getGameStats, 
+  postGameStat, 
+  batchUpdateGameStats, 
+  deleteGameStat 
+} from "@/services/tournaments.service";
 
 // Define the shape of our game stats state
 interface GameStatsState extends EntityState<GameStat, number> {
@@ -105,6 +113,10 @@ export const deleteGameStatFromStore = createAppAsyncThunk(
   }
 );
 
+interface AddGameStatsAction {
+  stats: GameStat[];
+}
+
 // Slice definition
 const gameStatsSlice = createSlice({
   name: "gameStats",
@@ -121,6 +133,9 @@ const gameStatsSlice = createSlice({
     resetUpdateGameStatStatus: (state) => {
       state.updateStatus = 'idle'
       state.updateError = null
+    },
+    addGameStats: (state, action: PayloadAction<AddGameStatsAction>) => {
+      gameStatsAdapter.addMany(state, action.payload.stats);
     }
   },
   extraReducers: (builder) => {
@@ -184,7 +199,12 @@ const gameStatsSlice = createSlice({
   },
 });
 
-export const { resetCreateGameStatStatus, resetDeleteGameStatStatus, resetUpdateGameStatStatus } = gameStatsSlice.actions
+export const { 
+  resetCreateGameStatStatus, 
+  resetDeleteGameStatStatus, 
+  resetUpdateGameStatStatus,
+  addGameStats 
+} = gameStatsSlice.actions
 export default gameStatsSlice.reducer;
 
 //
