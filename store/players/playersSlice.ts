@@ -101,3 +101,14 @@ export const makeSelectPlayersByIds = (ids: number[]) =>
   createSelector([selectAllPlayers], (players) =>
     players.filter((player) => ids.includes(player.id))
 );
+
+export const selectPlayerIdToPlayerMap = createSelector(
+  [selectAllPlayers], // Input: array of all teams
+  (players: Player[]) => {
+    const playerMap: Record<number, Player> = {};
+    players.forEach(player => {
+      playerMap[player.id] = player;
+    });
+    return playerMap;
+  }
+);
