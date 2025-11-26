@@ -1,17 +1,14 @@
-import { getGames } from "@/services/tournaments.service";
-
-import { Game } from "@/entities/index";
-
 import { RootState } from "@/store/store";
-
 import {
   createSlice,
   createEntityAdapter,
   EntityState,
   createSelector
 } from "@reduxjs/toolkit";
-
 import { createAppAsyncThunk } from "@/hooks/useStore";
+import { Game } from "@/entities/index";
+import { getGames } from "@/services/tournaments.service";
+import { addGameStats } from "../gamestats/gameStatsSlice";
 
 // Define the shape of our games state
 interface GamesState extends EntityState<Game, number> {
@@ -31,8 +28,18 @@ const initialState: GamesState = gamesAdapter.getInitialState({
 // Thunk for async fetching games
 export const fetchGames = createAppAsyncThunk(
   "games/fetchGames",
-  async () => {
+  async (_, thunkApi) => {
     const games = await getGames();
+    // store stats associate with this game in gameStatSlice
+    const statResponses = games.flatMap(game => game.stats);
+    const stats = statResponses.map(statResponse => {
+      const { player, ...statData } = statResponse;
+      const playerId = player.id;
+      return { playerId, ...statData };
+    });
+    if (stats.length > 0) {
+      thunkApi.dispatch(addGameStats({stats: stats}));
+    }
     return games;
   },
   {
@@ -57,7 +64,15 @@ const gamesSlice = createSlice({
       })
       .addCase(fetchGames.fulfilled, (state, action) => {
         state.status = "succeeded";
-        gamesAdapter.setAll(state, action.payload);
+        // convert GameResponse array to Game array
+        const games = action.payload.map(gameResponse => {
+          const { homeTeam, awayTeam, stats, ...gameData} = gameResponse;
+          const homeTeamId = homeTeam.id;
+          const awayTeamId = awayTeam.id;
+          const statIds = stats.map(stat => stat.id);
+          return {homeTeamId, awayTeamId, statIds, ...gameData};
+        });
+        gamesAdapter.addMany(state, games);
       })
       .addCase(fetchGames.rejected, (state, action) => {
         state.status = "failed";
