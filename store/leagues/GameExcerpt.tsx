@@ -1,17 +1,14 @@
 import React from 'react'; 
 import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
-import { Game } from '@/entities/index';
+import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
 import { useLocalSearchParams } from 'expo-router';
-import { Team } from '@/entities';
 
 const screenHeight = Dimensions.get('window').height;
 
 type GameExcerptProps = {
-    game: Game;
-    homeTeam: Team;
-    awayTeam: Team;
+    game: GameResponse;
     style?: ViewStyle;
 }
 
@@ -49,7 +46,7 @@ const styles = StyleSheet.create({
     }
 })
 
-export function GameExcerpt({ game, homeTeam, awayTeam, style }: GameExcerptProps) {
+export function GameExcerpt({ game, style }: GameExcerptProps) {
     const date = Date.parse(game.gameDateTime);
     const formattedDate = format(date, 'eee, MMM d pp');
     const { id } = useLocalSearchParams();
@@ -65,12 +62,12 @@ export function GameExcerpt({ game, homeTeam, awayTeam, style }: GameExcerptProp
                 <View style={styles.teamViews}>
                 <View style={styles.teamView}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <Text style={styles.text}>{homeTeam.name}</Text>
+                    <Text style={styles.text}>{game.homeTeam.name}</Text>
                 </View>
 
                 <View style={styles.teamView}>
                     <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
-                    <Text style={styles.text}>{awayTeam.name}</Text>
+                    <Text style={styles.text}>{game.awayTeam.name}</Text>
                     </View>
                 </View>
 

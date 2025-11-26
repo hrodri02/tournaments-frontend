@@ -1,4 +1,9 @@
-import React, { useEffect, useLayoutEffect, useMemo } from 'react';
+import React, { 
+  useEffect, 
+  useLayoutEffect, 
+  useMemo 
+} from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { 
   FlatList, 
@@ -13,11 +18,10 @@ import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
   selectGamesStatus, 
   fetchGames, 
-  makeSelectGamesByLeagueId, 
   selectGamesError
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
-import { useLocalSearchParams } from 'expo-router';
+import { makeSelectDenormalizedGames } from '@/store/teams/teamsSlice';
 
 export default function LeagueScreen() {
   const navigation = useNavigation();
@@ -27,11 +31,11 @@ export default function LeagueScreen() {
   const league = useAppSelector(state => selectLeagueById(state, leagueId));
   const gamesStatus = useAppSelector(selectGamesStatus);
   const gamesError = useAppSelector(selectGamesError);
-  const selectGamesOfLeague = useMemo(
-    () => makeSelectGamesByLeagueId(leagueId),
-    []
+  const selectDenormalizedGames = useMemo(
+    () => makeSelectDenormalizedGames(leagueId),
+    [leagueId]
   );
-  const gamesOfLeague = useAppSelector(selectGamesOfLeague);
+  const games = useAppSelector(selectDenormalizedGames);
 
   // fetch games if they haven't already
   useEffect(() => {
@@ -51,9 +55,12 @@ export default function LeagueScreen() {
     view = <FlatList
       ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
-      data={gamesOfLeague}
+      data={games}
       renderItem={({ item }) => (
-        <GameExcerpt game={item} style={styles.item} />
+        <GameExcerpt 
+          game={item}
+          style={styles.item} 
+        />
       )}
     />
   }
