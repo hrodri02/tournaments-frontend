@@ -151,7 +151,7 @@ export default function TeamsPage() {
                 
                 // Navigate
                 router.push({
-                    pathname: '/(app)/settings/teams/[id]',
+                    pathname: '/(app)/teams/[id]',
                     params: {id: team.id}
                 });
             }        
