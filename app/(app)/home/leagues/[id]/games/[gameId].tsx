@@ -19,10 +19,10 @@ import { useLocalSearchParams } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
-import { selectGameById } from '@/store/games/gamesSlice';
+import { makeSelectDenormalizedGame } from '@/store/games/gamesSlice';
 import { 
     fetchGameStats, 
-    makeSelectGameStatsByGameId, 
+    makeSelectDenormalizedStats,
     selectGameStatsFetchStatus, 
     createGameStat, 
     selectGameStatsCreateStatus, 
@@ -51,7 +51,11 @@ export default function Game() {
     const navigation = useNavigation(); 
     const { gameId } = useLocalSearchParams();
     const gameID = Number(gameId);
-    const game = useAppSelector(state => selectGameById(state, gameID))!
+    const selectDenormalizedGame = useMemo(
+        () => makeSelectDenormalizedGame(gameID),
+        []
+    );
+    const game = useAppSelector(selectDenormalizedGame)!
     const { showActionSheetWithOptions } = useActionSheet();
     const homeTeam = game.homeTeam
     const awayTeam = game.awayTeam
@@ -59,7 +63,7 @@ export default function Game() {
     const gameStatsStatus = useAppSelector(selectGameStatsFetchStatus)
     const createStatus = useAppSelector(selectGameStatsCreateStatus)
     const selectGameStatsOfGame = useMemo(
-        () => makeSelectGameStatsByGameId(gameID),
+        () => makeSelectDenormalizedStats(gameID),
         []
     )
     const gameStatsOfGame = useAppSelector(selectGameStatsOfGame)
@@ -136,9 +140,9 @@ export default function Game() {
     const handleSaveButtonPressed = async (data: GameStatFormData) => {
         const selectedPlayerId = data.playerId
         const selectedGameStat = data.gameStatType
-        let selectedPlayer = homeTeam.players.find((player) => player.email === selectedPlayerId)
+        let selectedPlayer = homeTeam.playerDTOs.find((player) => player.email === selectedPlayerId)
         if (!selectedPlayer) {
-            selectedPlayer = awayTeam.players.find((player) => player.email === selectedPlayerId)
+            selectedPlayer = awayTeam.playerDTOs.find((player) => player.email === selectedPlayerId)
         }
         const gameStatType: GameStatType | undefined = stringToGameStatType(selectedGameStat);
         const newGameStat = {
@@ -170,7 +174,7 @@ export default function Game() {
         setEditModalVisible(!editModalVisible)
     }
 
-    let view: JSX.Element = <></>;
+    let view: React.JSX.Element = <></>;
     if (gameStatsStatus === 'loading' || createStatus === 'loading') {
         view = <ActivityIndicator size="large" color="#0000ff" />
     }
