@@ -3,15 +3,11 @@ import {
     CreateTeamRequest, 
     TeamResponse,
     GetTeamsResponse, 
-    Game,
-    GameStat,
     Team,
     Player,
     TeamInvite
 } from "@/entities/index";
-import { upsertManyPlayers, selectPlayerIdToPlayerMap } from "@/store/players/playersSlice";
-import { makeSelectGamesByLeagueId } from "../games/gamesSlice";
-import { selectStatIdToStatMap } from "../gamestats/gameStatsSlice";
+import { upsertManyPlayers } from "@/store/players/playersSlice";
 import { upsertManyTeamInvites } from "@/store/team-invites/teamInvitesSlice";
 import { getTeams, postTeam } from "@/services/tournaments.service";
 import {
@@ -191,9 +187,10 @@ const teamsSlice = createSlice({
             })
             .addCase(createTeam.fulfilled, (state, action) => {
                 state.createStatus = "succeeded";
-                const { playerDTOs, invites, ...teamData } = action.payload;
+                const { playerDTOs, invites, invitees, ...teamData } = action.payload;
                 const playerIds = (playerDTOs && playerDTOs.length > 0)? playerDTOs.map(player => player.id) : []
-                teamsAdapter.addOne(state, {...teamData, playerIds});
+                const inviteeIds = (invitees && invitees.length > 0)? invitees.map(invitee => invitee.id) : []
+                teamsAdapter.addOne(state, {...teamData, playerIds, inviteeIds });
             })
             .addCase(createTeam.rejected, (state, action) => {
                 state.createStatus = "failed";
@@ -253,7 +250,7 @@ export const makeSelectTeamsByIds = (ids: number[]) =>
     teams.filter((team) => ids.includes(team.id))
 );
 
-const selectTeamIdToTeamMap = createSelector(
+export const selectTeamIdToTeamMap = createSelector(
   [selectAllTeams], // Input: array of all teams
   (teams: Team[]) => {
     // Output: a Record<number, Team> map
@@ -264,29 +261,3 @@ const selectTeamIdToTeamMap = createSelector(
     return teamMap;
   }
 );
-
-export const makeSelectDenormalizedGames = (leagueId: number) => 
-  createSelector(
-    // Input Selectors:
-    makeSelectGamesByLeagueId(leagueId), 
-    selectTeamIdToTeamMap,             
-    selectStatIdToStatMap,
-    selectPlayerIdToPlayerMap,
-    // Output Function: transforms the inputs
-    (games: Game[], teamMap: Record<number, Team>, statMap: Record<number, GameStat>, playerMap: Record<number, Player>) => {
-      // Perform the denormalization logic here
-      return games.map(game => {
-        const { homeTeamId, awayTeamId, statIds, ...gameData} = game;
-        const homeTeam = teamMap[homeTeamId];
-        const awayTeam = teamMap[awayTeamId];
-        const noralizedStats = game.statIds.map(statId => statMap[statId]);
-        const stats = noralizedStats.map(stat => {
-            const { playerId, ...statData } = stat;
-            const player = playerMap[playerId];
-            return { player, ...statData };
-        });
-        const gameResponse = { homeTeam, awayTeam, stats, ...gameData };
-        return gameResponse;
-      });
-    }
-  );
