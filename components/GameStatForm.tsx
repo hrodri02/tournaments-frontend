@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useForm, Controller } from 'react-hook-form';
-import { GameStatType, Team } from '@/entities';
+import { GameStatType, TeamResponse } from '@/entities';
 
 type GameStatFormProps = {
-    homeTeam: Team;
-    awayTeam: Team;
+    homeTeam: TeamResponse;
+    awayTeam: TeamResponse;
     onCancel(): void;
     onSubmit(data: GameStatFormData): void;
     style?: ViewStyle;
@@ -75,11 +75,11 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                         onValueChange={onChange}>
                         <Picker.Item label="Select Player..." value="" />
                         <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
-                        {homeTeam.players.map((player) => (
+                        {homeTeam.playerDTOs.map((player) => (
                             <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
                         ))}
                         <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
-                        {awayTeam.players.map((player) => (
+                        {awayTeam.playerDTOs.map((player) => (
                             <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
                         ))}
                     </Picker>
