@@ -6,8 +6,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function SettingsScreen() {
   const { logout, isLoading } = useAuth();
-  const myAccountSectionItems = ['Become an Admin', 'Teams', 'Change City (Puebla)', 'Delete Account'];
-  const pathnames = ['', '/(app)/settings/teams', '', ''];
+  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account'];
+  const pathnames = ['', '', ''];
 
   return (
     <SafeAreaProvider>
