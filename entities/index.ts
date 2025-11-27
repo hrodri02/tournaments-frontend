@@ -123,8 +123,6 @@ export interface GameStat {
     time: string;
 }
 
-export type GameStatUpdatePayload = Omit<GameStat, 'player'> & { playerId: number };
-
 export interface GameStatPayload extends GameStat {
     leagueId: number;
     gameId: number;
@@ -149,8 +147,8 @@ export enum GameStatType {
 export interface GameResponse {
     id: number;
     leagueId: number;
-    homeTeam: Team;
-    awayTeam: Team;
+    homeTeam: TeamResponse;
+    awayTeam: TeamResponse;
     address: string;
     gameDateTime: string;
     durationInMinutes: number;
@@ -194,14 +192,14 @@ export interface League {
 
 // TODO: rethink how whether to store players as part of team as or
 // if I should store a list of player ids and add a players slice
-export function filterStats(stats: GameStat[], type: GameStatType, team: Team | undefined = undefined): GameStat[] {
+export function filterStats(stats: GameStatResponse[], type: GameStatType, team: TeamResponse | undefined = undefined): GameStatResponse[] {
     return stats.filter((stat) => {
-        const isPlayerInTeam = team && team.playerIds.some(playerId => playerId === stat.player.id);
+        const isPlayerInTeam = team && team.playerDTOs.some(player => player.id === stat.player.id);
         return stat.type === type && (!team || isPlayerInTeam);
     })
 }
 
-export function getGoalScorersForTeam(goalStats: GameStat[]): string {
+export function getGoalScorersForTeam(goalStats: GameStatResponse[]): string {
     const playerNameToNumGoals: { [key: string]:number } = {}
     goalStats.forEach((stat) => {
         const name = `${stat.player.firstName} ${stat.player.lastName}`
@@ -226,9 +224,9 @@ export function getGoalScorersForTeam(goalStats: GameStat[]): string {
     return res
 }
 
-export function countStatsForTeam(stats: GameStat[], type: GameStatType, team: Team): number {
+export function countStatsForTeam(stats: GameStatResponse[], type: GameStatType, team: TeamResponse): number {
     return stats.reduce((count, stat) => {
-        const isPlayerInTeam = team.playerIds.some(playerId => playerId === stat.player.id)
+        const isPlayerInTeam = team.playerDTOs.some(player => player.id === stat.player.id)
         if (stat.type === type && isPlayerInTeam)
             return count += 1
         return count
@@ -249,7 +247,7 @@ export function stringToGameStatType(typeString: string): GameStatType | undefin
   return undefined; // Not found
 }
 
-export function isGameActive(game: Game): boolean {
+export function isGameActive(game: GameResponse): boolean {
     const currentTime = new Date()
     const gameStartDate = new Date(game.gameDateTime)
     const gameEndDate = new Date()
