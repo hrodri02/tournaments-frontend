@@ -2,7 +2,6 @@ import {Platform} from 'react-native'
 import {
     GameResponse, 
     GameStat, 
-    GameStatUpdatePayload,
     LeagueResponse, 
     LeagueStatus, 
     GameStatBatchUpdateResponse,
@@ -34,7 +33,7 @@ export const getGameStats = async (): Promise<GameStat[]> => {
     return httpRequest<GameStat[]>(url, 'GET')
 }
 
-export const batchUpdateGameStats = async (stats: GameStatUpdatePayload[]): Promise<GameStatBatchUpdateResponse> => {
+export const batchUpdateGameStats = async (stats: GameStat[]): Promise<GameStatBatchUpdateResponse> => {
     const url = `${API_URL}/gamestats/batchUpdate`
     return httpRequest<GameStatBatchUpdateResponse>(url, 'PUT', stats)
 }
