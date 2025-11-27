@@ -9,8 +9,8 @@ import {
 import { createAppAsyncThunk } from "@/hooks/useStore";
 import { 
   GameStat, 
-  GameStatUpdatePayload, 
-  GameStatUpdateFailure 
+  GameStatUpdateFailure,
+  Player 
 } from "@/entities/index";
 import { 
   getGameStats, 
@@ -18,6 +18,7 @@ import {
   batchUpdateGameStats, 
   deleteGameStat 
 } from "@/services/tournaments.service";
+import { selectPlayerIdToPlayerMap } from "@/store/players/playersSlice";
 
 // Define the shape of our game stats state
 interface GameStatsState extends EntityState<GameStat, number> {
@@ -84,7 +85,7 @@ export const createGameStat = createAppAsyncThunk(
 // Thunk for async updating game stats
 export const updateGameStats = createAppAsyncThunk(
   "gameStats/updateGameStats",
-  async (stats: GameStatUpdatePayload[]) => {
+  async (stats: GameStat[]) => {
     const response = await batchUpdateGameStats(stats);
     return response;
   },
@@ -257,6 +258,19 @@ export const makeSelectGameStatsByGameId = (gameId: number) =>
   createSelector([selectAllGameStats], (games) =>
     games.filter((game) => game.gameId === gameId)
 );
+
+export const makeSelectDenormalizedStats = (gameId: number) =>
+  createSelector(
+    makeSelectGameStatsByGameId(gameId),
+    selectPlayerIdToPlayerMap,
+    (normalizedStats: GameStat[], playerMap: Record<number, Player>) => {
+      return normalizedStats.map(normalizedStat => {
+        const { playerId, ...statData} = normalizedStat;
+        const player = playerMap[playerId];
+        return { player, ...statData};
+      });
+    }
+  );
 
 export const selectStatIdToStatMap = createSelector(
   [selectAllGameStats], // Input: array of all teams
