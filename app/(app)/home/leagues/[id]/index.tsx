@@ -21,7 +21,7 @@ import {
   selectGamesError
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
-import { makeSelectDenormalizedGames } from '@/store/teams/teamsSlice';
+import { makeSelectDenormalizedGames } from '@/store/games/gamesSlice';
 
 export default function LeagueScreen() {
   const navigation = useNavigation();
