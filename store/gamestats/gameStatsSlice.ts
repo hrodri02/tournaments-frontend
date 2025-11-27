@@ -1,15 +1,24 @@
-import { getGameStats, postGameStat, batchUpdateGameStats, deleteGameStat } from "@/services/tournaments.service";
-import { GameStat, GameStatUpdatePayload, GameStatUpdateFailure } from "@/entities/index";
 import { RootState } from "@/store/store";
-
 import {
   createSlice,
   createEntityAdapter,
   EntityState,
-  createSelector
+  createSelector,
+  PayloadAction
 } from "@reduxjs/toolkit";
-
 import { createAppAsyncThunk } from "@/hooks/useStore";
+import { 
+  GameStat, 
+  GameStatUpdateFailure,
+  Player 
+} from "@/entities/index";
+import { 
+  getGameStats, 
+  postGameStat, 
+  batchUpdateGameStats, 
+  deleteGameStat 
+} from "@/services/tournaments.service";
+import { selectPlayerIdToPlayerMap } from "@/store/players/playersSlice";
 
 // Define the shape of our game stats state
 interface GameStatsState extends EntityState<GameStat, number> {
@@ -76,7 +85,7 @@ export const createGameStat = createAppAsyncThunk(
 // Thunk for async updating game stats
 export const updateGameStats = createAppAsyncThunk(
   "gameStats/updateGameStats",
-  async (stats: GameStatUpdatePayload[]) => {
+  async (stats: GameStat[]) => {
     const response = await batchUpdateGameStats(stats);
     return response;
   },
@@ -105,6 +114,10 @@ export const deleteGameStatFromStore = createAppAsyncThunk(
   }
 );
 
+interface AddGameStatsAction {
+  stats: GameStat[];
+}
+
 // Slice definition
 const gameStatsSlice = createSlice({
   name: "gameStats",
@@ -121,6 +134,9 @@ const gameStatsSlice = createSlice({
     resetUpdateGameStatStatus: (state) => {
       state.updateStatus = 'idle'
       state.updateError = null
+    },
+    addGameStats: (state, action: PayloadAction<AddGameStatsAction>) => {
+      gameStatsAdapter.addMany(state, action.payload.stats);
     }
   },
   extraReducers: (builder) => {
@@ -184,7 +200,12 @@ const gameStatsSlice = createSlice({
   },
 });
 
-export const { resetCreateGameStatStatus, resetDeleteGameStatStatus, resetUpdateGameStatStatus } = gameStatsSlice.actions
+export const { 
+  resetCreateGameStatStatus, 
+  resetDeleteGameStatStatus, 
+  resetUpdateGameStatStatus,
+  addGameStats 
+} = gameStatsSlice.actions
 export default gameStatsSlice.reducer;
 
 //
@@ -236,4 +257,29 @@ export const selectGameStatsDeleteError = (state: RootState) =>
 export const makeSelectGameStatsByGameId = (gameId: number) =>
   createSelector([selectAllGameStats], (games) =>
     games.filter((game) => game.gameId === gameId)
+);
+
+export const makeSelectDenormalizedStats = (gameId: number) =>
+  createSelector(
+    makeSelectGameStatsByGameId(gameId),
+    selectPlayerIdToPlayerMap,
+    (normalizedStats: GameStat[], playerMap: Record<number, Player>) => {
+      return normalizedStats.map(normalizedStat => {
+        const { playerId, ...statData} = normalizedStat;
+        const player = playerMap[playerId];
+        return { player, ...statData};
+      });
+    }
+  );
+
+export const selectStatIdToStatMap = createSelector(
+  [selectAllGameStats], // Input: array of all teams
+  (stats: GameStat[]) => {
+    // Output: a Record<number, Team> map
+    const statMap: Record<number, GameStat> = {};
+    stats.forEach(stat => {
+      statMap[stat.id] = stat;
+    });
+    return statMap;
+  }
 );

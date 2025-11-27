@@ -1,14 +1,14 @@
 import React from 'react'; 
 import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
-import { Game } from '@/entities/index';
+import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
 import { useLocalSearchParams } from 'expo-router';
 
 const screenHeight = Dimensions.get('window').height;
 
 type GameExcerptProps = {
-    game: Game;
+    game: GameResponse;
     style?: ViewStyle;
 }
 

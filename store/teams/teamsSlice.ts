@@ -187,9 +187,10 @@ const teamsSlice = createSlice({
             })
             .addCase(createTeam.fulfilled, (state, action) => {
                 state.createStatus = "succeeded";
-                const { playerDTOs, invites, ...teamData } = action.payload;
+                const { playerDTOs, invites, invitees, ...teamData } = action.payload;
                 const playerIds = (playerDTOs && playerDTOs.length > 0)? playerDTOs.map(player => player.id) : []
-                teamsAdapter.addOne(state, {...teamData, playerIds});
+                const inviteeIds = (invitees && invitees.length > 0)? invitees.map(invitee => invitee.id) : []
+                teamsAdapter.addOne(state, {...teamData, playerIds, inviteeIds });
             })
             .addCase(createTeam.rejected, (state, action) => {
                 state.createStatus = "failed";
@@ -247,4 +248,16 @@ export const makeSelectTeamsByPlayerId = (id: number) =>
 export const makeSelectTeamsByIds = (ids: number[]) =>
   createSelector([selectAllTeams], (teams) =>
     teams.filter((team) => ids.includes(team.id))
+);
+
+export const selectTeamIdToTeamMap = createSelector(
+  [selectAllTeams], // Input: array of all teams
+  (teams: Team[]) => {
+    // Output: a Record<number, Team> map
+    const teamMap: Record<number, Team> = {};
+    teams.forEach(team => {
+      teamMap[team.id] = team;
+    });
+    return teamMap;
+  }
 );

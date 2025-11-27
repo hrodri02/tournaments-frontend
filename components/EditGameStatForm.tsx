@@ -10,7 +10,14 @@ import {
     Platform
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { GameStatType, GameStat, GameStatUpdatePayload, Team, filterStats, GameStatUpdateFailure } from '@/entities';
+import { 
+    GameStatType, 
+    GameStatResponse, 
+    GameStat, 
+    TeamResponse, 
+    filterStats, 
+    GameStatUpdateFailure 
+} from '@/entities';
 import { 
     deleteGameStatFromStore, 
     resetDeleteGameStatStatus, 
@@ -27,9 +34,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { FontAwesome6 } from "@expo/vector-icons";
 
 type EditGameStatFormProps = {
-    stats: GameStat[],
-    homeTeam: Team,
-    awayTeam: Team,
+    stats: GameStatResponse[],
+    homeTeam: TeamResponse,
+    awayTeam: TeamResponse,
     onCancel(): void;
     style?: ViewStyle;
 }
@@ -59,7 +66,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         }
     });
 
-    const handleDeleteStatButtonPressed = (stat: GameStat) => {
+    const handleDeleteStatButtonPressed = (stat: GameStatResponse) => {
         dispatch(deleteGameStatFromStore(stat.id))
     }
 
@@ -75,10 +82,11 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
     }, [deleteStatus, dispatch]);
 
     const onFormSubmitted = (data: EditGameStatFormData) => {
-        const updatedGameStats: GameStatUpdatePayload[] = stats.map(stat => ({
-            ...stat,
-            playerId: data.statIdToplayerId[stat.id.toString()]
-        }))
+        const updatedGameStats: GameStat[] = stats.map(stat => {
+            const { player, ...statData } = stat;
+            const playerId = data.statIdToplayerId[stat.id.toString()];
+            return { playerId, ...statData };
+        })
         dispatch(updateGameStats(updatedGameStats))
     };
 
@@ -93,7 +101,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         }
     }, [updateStatus, dispatch]);
 
-    const updateFailed = (stat: GameStat): GameStatUpdateFailure | undefined => {
+    const updateFailed = (stat: GameStatResponse): GameStatUpdateFailure | undefined => {
         const failure = batchUpdateFailures?.filter(failure => failure.gameStatId === stat.id)
         return failure ? failure[0] : undefined
     }
@@ -137,11 +145,11 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                                             }}
                                         >
                                             <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
-                                            {homeTeam.players.map((player) => (
+                                            {homeTeam.playerDTOs.map((player) => (
                                                 <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
                                             ))}
                                             <Picker.Item label="--- Away Team ---" value="category_away_team" enabled={false} />
-                                            {awayTeam.players.map((player) => (
+                                            {awayTeam.playerDTOs.map((player) => (
                                                 <Picker.Item key={player.id} label={`${player.firstName} ${player.lastName}`} value={+player.id} />
                                             ))}
                                         </Picker>

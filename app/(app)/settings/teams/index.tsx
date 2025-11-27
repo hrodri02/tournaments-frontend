@@ -80,12 +80,12 @@ export default function TeamsPage() {
     const teamIdToInviteId: TeamIdToInviteIdMap = {}
     const invites = useAppSelector(selectInvitesForPlayer);
     invites.map(invite => teamIdToInviteId[invite.teamId] = invite.id)
-    const inviteIds = invites.map(invite => invite.id);
-    const selectTeamsFromInviteIds = useMemo(
-        () => makeSelectTeamsByIds(inviteIds),
-        [inviteIds]
+    const teamIds = invites.map(invite => invite.teamId);
+    const selectTeamsFromIds = useMemo(
+        () => makeSelectTeamsByIds(teamIds),
+        [teamIds]
     );
-    const teamsInvitedTo = useAppSelector(selectTeamsFromInviteIds);
+    const teamsInvitedTo = useAppSelector(selectTeamsFromIds);
     const sectionsWithIndex: TeamsSection[] = [
         { title: 'Teams', data: teams, isSectionHeader: true, isSwipeable: false },
         { title: 'Invites', data: teamsInvitedTo, isSectionHeader: true, isSwipeable: false },

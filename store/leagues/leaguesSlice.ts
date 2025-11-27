@@ -2,6 +2,7 @@ import { getLeagues } from "@/services/tournaments.service";
 import { 
   League, 
   LeagueStatus, 
+  Player,
 } from "@/entities/index";
 import {
   createSlice,
@@ -13,6 +14,7 @@ import {
 import { RootState } from "@/store/store";
 import { createAppAsyncThunk } from "@/hooks/useStore";
 import { addTeams } from "../teams/teamsSlice";
+import { upsertManyPlayers } from "../players/playersSlice";
 
 // Define the shape of our leagues state
 interface LeaguesState extends EntityState<League, number> {
@@ -43,6 +45,20 @@ export const fetchLeagues = createAppAsyncThunk(
     });
     if (teams.length > 0) {
       thunkApi.dispatch(addTeams({teams: teams}));
+    }
+    const allPlayers = teamResponses.flatMap(teamResponse => {
+      const playersInTeam = teamResponse.playerDTOs? teamResponse.playerDTOs : [];
+      const invitees = teamResponse.invitees? teamResponse.invitees : [];
+      return playersInTeam.concat(invitees);
+    });
+    const uniquePlayersMap = new Map<number, Player>();
+    allPlayers.forEach(player => {
+      uniquePlayersMap.set(player.id, player);
+    });
+     // create an array of the unique players using the map
+    const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
+    if (playersToStore.length > 0) {
+      thunkApi.dispatch(upsertManyPlayers({players: playersToStore}));
     }
     return leagues;
   },
