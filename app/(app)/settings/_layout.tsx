@@ -8,6 +8,14 @@ export default function HomeTabLayout() {
             headerTitleAlign: 'center'
         }}>
             <Stack.Screen name="index" options={{title: "Settings"}}/>
+            <Stack.Screen 
+                name="language-preference/index"
+                options={{
+                    title: "Language Preference",
+                    headerShown: true,
+                    headerBackButtonDisplayMode: 'minimal'
+                }}
+            />
         </Stack>
     );
 }
