@@ -1,0 +1,9 @@
+{
+  "greeting": "Welcome!",
+  "button": "Login",
+  "button_loading": "Loggin in...",
+  "username_placeholder": "Email",
+  "password_placeholder": "Password",
+  "dev_button": "Dev Data",
+  "create_account_link": "Don't have an account? Register"
+}

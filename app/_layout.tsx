@@ -11,7 +11,7 @@ import { Provider } from "react-redux";
 import store from "@/store/store";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import '@/i18n/i18n';
+import '@/i18n';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 

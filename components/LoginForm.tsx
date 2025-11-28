@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 interface LoginFormData {
   email: string;
@@ -10,6 +11,7 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
+  const { t, i18n } = useTranslation('login');
   const { login, isLoading, error } = useAuth();
   const { control, handleSubmit, setValue } = useForm<LoginFormData>({
     defaultValues: {
@@ -34,7 +36,7 @@ export default function LoginForm() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>{t('greeting')}</Text>
       
       {error && <Text style={styles.error}>{error}</Text>}
       
@@ -46,7 +48,7 @@ export default function LoginForm() {
           <View>
             <TextInput
               style={[styles.input, error && styles.inputError]}
-              placeholder="Email"
+              placeholder={t('username_placeholder')}
               value={value}
               onChangeText={onChange}
               autoCapitalize="none"
@@ -65,7 +67,7 @@ export default function LoginForm() {
           <View>
             <TextInput
               style={[styles.input, error && styles.inputError]}
-              placeholder="Password"
+              placeholder={t('password_placeholder')}
               value={value}
               onChangeText={onChange}
               secureTextEntry
@@ -81,7 +83,7 @@ export default function LoginForm() {
         disabled={isLoading}
       >
         <Text style={styles.buttonText}>
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? t('button_loading') : t('button')}
         </Text>
       </TouchableOpacity>
 
@@ -90,7 +92,7 @@ export default function LoginForm() {
           style={styles.devButton}
           onPress={handleDevLogin}
         >
-          <Text style={styles.devButtonText}>Dev Data</Text>
+          <Text style={styles.devButtonText}>{t('dev_button')}</Text>
         </TouchableOpacity>
       )}
       
@@ -98,7 +100,7 @@ export default function LoginForm() {
         style={styles.link}
         onPress={() => router.push('/register')}
       >
-        <Text style={styles.linkText}>Don't have an account? Register</Text>
+        <Text style={styles.linkText}>{t('create_account_link')}</Text>
       </TouchableOpacity>
     </View>
   );
