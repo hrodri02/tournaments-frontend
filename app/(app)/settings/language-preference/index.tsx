@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RadioButton from '@/components/RadioButton';
 import { useTranslation } from 'react-i18next';
@@ -12,8 +12,8 @@ const languageOptions: Option[] = [
 
 export default function LanguagePreferencePage() {
     const { t, i18n } = useTranslation('login');
-    const currentLangue = i18n.language;
-    const [selectedOption, setSelectedOption] = useState<string>(currentLangue);
+    const currentLanguage = i18n.language;
+    const [selectedOption, setSelectedOption] = useState<string>(currentLanguage);
     const changeLanguage = (lng: string) => {
         setSelectedOption(lng);
         i18n.changeLanguage(lng);
@@ -21,7 +21,7 @@ export default function LanguagePreferencePage() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.groupTitle}>Choose your preferred langue</Text>
+            <Text style={styles.groupTitle}>Choose your preferred language</Text>
             {languageOptions.map((option) => (
             <RadioButton<string>
                 key={option.value}
