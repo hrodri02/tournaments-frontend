@@ -1,13 +1,21 @@
 import React from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
-import {useAuth} from '@/contexts/AuthContext';
-import {router} from 'expo-router';
+import {
+    View, 
+    Text, 
+    TextInput, 
+    TouchableOpacity, 
+    StyleSheet
+} from 'react-native';
+import { useAuth } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterScreen() {
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const {register, isLoading, error} = useAuth();
+    const { t, i18n } = useTranslation('register');
 
     const handleRegister = async () => {
         try {
@@ -20,20 +28,20 @@ export default function RegisterScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Register</Text>
+            <Text style={styles.title}>{t('greeting')}</Text>
 
             {error && <Text style={styles.error}>{error}</Text>}
 
             <TextInput
                 style={styles.input}
-                placeholder="Name"
+                placeholder={t('name_placeholder')}
                 value={name}
                 onChangeText={setName}
             />
 
             <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder={t('email_placeholder')}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -42,7 +50,7 @@ export default function RegisterScreen() {
 
             <TextInput
                 style={styles.input}
-                placeholder="Password"
+                placeholder={t('password_placeholder')}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -54,7 +62,7 @@ export default function RegisterScreen() {
                 disabled={isLoading}
             >
                 <Text style={styles.buttonText}>
-                    {isLoading ? 'Registering...' : 'Register'}
+                    {isLoading ? t('button_loading') : t('button')}
                 </Text>
             </TouchableOpacity>
 
@@ -62,7 +70,7 @@ export default function RegisterScreen() {
                 style={styles.link}
                 onPress={() => router.push('/login')}
             >
-                <Text style={styles.linkText}>Already have an account? Login</Text>
+                <Text style={styles.linkText}>{t('login_link')}</Text>
             </TouchableOpacity>
         </View>
     );
