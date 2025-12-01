@@ -3,7 +3,9 @@ import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 
 import { Link } from 'expo-router';
 import { League, LeagueStatus } from '@/entities/index';
 import { parseISO, format, addWeeks } from 'date-fns';
-import { type Href } from 'expo-router'; 
+import { es, enUS } from 'date-fns/locale'
+import { type Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -32,6 +34,9 @@ const styles = StyleSheet.create({
 });
 
 export function LeagueExcerpt({ league, pathname, style, clickable = false, imageSideLength = screenHeight * 0.1 }: LeagueExcerptProps) {
+    const { t, i18n } = useTranslation('home');
+    const currentLanguage = i18n.language;
+    const locale = currentLanguage === 'en-US'? enUS : es;
     const linkHref: Href = { pathname: pathname } as Href;
 
     if (!league) {
@@ -40,17 +45,17 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
 
     const startDate = parseISO(league.startDate)
     const endDate = addWeeks(startDate, league.durationInWeeks)
-    const formattedStartDate = format(startDate, 'MMMM d y');
-    const formattedEndDate = format(endDate, 'MMMM d y')
+    const formattedStartDate = format(startDate, 'MMMM d y', {locale: locale});
+    const formattedEndDate = format(endDate, 'MMMM d y', {locale: locale})
 
     const renderLeagueDateText = (league: League): React.JSX.Element | null => {
         switch (league.status) {
             case LeagueStatus.notStarted:
-                return <Text style={styles.itemSubheader}>Starts {formattedStartDate}</Text>
+                return <Text style={styles.itemSubheader}>{t('starts_label')} {formattedStartDate}</Text>
             case LeagueStatus.inProgress:
-                return <Text style={styles.itemSubheader}>Started {formattedStartDate}</Text>
+                return <Text style={styles.itemSubheader}>{t('started_label')} {formattedStartDate}</Text>
             case LeagueStatus.ended:
-                return <Text style={styles.itemSubheader}>Ended {formattedEndDate}</Text>
+                return <Text style={styles.itemSubheader}>{t('ended_label')} {formattedEndDate}</Text>
             default:
                 return null;
         }
