@@ -7,17 +7,21 @@ import en_login from './locales/en/login.json';
 import es_login from './locales/es/login.json';
 import en_register from './locales/en/register.json';
 import es_register from './locales/es/register.json';
+import en_home from './locales/en/home.json';
+import es_home from './locales/es/home.json';
 // don't want to use this?
 // have a look at the Quick start guide 
 // for passing in lng and translations on init
 const resources = {
   en: {
     login: en_login,
-    register: en_register
+    register: en_register,
+    home: en_home
   },
   es: {
     login: es_login,
-    register: es_register
+    register: es_register,
+    home: es_home
   },
 };
 
