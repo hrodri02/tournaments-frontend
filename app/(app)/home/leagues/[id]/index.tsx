@@ -22,9 +22,11 @@ import {
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectDenormalizedGames } from '@/store/games/gamesSlice';
+import { useTranslation } from 'react-i18next';
 
 export default function LeagueScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation('league');
   const { id } = useLocalSearchParams();
   const dispatch = useAppDispatch();
   const leagueId = Number(id);
@@ -53,7 +55,7 @@ export default function LeagueScreen() {
   let view: React.JSX.Element = <></>;
   if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
     view = <FlatList
-      ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
+      ListHeaderComponent={<Text style={styles.header}>{t('schedule_title')}</Text>}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       data={games}
       renderItem={({ item }) => (
