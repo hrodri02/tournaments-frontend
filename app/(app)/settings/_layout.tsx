@@ -1,13 +1,16 @@
 import { Stack } from 'expo-router';
 import React from 'react';
 import 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 
 export default function HomeTabLayout() {
+    const { t } = useTranslation(['common', 'settings']);
+
     return (
         <Stack screenOptions={{
             headerTitleAlign: 'center'
         }}>
-            <Stack.Screen name="index" options={{title: "Settings"}}/>
+            <Stack.Screen name="index" options={{title: t('settings_label')}}/>
             <Stack.Screen 
                 name="language-preference/index"
                 options={{
