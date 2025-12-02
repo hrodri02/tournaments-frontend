@@ -3,8 +3,8 @@ import React from 'react';
 import 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
-export default function HomeTabLayout() {
-    const { t } = useTranslation(['common', 'settings']);
+export default function SettingsTabLayout() {
+    const { t } = useTranslation(['common', 'settings', 'language_preference']);
 
     return (
         <Stack screenOptions={{
@@ -14,7 +14,7 @@ export default function HomeTabLayout() {
             <Stack.Screen 
                 name="language-preference/index"
                 options={{
-                    title: "Language Preference",
+                    title: t('language_preference:title'),
                     headerShown: true,
                     headerBackButtonDisplayMode: 'minimal'
                 }}

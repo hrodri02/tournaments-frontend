@@ -5,13 +5,13 @@ import RadioButton from '@/components/RadioButton';
 import { useTranslation } from 'react-i18next';
 
 interface Option { value: string; label: string; }
-const languageOptions: Option[] = [
-    { value: 'en', label: 'English' },
-    { value: 'es', label: 'Spanish' },
-];
 
 export default function LanguagePreferencePage() {
-    const { t, i18n } = useTranslation('login');
+    const { t, i18n } = useTranslation('language_preference');
+    const languageOptions: Option[] = [
+      { value: 'en', label: t('en_option') },
+      { value: 'es', label: t('es_option') },
+    ];
     const currentLanguage = i18n.language;
     const [selectedOption, setSelectedOption] = useState<string>(currentLanguage);
     const changeLanguage = (lng: string) => {
@@ -21,7 +21,7 @@ export default function LanguagePreferencePage() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.groupTitle}>Choose your preferred language</Text>
+            <Text style={styles.groupTitle}>{t('choose_preferred_language_label')}</Text>
             {languageOptions.map((option) => (
             <RadioButton<string>
                 key={option.value}

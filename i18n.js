@@ -19,6 +19,8 @@ import en_common from './locales/en/common.json';
 import es_common from './locales/es/common.json';
 import en_settings from './locales/en/settings.json';
 import es_settings from './locales/es/settings.json';
+import en_language_preference from './locales/en/language-preference.json';
+import es_language_preference from './locales/es/language-preference.json';
 // don't want to use this?
 // have a look at the Quick start guide 
 // for passing in lng and translations on init
@@ -31,7 +33,8 @@ const resources = {
     upcoming_league: en_upcoming_league,
     game: en_game,
     common: en_common,
-    settings: en_settings
+    settings: en_settings,
+    language_preference: en_language_preference
   },
   es: {
     login: es_login,
@@ -41,7 +44,8 @@ const resources = {
     upcoming_league: es_upcoming_league,
     game: es_game,
     common: es_common,
-    settings: es_settings
+    settings: es_settings,
+    language_preference: es_language_preference
   },
 };
 
