@@ -30,10 +30,12 @@ import {
     resetApplicationsCreateState,
     makeSelectApplicationsByTeamId
 } from '@/store/league-applications/applicationsSlice';
+import { useTranslation } from 'react-i18next';
 
 export default function JoinLeague() {
     const dispatch = useAppDispatch();
     const { id } = useLocalSearchParams();
+    const { t } = useTranslation('teams');
     const teamId = Number(id);
     const fetchStatus = useAppSelector(selectApplicationsFetchStatus);
     const fetchError = useAppSelector(selectApplicationsFetchError);
@@ -79,7 +81,7 @@ export default function JoinLeague() {
                     deleteRow(rowMap, String(data.item.id))
                 }
             >
-                <Text style={styles.backTextWhite}>Join</Text>
+                <Text style={styles.backTextWhite}>{t('join_a_league.join_button')}</Text>
             </Pressable>
         </View>
     );
@@ -132,7 +134,7 @@ export default function JoinLeague() {
     }
     else if (createStatus === 'succeeded') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>Application successfully sent.</Text>
+            <Text>{t('join_a_league.success_message')}</Text>
             <Ionicons name="checkmark-circle" size={32} color="green" />
         </View>
     }

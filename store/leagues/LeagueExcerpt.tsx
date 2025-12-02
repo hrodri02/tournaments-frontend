@@ -11,7 +11,7 @@ const screenHeight = Dimensions.get('window').height;
 
 type LeagueExcerptProps = {
     league: League;
-    pathname: string;
+    pathname?: string;
     style?: ViewStyle;
     clickable?: boolean;
     imageSideLength?: number;

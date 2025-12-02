@@ -16,10 +16,12 @@ import { useAppSelector } from '@/hooks/useStore';
 import { selectTeamById } from '@/store/teams/teamsSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function TeamDetailPage() {
     const router = useRouter();
     const { user, isLoading } = useAuth();
+    const { t } = useTranslation('teams');
     const { showActionSheetWithOptions } = useActionSheet();
     const { id } = useLocalSearchParams();
     const teamId = Number(id);
@@ -38,7 +40,11 @@ export default function TeamDetailPage() {
     }, [navigation, team?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = ['Invites', 'Join League', 'Cancel'];
+        const options = [
+            t('detail.invites_option'),
+            t('detail.join_league_option'),
+            t('detail.cancel_option')
+        ];
         const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(
@@ -83,7 +89,7 @@ export default function TeamDetailPage() {
         <SafeAreaView style={styles.safeAreaContainer}>
             <FlatList
                 ItemSeparatorComponent={() => <View style={styles.itemSeparator}/>}
-                ListHeaderComponent={<View><Text style={styles.sectionHeader}>Players</Text></View>}
+                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('detail.players_label')}</Text></View>}
                 data={playersInTeam}
                 renderItem={({item}) => <PlayerExcerpt style={styles.item} player={item}/>}
                 keyExtractor={item => String(item.id)}

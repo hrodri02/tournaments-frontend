@@ -1,5 +1,12 @@
-import React, {useState} from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { 
+    View, 
+    Text, 
+    TextInput, 
+    Pressable, 
+    StyleSheet 
+} from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface EditEmailFormProps {
     oldEmail: string;
@@ -8,6 +15,7 @@ interface EditEmailFormProps {
 }
 
 export default function EditEmailForm({ oldEmail, onSubmit, onClose }: EditEmailFormProps) {
+    const { t } = useTranslation(['teams', 'common']);
     const [email, setEmail] = useState(oldEmail);
 
     const handleSubmitPress = () => {
@@ -23,25 +31,25 @@ export default function EditEmailForm({ oldEmail, onSubmit, onClose }: EditEmail
             onClose();
         } else {
             // Handle case where input is empty
-            alert('Please enter a valid email address.');
+            alert(t('edit_email.error_message'));
         }
     };
 
     return (
         <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Edit email</Text>
+            <Text style={styles.modalTitle}>{t('edit_email.title')}</Text>
             <TextInput
                 style={[styles.input, styles.whiteBackground]}
                 onChangeText={setEmail}
                 value={email}
-                placeholder="Enter email"
+                placeholder={t('common:email_placeholder')}
             />
 
             <Pressable
                 onPress={handleSubmitPress}
                 style={styles.buttonContainer}
             >
-                <Text style={styles.buttonText}>Submit</Text>
+                <Text style={styles.buttonText}>{t('edit_email.button')}</Text>
             </Pressable>
         </View>
     );

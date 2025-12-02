@@ -1,0 +1,52 @@
+{
+    "title": "Teams",
+    "invites_label": "Invites",
+    "decline_button": "Decline",
+    "accept_button": "Accept",
+    "invite_players_message": "Max number of players:",
+    "create_team": {
+        "title": "Create Team",
+        "team_name_label": "Team Name",
+        "team_name_placeholder": "Enter team name",
+        "upload_team_logo_label": "Upload Team Logo",
+        "upload_img_message": "Upload a PNG or JPG under 8MB.",
+        "invite_players_label": "Invite Players",
+        "button": "Create Team",
+        "edit_button": "Edit",
+        "delete_button": "Delete",
+        "success_message": "Team successfully created."
+    },
+    "edit_email": {
+        "title": "Edit Email",
+        "button": "Submit",
+        "error_message": "Please enter a valid email address."
+    },
+    "detail": {
+        "players_label": "Players",
+        "invites_option": "Invites",
+        "join_league_option": "Join League",
+        "cancel_option": "Cancel"
+    },
+    "pending_invites": {
+        "revoke_button": "Revoke",
+        "pending_label": "Pending",
+        "accepted_label": "Accepted",
+        "declined_label": "Declined",
+        "revoked_label": "Revoked"
+    },
+    "invites": {
+        "title": "Invite a Friend",
+        "email_placeholder": "Email",
+        "button": "Add Email",
+        "error_message": "Please enter a valid email address."
+    },
+    "join_a_league": {
+        "join_button": "Join",
+        "success_message": "Application successfully sent."
+    },
+    "goal_keeper_label": "Goal keeper",
+    "defender_label": "Defender",
+    "midfielder_label": "Midfielder",
+    "striker_label": "Striker",
+    "winger_label": "Winger"
+}

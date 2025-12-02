@@ -3,9 +3,11 @@ import React from 'react';
 import 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons'; 
 import { Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function TeamsTabLayout() {
     const router = useRouter(); 
+    const { t } = useTranslation('teams');
 
     return (
         <Stack screenOptions={{
@@ -14,7 +16,7 @@ export default function TeamsTabLayout() {
             <Stack.Screen 
                 name="index" 
                 options={{
-                    title: "Teams",
+                    title: t('teams:title'),
                     headerRight: () => (
                         <Pressable onPress={() => {router.push('/teams/create-team');}}>
                             <Ionicons name="add" size={24} color="black" style={{ marginRight: 15 }} />
@@ -32,7 +34,7 @@ export default function TeamsTabLayout() {
             <Stack.Screen 
                 name="[id]/invites/index"
                 options={{
-                    title: "Invites",
+                    title: t('detail.invites_option'),
                     headerShown: true,
                     headerBackButtonDisplayMode: 'minimal'
                 }}
@@ -40,12 +42,12 @@ export default function TeamsTabLayout() {
             <Stack.Screen 
                 name="[id]/join-league/index"
                 options={{
-                    title: "Join League",
+                    title: t('detail.join_league_option'),
                     headerShown: true,
                     headerBackButtonDisplayMode: 'minimal'
                 }}
             />
-            <Stack.Screen name="create-team/index" options={{title: "Create Team"}}/>
+            <Stack.Screen name="create-team/index" options={{title: t('create_team.title')}}/>
         </Stack>
     );
 }

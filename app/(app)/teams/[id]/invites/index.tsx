@@ -35,6 +35,7 @@ import {
 } from '@/store/team-invites/teamInvitesSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
 import { selectTeamById } from '@/store/teams/teamsSlice';
+import { useTranslation } from 'react-i18next';
 
 interface PlayerIdToInviteIdMap {
     [playerId: number] : number;
@@ -42,6 +43,7 @@ interface PlayerIdToInviteIdMap {
 
 export default function Invites() {
     const MAX_PLAYERS = 24;
+    const { t } = useTranslation('teams');
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const navigation = useNavigation();
     const dispatch = useAppDispatch();
@@ -97,7 +99,7 @@ export default function Invites() {
                     deleteRow(rowMap, String(data.item.id))
                 }
             >
-                <Text style={styles.backTextWhite}>Revoke</Text>
+                <Text style={styles.backTextWhite}>{t('pending_invites.revoke_button')}</Text>
             </Pressable>
         </View>
     );
@@ -136,7 +138,7 @@ export default function Invites() {
             setInviteModalVisible(true)
         }
         else {
-            alert('You can have up to ' + MAX_PLAYERS + ' players in your team.');
+            alert(`${t('invite_players_message')} ${MAX_PLAYERS}`);
         }
     }
 
