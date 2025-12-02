@@ -15,6 +15,8 @@ import en_league from './locales/en/league.json';
 import es_league from './locales/es/league.json';
 import en_game from './locales/en/game.json';
 import es_game from './locales/es/game.json';
+import en_common from './locales/en/common.json';
+import es_common from './locales/es/common.json';
 // don't want to use this?
 // have a look at the Quick start guide 
 // for passing in lng and translations on init
@@ -25,7 +27,8 @@ const resources = {
     home: en_home,
     league: en_league,
     upcoming_league: en_upcoming_league,
-    game: en_game
+    game: en_game,
+    common: en_common
   },
   es: {
     login: es_login,
@@ -33,7 +36,8 @@ const resources = {
     home: es_home,
     league: es_league,
     upcoming_league: es_upcoming_league,
-    game: es_game
+    game: es_game,
+    common: es_common
   },
 };
 
