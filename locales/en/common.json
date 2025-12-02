@@ -1,5 +1,6 @@
 {
     "home_label": "Home",
     "teams_label": "Teams",
-    "settings_label": "Settings"
+    "settings_label": "Settings",
+    "email_placeholder": "Email"
 }

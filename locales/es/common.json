@@ -1,5 +1,6 @@
 {
     "home_label": "Hogar",
     "teams_label": "Equipos",
-    "settings_label": "Ajustes"
+    "settings_label": "Ajustes",
+    "email_placeholder": "Correo Electrónico"
 }
