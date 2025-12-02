@@ -3,5 +3,7 @@
     "section_two_title": "Teams",
     "start_date_label": "Start Date",
     "duration_label": "Duration",
-    "weeks_label": "weeks"
+    "weeks_label": "weeks",
+    "applications_label": "Applications",
+    "cancel_label": "Cancel"
 }

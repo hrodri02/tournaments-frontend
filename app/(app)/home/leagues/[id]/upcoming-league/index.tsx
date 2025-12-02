@@ -18,7 +18,7 @@ import { makeSelectTeamsByIds } from '@/store/teams/teamsSlice';
 import { TeamExcerpt } from '@/components/TeamExcerpt';
 import { LeagueDetail, LeagueDetailExcerpt } from '@/components/LeagueDetailExcerpt';
 import { useTranslation } from 'react-i18next';
-import { parseISO, format, addWeeks } from 'date-fns';
+import { parseISO, format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale'
 
 export default function UpcomingLeaguePage() {
@@ -61,7 +61,7 @@ export default function UpcomingLeaguePage() {
     }, [navigation, league?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = ['Applications', 'Cancel'];
+        const options = [t('applications_label'), t('cancel_label')];
         const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(
