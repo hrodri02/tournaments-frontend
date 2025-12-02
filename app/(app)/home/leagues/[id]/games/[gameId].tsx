@@ -29,6 +29,7 @@ import {
     resetCreateGameStatStatus 
 } from '@/store/gamestats/gameStatsSlice';
 import { format } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 import { 
     GameStatType, 
     filterStats, 
@@ -40,11 +41,13 @@ import {
 import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 import EditGameStatForm from '@/components/EditGameStatForm';
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height; 
 
 export default function Game() {
     const { user, isLoading } = useAuth();
+    const { t, i18n } = useTranslation('game');
     const [modalVisible, setModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const dispatch = useAppDispatch()
@@ -59,7 +62,8 @@ export default function Game() {
     const { showActionSheetWithOptions } = useActionSheet();
     const homeTeam = game.homeTeam
     const awayTeam = game.awayTeam
-    const formattedDate = format(game.gameDateTime, 'eee, MMM d')
+    const locale = (['en', 'en-US'].includes(i18n.language))? enUS : es;
+    const formattedDate = format(game.gameDateTime, 'eee, MMM d', {locale: locale});
     const gameStatsStatus = useAppSelector(selectGameStatsFetchStatus)
     const createStatus = useAppSelector(selectGameStatsCreateStatus)
     const selectGameStatsOfGame = useMemo(
@@ -90,7 +94,7 @@ export default function Game() {
     }, [navigation, homeTeam, awayTeam]);
 
     const handlePress = () => {
-        const options = ['Add', 'Edit', 'Cancel'];
+        const options = [t('add_option'), t('edit_option'), t('cancel_option')];
         const destructiveButtonIndex = 2;
         const cancelButtonIndex = 3;
 
@@ -186,7 +190,7 @@ export default function Game() {
     }
     else if (gameStatsStatus === 'succeeded') {
         view = <View>
-            <Text style={styles.date}>{formattedDate} at {game.address}</Text>
+            <Text style={styles.date}>{formattedDate} {t('at_text')} {game.address}</Text>
             
             <View style={styles.gameStatView}> 
                 <View style={styles.teamLogo}> 
@@ -224,13 +228,13 @@ export default function Game() {
 
             <View style={styles.gameStatView} >
                 <Text style={[styles.text, styles.equalWidth]}>{homeTeamYellowCards}</Text>
-                <Text style={[styles.text, styles.equalWidth]}> Yellow Cards </Text>
+                <Text style={[styles.text, styles.equalWidth]}>{t('yellow_cards_label')}</Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamYellowCards}</Text>
             </View>
 
             <View style={styles.gameStatView}> 
                 <Text style={[styles.text, styles.equalWidth]}>{homeTeamRedCards}</Text>
-                <Text style={[styles.text, styles.equalWidth]}> Red Cards </Text>
+                <Text style={[styles.text, styles.equalWidth]}>{t('red_cards_label')}</Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamRedCards}</Text>
             </View>
 

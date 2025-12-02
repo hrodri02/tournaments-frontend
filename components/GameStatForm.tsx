@@ -10,6 +10,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { useForm, Controller } from 'react-hook-form';
 import { GameStatType, TeamResponse } from '@/entities';
+import { useTranslation } from 'react-i18next';
 
 type GameStatFormProps = {
     homeTeam: TeamResponse;
@@ -26,8 +27,14 @@ export interface GameStatFormData {
 
 const gameStatValues = Object.values(GameStatType);
 
-// TODO: fetch players from player slice
 export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }: GameStatFormProps) {
+    const { t } = useTranslation('game');
+    const GameStatTypeDisplay: Record<GameStatType, string> = {
+        'GOAL': t('goal_option'),
+        'YELLOW_CARD': t('yellow_card_option'),
+        'RED_CARD': t('red_card_option'),
+    };
+
     const { control, handleSubmit } = useForm<GameStatFormData>({
         defaultValues: {
             gameStatType: '',
@@ -47,14 +54,14 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 rules={{ required: 'Game stat type is required' }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
-                    <Text style={styles.pickerLabel}>Select Game Stat Type</Text>
+                    <Text style={styles.pickerLabel}>{t('select_game_stat_label')}</Text>
                     <Picker
                         style={styles.picker}
                         selectedValue={value}
                         onValueChange={onChange}>
-                        <Picker.Item label="Select Game Stat..." value={""} />
+                        <Picker.Item label={t('select_game_stat_picker_label')} value={""} />
                         {gameStatValues.map((type) => (
-                            <Picker.Item key={type} label={type} value={type} />
+                            <Picker.Item key={type} label={GameStatTypeDisplay[type]} value={type} />
                         ))}
                     </Picker>
                     {error && <Text style={styles.errorText}>{error.message}</Text>}
@@ -68,12 +75,12 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 rules={{ required: 'Player is required' }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
-                    <Text style={styles.pickerLabel}>Select Player</Text>
+                    <Text style={styles.pickerLabel}>{t('select_player_label')}</Text>
                     <Picker
                         style={styles.picker}
                         selectedValue={value}
                         onValueChange={onChange}>
-                        <Picker.Item label="Select Player..." value="" />
+                        <Picker.Item label={t('select_player_picker_label')} value="" />
                         <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
                         {homeTeam.playerDTOs.map((player) => (
                             <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
@@ -92,13 +99,13 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 style={styles.pickerButton}
                 onPress={handleSubmit(onFormSubmitted)}
             >
-                <Text style={styles.pickerButtonText}>Save</Text>
+                <Text style={styles.pickerButtonText}>{t('save_button')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.pickerButton}
                 onPress={onCancel}
             >
-                <Text style={styles.pickerButtonText}>Cancel</Text>
+                <Text style={styles.pickerButtonText}>{t('cancel_button')}</Text>
             </TouchableOpacity>
         </View>
     );

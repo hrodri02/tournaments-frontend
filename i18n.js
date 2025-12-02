@@ -13,6 +13,8 @@ import en_upcoming_league from './locales/en/upcoming-league.json';
 import es_upcoming_league from './locales/es/upcoming-league.json';
 import en_league from './locales/en/league.json';
 import es_league from './locales/es/league.json';
+import en_game from './locales/en/game.json';
+import es_game from './locales/es/game.json';
 // don't want to use this?
 // have a look at the Quick start guide 
 // for passing in lng and translations on init
@@ -22,14 +24,16 @@ const resources = {
     register: en_register,
     home: en_home,
     league: en_league,
-    upcoming_league: en_upcoming_league
+    upcoming_league: en_upcoming_league,
+    game: en_game
   },
   es: {
     login: es_login,
     register: es_register,
     home: es_home,
     league: es_league,
-    upcoming_league: es_upcoming_league
+    upcoming_league: es_upcoming_league,
+    game: es_game
   },
 };
 
