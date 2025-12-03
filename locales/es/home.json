@@ -14,6 +14,9 @@
         "applications_label": "Aplicaciones",
         "cancel_label": "Cancelar"
     },
+    "league": {
+        "schedule_title": "Cronograma"
+    },
     "applications": {
         "reject_button": "Rechazar",
         "accept_button": "Aceptar",

@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function LeagueScreen() {
   const navigation = useNavigation();
-  const { t } = useTranslation('league');
+  const { t } = useTranslation('home');
   const { id } = useLocalSearchParams();
   const dispatch = useAppDispatch();
   const leagueId = Number(id);
@@ -55,7 +55,7 @@ export default function LeagueScreen() {
   let view: React.JSX.Element = <></>;
   if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
     view = <FlatList
-      ListHeaderComponent={<Text style={styles.header}>{t('schedule_title')}</Text>}
+      ListHeaderComponent={<Text style={styles.header}>{t('league.schedule_title')}</Text>}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       data={games}
       renderItem={({ item }) => (
