@@ -34,7 +34,6 @@
     },
     "invites": {
         "title": "Invite a Friend",
-        "email_placeholder": "Email",
         "button": "Add Email",
         "error_message": "Please enter a valid email address."
     },

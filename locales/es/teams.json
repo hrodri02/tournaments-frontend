@@ -23,7 +23,7 @@
     "detail": {
         "players_label": "Jugadores",
         "invites_option": "Invitaciones",
-        "join_league_option": "Únete a una Liga",
+        "join_league_option": "Únete a una Liga"
     },
     "pending_invites": {
         "revoke_button": "Revocar",
@@ -34,7 +34,6 @@
     },
     "invites": {
         "title": "Invita a un Amigo",
-        "email_placeholder": "Correo Electrónico",
         "button": "Agrega Correo Electrónico",
         "error_message": "Por favor, introduce una dirección de correo electrónico válida."
     },
