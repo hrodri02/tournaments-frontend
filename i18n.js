@@ -19,8 +19,6 @@ import en_common from './locales/en/common.json';
 import es_common from './locales/es/common.json';
 import en_settings from './locales/en/settings.json';
 import es_settings from './locales/es/settings.json';
-import en_language_preference from './locales/en/language-preference.json';
-import es_language_preference from './locales/es/language-preference.json';
 import en_teams from './locales/en/teams.json';
 import es_teams from './locales/es/teams.json';
 // don't want to use this?
@@ -36,7 +34,6 @@ const resources = {
     game: en_game,
     common: en_common,
     settings: en_settings,
-    language_preference: en_language_preference,
     teams: en_teams
   },
   es: {
@@ -48,7 +45,6 @@ const resources = {
     game: es_game,
     common: es_common,
     settings: es_settings,
-    language_preference: es_language_preference,
     teams: es_teams
   },
 };
