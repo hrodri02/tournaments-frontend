@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useTranslation } from 'react-i18next';
 
 export default function HomeLayout() {
-  const { t } = useTranslation('upcoming_league');
+  const { t } = useTranslation('home');
 
   return (
     <Stack screenOptions={{
@@ -27,7 +27,7 @@ export default function HomeLayout() {
       <Stack.Screen 
         name="leagues/[id]/applications/index"
         options={{
-          title: t('applications_label'),
+          title: t('upcoming_league.applications_label'),
           headerShown: true,
           headerBackButtonDisplayMode: 'minimal'
         }}

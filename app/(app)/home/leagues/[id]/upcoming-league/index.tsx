@@ -24,7 +24,7 @@ import { es, enUS } from 'date-fns/locale'
 export default function UpcomingLeaguePage() {
     const router = useRouter();
     const navigation = useNavigation();
-    const { t, i18n } = useTranslation('upcoming_league');
+    const { t, i18n } = useTranslation('home');
     const currentLanguage = i18n.language;
     const locale = currentLanguage === 'en-US'? enUS : es;
     const { user, isLoading } = useAuth();
@@ -43,14 +43,14 @@ export default function UpcomingLeaguePage() {
         {
             id: 1, 
             iconName: "calendar-outline", 
-            description: t('start_date_label'), 
+            description: t('upcoming_league.start_date_label'), 
             text: formattedStartDate
         },
         {
             id: 2, 
             iconName: "time-outline", 
-            description: t('duration_label'), 
-            text: `${league.durationInWeeks} ${t('weeks_label')}`
+            description: t('upcoming_league.duration_label'), 
+            text: `${league.durationInWeeks} ${t('upcoming_league.weeks_label')}`
         },
     ];
     
@@ -61,7 +61,7 @@ export default function UpcomingLeaguePage() {
     }, [navigation, league?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = [t('applications_label'), t('cancel_label')];
+        const options = [t('upcoming_league.applications_label'), t('upcoming_league.cancel_label')];
         const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(
@@ -107,7 +107,7 @@ export default function UpcomingLeaguePage() {
         <SafeAreaView style={styles.container}>
             <FlatList
                 style={styles.topFlatList}
-                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('section_one_title')}</Text></View>}
+                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('upcoming_league.section_one_title')}</Text></View>}
                 data={leagueDetails}
                 renderItem={({item}) => 
                     <LeagueDetailExcerpt detail={item} style={styles.item}/>
@@ -117,7 +117,7 @@ export default function UpcomingLeaguePage() {
             <FlatList
                 style={styles.bottomFlatList}
                 ItemSeparatorComponent={() => <View style={styles.itemSeparator}/>}
-                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('section_two_title')}</Text></View>}
+                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('upcoming_league.section_two_title')}</Text></View>}
                 data={teams}
                 renderItem={({item}) => <TeamExcerpt style={styles.item} team={item}/>}
                 keyExtractor={item => String(item.id)}
