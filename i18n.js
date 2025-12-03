@@ -9,8 +9,6 @@ import en_register from './locales/en/register.json';
 import es_register from './locales/es/register.json';
 import en_home from './locales/en/home.json';
 import es_home from './locales/es/home.json';
-import en_upcoming_league from './locales/en/upcoming-league.json';
-import es_upcoming_league from './locales/es/upcoming-league.json';
 import en_league from './locales/en/league.json';
 import es_league from './locales/es/league.json';
 import en_game from './locales/en/game.json';
@@ -30,7 +28,6 @@ const resources = {
     register: en_register,
     home: en_home,
     league: en_league,
-    upcoming_league: en_upcoming_league,
     game: en_game,
     common: en_common,
     settings: en_settings,
@@ -41,7 +38,6 @@ const resources = {
     register: es_register,
     home: es_home,
     league: es_league,
-    upcoming_league: es_upcoming_league,
     game: es_game,
     common: es_common,
     settings: es_settings,
