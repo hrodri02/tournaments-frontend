@@ -3,5 +3,6 @@
     "teams_label": "Teams",
     "settings_label": "Settings",
     "email_placeholder": "Email",
-    "cancel_button": "Cancel"
+    "cancel_button": "Cancel",
+    "delete_button": "Delete"
 }

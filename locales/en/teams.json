@@ -13,7 +13,6 @@
         "invite_players_label": "Invite Players",
         "button": "Create Team",
         "edit_button": "Edit",
-        "delete_button": "Delete",
         "success_message": "Team successfully created."
     },
     "edit_email": {

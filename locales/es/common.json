@@ -3,5 +3,6 @@
     "teams_label": "Equipos",
     "settings_label": "Ajustes",
     "email_placeholder": "Correo Electrónico",
-    "cancel_button": "Cancelar"
+    "cancel_button": "Cancelar",
+    "delete_button": "Borrar"
 }

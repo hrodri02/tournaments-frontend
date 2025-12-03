@@ -40,7 +40,7 @@ interface CreateTeamFormData {
 
 export default function CreateTeamPage() {
     const MAX_PLAYERS = 24;
-    const { t } = useTranslation('teams');
+    const { t } = useTranslation(['teams', 'common']);
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -204,7 +204,7 @@ export default function CreateTeamPage() {
                                         deleteRow(rowMap, data.item.key)
                                     }}
                                 >
-                                    <Text style={styles.backTextWhite}>{t('create_team.delete_button')}</Text>
+                                    <Text style={styles.backTextWhite}>{t('common:delete_button')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

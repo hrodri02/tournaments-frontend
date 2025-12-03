@@ -48,7 +48,7 @@ export interface EditGameStatFormData {
 
 export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }: EditGameStatFormProps) {
     const dispatch = useAppDispatch();
-    const { t } = useTranslation('home');
+    const { t } = useTranslation(['home', 'common']);
     const goalStats = filterStats(stats, GameStatType.goal)
     const yellowCardStats = filterStats(stats, GameStatType.yellowCard)
     const redCardStats = filterStats(stats, GameStatType.redCard)
@@ -162,7 +162,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                                 style={styles.deleteButton}
                                 onPress={() => handleDeleteStatButtonPressed(item)}
                             >
-                                <Text style={styles.deleteButtonText}>{t('game.delete_button')}</Text>
+                                <Text style={styles.deleteButtonText}>{t('common:delete_button')}</Text>
                             </TouchableOpacity>
 
                             {updateStatus === 'succeeded' && failed && <Text style={styles.errorText}>{failed.message}</Text>}

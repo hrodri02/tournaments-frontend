@@ -35,7 +35,6 @@
         "save_button": "Guardar",
         "goal_option": "Gol",
         "yellow_card_option": "Tarjeta amarilla",
-        "red_card_option": "Tarjeta roja",
-        "delete_button": "Borrar"
+        "red_card_option": "Tarjeta roja"
     }
 }

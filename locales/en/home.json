@@ -35,7 +35,6 @@
         "save_button": "Save",
         "goal_option": "Goal",
         "yellow_card_option": "Yellow card",
-        "red_card_option": "Red card",
-        "delete_button": "Delete"
+        "red_card_option": "Red card"
     }
 }
