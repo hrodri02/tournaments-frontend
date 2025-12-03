@@ -24,7 +24,7 @@ import { es, enUS } from 'date-fns/locale'
 export default function UpcomingLeaguePage() {
     const router = useRouter();
     const navigation = useNavigation();
-    const { t, i18n } = useTranslation('home');
+    const { t, i18n } = useTranslation(['home', 'common']);
     const currentLanguage = i18n.language;
     const locale = currentLanguage === 'en-US'? enUS : es;
     const { user, isLoading } = useAuth();
@@ -61,7 +61,7 @@ export default function UpcomingLeaguePage() {
     }, [navigation, league?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = [t('upcoming_league.applications_label'), t('upcoming_league.cancel_label')];
+        const options = [t('upcoming_league.applications_label'), t('common:cancel_button')];
         const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(

@@ -191,7 +191,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 style={styles.modalButton}
                 onPress={onCancel}
             >
-                <Text style={styles.modalButtonText}>{t('game.cancel_button')}</Text>
+                <Text style={styles.modalButtonText}>{t('common:cancel_button')}</Text>
             </TouchableOpacity>
         </>
     }

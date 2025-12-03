@@ -28,7 +28,7 @@ export interface GameStatFormData {
 const gameStatValues = Object.values(GameStatType);
 
 export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }: GameStatFormProps) {
-    const { t } = useTranslation('home');
+    const { t } = useTranslation(['home', 'common']);
     const GameStatTypeDisplay: Record<GameStatType, string> = {
         'GOAL': t('game.goal_option'),
         'YELLOW_CARD': t('game.yellow_card_option'),
@@ -105,7 +105,7 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 style={styles.pickerButton}
                 onPress={onCancel}
             >
-                <Text style={styles.pickerButtonText}>{t('game.cancel_button')}</Text>
+                <Text style={styles.pickerButtonText}>{t('common:cancel_button')}</Text>
             </TouchableOpacity>
         </View>
     );

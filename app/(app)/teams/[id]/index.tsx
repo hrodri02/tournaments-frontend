@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 export default function TeamDetailPage() {
     const router = useRouter();
     const { user, isLoading } = useAuth();
-    const { t } = useTranslation('teams');
+    const { t } = useTranslation(['teams', 'common']);
     const { showActionSheetWithOptions } = useActionSheet();
     const { id } = useLocalSearchParams();
     const teamId = Number(id);
@@ -43,7 +43,7 @@ export default function TeamDetailPage() {
         const options = [
             t('detail.invites_option'),
             t('detail.join_league_option'),
-            t('detail.cancel_option')
+            t('common:cancel_button')
         ];
         const cancelButtonIndex = options.length - 1;
 
