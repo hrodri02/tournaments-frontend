@@ -94,7 +94,7 @@ export default function Game() {
     }, [navigation, homeTeam, awayTeam]);
 
     const handlePress = () => {
-        const options = [t('game.add_option'), t('game.edit_option'), t('common:cancel_button')];
+        const options = [t('game.add_option'), t('common:edit_button'), t('common:cancel_button')];
         const destructiveButtonIndex = 2;
         const cancelButtonIndex = 3;
 

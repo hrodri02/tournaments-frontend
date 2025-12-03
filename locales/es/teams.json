@@ -12,7 +12,6 @@
         "upload_img_message": "Sube un archivo PNG o JPG de menos de 8 MB.",
         "invite_players_label": "Invitar a jugadores",
         "button": "Crear Equipo",
-        "edit_button": "Editar",
         "success_message": "Equipo creado exitosamente."
     },
     "edit_email": {

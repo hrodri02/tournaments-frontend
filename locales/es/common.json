@@ -4,5 +4,6 @@
     "settings_label": "Ajustes",
     "email_placeholder": "Correo Electrónico",
     "cancel_button": "Cancelar",
-    "delete_button": "Borrar"
+    "delete_button": "Borrar",
+    "edit_button": "Editar"
 }

@@ -4,5 +4,6 @@
     "settings_label": "Settings",
     "email_placeholder": "Email",
     "cancel_button": "Cancel",
-    "delete_button": "Delete"
+    "delete_button": "Delete",
+    "edit_button": "Edit"
 }

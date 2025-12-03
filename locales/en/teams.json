@@ -12,7 +12,6 @@
         "upload_img_message": "Upload a PNG or JPG under 8MB.",
         "invite_players_label": "Invite Players",
         "button": "Create Team",
-        "edit_button": "Edit",
         "success_message": "Team successfully created."
     },
     "edit_email": {
@@ -23,7 +22,7 @@
     "detail": {
         "players_label": "Players",
         "invites_option": "Invites",
-        "join_league_option": "Join League",
+        "join_league_option": "Join League"
     },
     "pending_invites": {
         "revoke_button": "Revoke",

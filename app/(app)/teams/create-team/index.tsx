@@ -196,7 +196,7 @@ export default function CreateTeamPage() {
                                     style={[styles.backRightBtn, styles.backRightBtnLeft]}
                                     onPress={() => editRow(rowMap, data.item.key)}
                                 >
-                                    <Text style={styles.backTextWhite}>{t('create_team.edit_button')}</Text>
+                                    <Text style={styles.backTextWhite}>{t('common:edit_button')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.backRightBtn, styles.backRightBtnRight]}
