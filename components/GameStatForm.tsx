@@ -28,11 +28,11 @@ export interface GameStatFormData {
 const gameStatValues = Object.values(GameStatType);
 
 export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }: GameStatFormProps) {
-    const { t } = useTranslation('game');
+    const { t } = useTranslation('home');
     const GameStatTypeDisplay: Record<GameStatType, string> = {
-        'GOAL': t('goal_option'),
-        'YELLOW_CARD': t('yellow_card_option'),
-        'RED_CARD': t('red_card_option'),
+        'GOAL': t('game.goal_option'),
+        'YELLOW_CARD': t('game.yellow_card_option'),
+        'RED_CARD': t('game.red_card_option'),
     };
 
     const { control, handleSubmit } = useForm<GameStatFormData>({
@@ -54,12 +54,12 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 rules={{ required: 'Game stat type is required' }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
-                    <Text style={styles.pickerLabel}>{t('select_game_stat_label')}</Text>
+                    <Text style={styles.pickerLabel}>{t('game.select_game_stat_label')}</Text>
                     <Picker
                         style={styles.picker}
                         selectedValue={value}
                         onValueChange={onChange}>
-                        <Picker.Item label={t('select_game_stat_picker_label')} value={""} />
+                        <Picker.Item label={t('game.select_game_stat_picker_label')} value={""} />
                         {gameStatValues.map((type) => (
                             <Picker.Item key={type} label={GameStatTypeDisplay[type]} value={type} />
                         ))}
@@ -75,12 +75,12 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 rules={{ required: 'Player is required' }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
-                    <Text style={styles.pickerLabel}>{t('select_player_label')}</Text>
+                    <Text style={styles.pickerLabel}>{t('game.select_player_label')}</Text>
                     <Picker
                         style={styles.picker}
                         selectedValue={value}
                         onValueChange={onChange}>
-                        <Picker.Item label={t('select_player_picker_label')} value="" />
+                        <Picker.Item label={t('game.select_player_picker_label')} value="" />
                         <Picker.Item label="--- Home Team ---" value="category_home_team" enabled={false} />
                         {homeTeam.playerDTOs.map((player) => (
                             <Picker.Item key={player.email} label={`${player.firstName} ${player.lastName}`} value={player.email} />
@@ -99,13 +99,13 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
                 style={styles.pickerButton}
                 onPress={handleSubmit(onFormSubmitted)}
             >
-                <Text style={styles.pickerButtonText}>{t('save_button')}</Text>
+                <Text style={styles.pickerButtonText}>{t('game.save_button')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.pickerButton}
                 onPress={onCancel}
             >
-                <Text style={styles.pickerButtonText}>{t('cancel_button')}</Text>
+                <Text style={styles.pickerButtonText}>{t('game.cancel_button')}</Text>
             </TouchableOpacity>
         </View>
     );

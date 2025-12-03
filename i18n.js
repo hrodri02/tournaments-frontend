@@ -9,8 +9,6 @@ import en_register from './locales/en/register.json';
 import es_register from './locales/es/register.json';
 import en_home from './locales/en/home.json';
 import es_home from './locales/es/home.json';
-import en_game from './locales/en/game.json';
-import es_game from './locales/es/game.json';
 import en_common from './locales/en/common.json';
 import es_common from './locales/es/common.json';
 import en_settings from './locales/en/settings.json';
@@ -25,7 +23,6 @@ const resources = {
     login: en_login,
     register: en_register,
     home: en_home,
-    game: en_game,
     common: en_common,
     settings: en_settings,
     teams: en_teams
@@ -34,7 +31,6 @@ const resources = {
     login: es_login,
     register: es_register,
     home: es_home,
-    game: es_game,
     common: es_common,
     settings: es_settings,
     teams: es_teams

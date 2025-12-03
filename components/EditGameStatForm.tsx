@@ -48,7 +48,7 @@ export interface EditGameStatFormData {
 
 export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }: EditGameStatFormProps) {
     const dispatch = useAppDispatch();
-    const { t } = useTranslation('game');
+    const { t } = useTranslation('home');
     const goalStats = filterStats(stats, GameStatType.goal)
     const yellowCardStats = filterStats(stats, GameStatType.yellowCard)
     const redCardStats = filterStats(stats, GameStatType.redCard)
@@ -123,9 +123,9 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 style={styles.sectionList}
                 scrollEnabled={false}
                 sections={[
-                    { title: t('goals_label'), data: goalStats },
-                    { title: t('yellow_cards_label'), data: yellowCardStats },
-                    { title: t('red_cards_label'), data: redCardStats },
+                    { title: t('game.goals_label'), data: goalStats },
+                    { title: t('game.yellow_cards_label'), data: yellowCardStats },
+                    { title: t('game.red_cards_label'), data: redCardStats },
                 ]}
                 renderItem={({ item }) => {
                     const failed = updateFailed(item)
@@ -162,7 +162,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                                 style={styles.deleteButton}
                                 onPress={() => handleDeleteStatButtonPressed(item)}
                             >
-                                <Text style={styles.deleteButtonText}>{t('delete_button')}</Text>
+                                <Text style={styles.deleteButtonText}>{t('game.delete_button')}</Text>
                             </TouchableOpacity>
 
                             {updateStatus === 'succeeded' && failed && <Text style={styles.errorText}>{failed.message}</Text>}
@@ -180,7 +180,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 style={styles.modalButton}
                 onPress={handleSubmit(onFormSubmitted)}
             >
-                <Text style={styles.modalButtonText}>{t('save_button')}</Text>
+                <Text style={styles.modalButtonText}>{t('game.save_button')}</Text>
             </TouchableOpacity>
 
             {updateError && <Text style={styles.errorText}>{updateError}</Text>}
@@ -191,7 +191,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 style={styles.modalButton}
                 onPress={onCancel}
             >
-                <Text style={styles.modalButtonText}>{t('cancel_button')}</Text>
+                <Text style={styles.modalButtonText}>{t('game.cancel_button')}</Text>
             </TouchableOpacity>
         </>
     }

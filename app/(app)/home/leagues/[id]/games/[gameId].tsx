@@ -47,7 +47,7 @@ const screenHeight = Dimensions.get('window').height;
 
 export default function Game() {
     const { user, isLoading } = useAuth();
-    const { t, i18n } = useTranslation('game');
+    const { t, i18n } = useTranslation('home');
     const [modalVisible, setModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const dispatch = useAppDispatch()
@@ -94,7 +94,7 @@ export default function Game() {
     }, [navigation, homeTeam, awayTeam]);
 
     const handlePress = () => {
-        const options = [t('add_option'), t('edit_option'), t('cancel_option')];
+        const options = [t('game.add_option'), t('game.edit_option'), t('game.cancel_option')];
         const destructiveButtonIndex = 2;
         const cancelButtonIndex = 3;
 
@@ -190,7 +190,7 @@ export default function Game() {
     }
     else if (gameStatsStatus === 'succeeded') {
         view = <View>
-            <Text style={styles.date}>{formattedDate} {t('at_text')} {game.address}</Text>
+            <Text style={styles.date}>{formattedDate} {t('game.at_text')} {game.address}</Text>
             
             <View style={styles.gameStatView}> 
                 <View style={styles.teamLogo}> 
@@ -228,13 +228,13 @@ export default function Game() {
 
             <View style={styles.gameStatView} >
                 <Text style={[styles.text, styles.equalWidth]}>{homeTeamYellowCards}</Text>
-                <Text style={[styles.text, styles.equalWidth]}>{t('yellow_cards_label')}</Text>
+                <Text style={[styles.text, styles.equalWidth]}>{t('game.yellow_cards_label')}</Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamYellowCards}</Text>
             </View>
 
             <View style={styles.gameStatView}> 
                 <Text style={[styles.text, styles.equalWidth]}>{homeTeamRedCards}</Text>
-                <Text style={[styles.text, styles.equalWidth]}>{t('red_cards_label')}</Text>
+                <Text style={[styles.text, styles.equalWidth]}>{t('game.red_cards_label')}</Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamRedCards}</Text>
             </View>
 
