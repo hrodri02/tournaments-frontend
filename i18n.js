@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 
 // import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import en_errors from './locales/en/errors.json';
+import es_errors from './locales/es/errors.json';
 import en_login from './locales/en/login.json';
 import es_login from './locales/es/login.json';
 import en_register from './locales/en/register.json';
@@ -20,6 +22,7 @@ import es_teams from './locales/es/teams.json';
 // for passing in lng and translations on init
 const resources = {
   en: {
+    errors: en_errors,
     login: en_login,
     register: en_register,
     home: en_home,
@@ -28,6 +31,7 @@ const resources = {
     teams: en_teams
   },
   es: {
+    errors: es_errors,
     login: es_login,
     register: es_register,
     home: es_home,
