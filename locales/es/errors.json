@@ -1,3 +1,27 @@
 {
-    "INVALID_CREDENTIALS": "El nombre de usuario o la contraseña no son válidos."
+    "INVALID_CREDENTIALS": "El nombre de usuario o la contraseña no son válidos.",
+    "DISABLED_ACCOUNT": "Tu cuenta ha sido deshabilitada temporalmente.",
+    "LOCKED_ACCOUNT": "Tu cuenta ha sido bloqueada. Por favor, contacta a soporte.",
+    "TOKEN_EXPIRED": "El token de seguridad ha expirado. Por favor, inténtalo de nuevo.",
+    "INVALID_TOKEN": "El token de seguridad proporcionado no es válido.",
+    "MISSING_TOKEN": "Se requiere un token de seguridad para esta acción.",
+    "RESET_TOKEN_NOT_FOUND": "El enlace para restablecer la contraseña no es válido o ya se ha utilizado.",
+    "CONFIRMATION_TOKEN_NOT_FOUND": "El enlace de confirmación de cuenta no es válido o ya se ha utilizado.",
+    "USER_NOT_FOUND": "El usuario no pudo ser encontrado.",
+    "GAME_NOT_FOUND": "El juego solicitado no pudo ser encontrado.",
+    "GAME_STAT_NOT_FOUND": "Las estadísticas del juego solicitado no pudieron ser encontradas.",
+    "TEAM_NOT_FOUND": "El equipo solicitado no pudo ser encontrado.",
+    "TEAM_INVITE_NOT_FOUND": "La invitación al equipo no pudo ser encontrada.",
+    "TEAM_INVITE_REVOKED": "Esta invitación al equipo ha sido revocada por el propietario.",
+    "TEAM_INVITE_ALREADY_ACCEPTED_OR_DENIED": "Esta invitación al equipo ya ha sido aceptada o rechazada.",
+    "USER_NOT_INVITED_TO_TEAM": "No fuiste invitado a unirte a este equipo.",
+    "UNAUTHORIZED_TO_ACCESS_TEAM_INVITES": "No estás autorizado para ver o gestionar estas invitaciones al equipo.",
+    "LEAGUE_NOT_FOUND": "La liga solicitada no pudo ser encontrada.",
+    "APPLICATION_NOT_FOUND": "La solicitud para esta liga no pudo ser encontrada.",
+    "TEAM_IN_LEAGUE": "Este equipo ya está registrado en la liga.",
+    "USER_ALREADY_EXISTS": "Ya existe un usuario con esta dirección de correo electrónico.",
+    "EMAIL_ALREADY_CONFIRMED": "Tu dirección de correo electrónico ya ha sido confirmada.",
+    "PASSWORD_ALREADY_RESET": "Tu contraseña ya ha sido restablecida.",
+    "NOT_TEAM_OWNER": "Debes ser el propietario del equipo para realizar esta acción.",
+    "GAME_INACTIVE": "El juego está actualmente inactivo y no se puede actualizar."
 }

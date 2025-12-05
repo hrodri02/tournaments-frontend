@@ -1,3 +1,27 @@
 {
-    "INVALID_CREDENTIALS": "Username or password is invalid."
+    "INVALID_CREDENTIALS": "Username or password is invalid.",
+    "DISABLED_ACCOUNT": "Your account has been temporarily disabled.",
+    "LOCKED_ACCOUNT": "Your account has been locked. Please contact support.",
+    "TOKEN_EXPIRED": "The security token has expired. Please try again.",
+    "INVALID_TOKEN": "The provided security token is invalid.",
+    "MISSING_TOKEN": "A security token is required for this action.",
+    "RESET_TOKEN_NOT_FOUND": "The password reset link is invalid or has already been used.",
+    "CONFIRMATION_TOKEN_NOT_FOUND": "The account confirmation link is invalid or has already been used.",
+    "USER_NOT_FOUND": "The user could not be found.",
+    "GAME_NOT_FOUND": "The requested game could not be found.",
+    "GAME_STAT_NOT_FOUND": "The requested game statistics could not be found.",
+    "TEAM_NOT_FOUND": "The requested team could not be found.",
+    "TEAM_INVITE_NOT_FOUND": "The team invite could not be found.",
+    "TEAM_INVITE_REVOKED": "This team invitation has been revoked by the team owner.",
+    "TEAM_INVITE_ALREADY_ACCEPTED_OR_DENIED": "This team invitation has already been accepted or declined.",
+    "USER_NOT_INVITED_TO_TEAM": "You were not invited to join this team.",
+    "UNAUTHORIZED_TO_ACCESS_TEAM_INVITES": "You are not authorized to view or manage these team invitations.",
+    "LEAGUE_NOT_FOUND": "The requested league could not be found.",
+    "APPLICATION_NOT_FOUND": "The application for this league could not be found.",
+    "TEAM_IN_LEAGUE": "This team is already registered in the league.",
+    "USER_ALREADY_EXISTS": "A user with this email address already exists.",
+    "EMAIL_ALREADY_CONFIRMED": "Your email address has already been confirmed.",
+    "PASSWORD_ALREADY_RESET": "Your password has already been reset.",
+    "NOT_TEAM_OWNER": "You must be the team owner to perform this action.",
+    "GAME_INACTIVE": "The game is currently inactive and cannot be updated."
 }
