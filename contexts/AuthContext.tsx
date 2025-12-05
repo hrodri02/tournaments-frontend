@@ -22,6 +22,7 @@ import {
 } from "@/store/auth/authStorage";
 import { useAppDispatch } from "@/hooks/useStore";
 import { resetFetchState } from "@/store/teams/teamsSlice";
+import { useTranslation } from "react-i18next";
 
 // TODO: Change to the API_URL from the .env file
 // Platform-specific API URL
@@ -45,6 +46,7 @@ const initialState: AuthState = {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { t } = useTranslation('errors');
   const dispatch = useAppDispatch();
   const [state, setState] = useState<AuthState>(initialState);
 
@@ -92,7 +94,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       if (!response.ok) {
-        throw new Error("Invalid credentials");
+        // 1. Read the response body to get the server's detailed error message.
+        let errorMessage = "Invalid username or password";
+        
+        try {
+          const errorData = await response.json();
+          
+          // Assuming the error structure from your Spring backend includes a 'message' field
+          // that contains the detailed exception text (e.g., from ServiceException).
+          if (errorData) {
+            const key = errorData.errorKey;
+            errorMessage = t(`${key}`);
+          }
+        } catch (e) {
+          // Fallback if the response body is not valid JSON
+          errorMessage = `Login failed with status ${response.status}. Could not read error details.`;
+        }
+        
+        // 2. Throw a new Error using the specific message retrieved from the server.
+        throw new Error(errorMessage);
       }
 
       const data = await response.json()
