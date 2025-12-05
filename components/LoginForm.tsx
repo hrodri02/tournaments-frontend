@@ -1,5 +1,11 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet 
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
@@ -11,8 +17,8 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
-  const { t, i18n } = useTranslation('login');
-  const { login, isLoading, error } = useAuth();
+  const { t } = useTranslation('login');
+  const { login, isLoading, error, user } = useAuth();
   const { control, handleSubmit, setValue } = useForm<LoginFormData>({
     defaultValues: {
       email: '',
@@ -21,13 +27,16 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      await login(data);
-      router.replace("/(app)/home");
-    } catch (err) {
-      console.error("Login failed:", err);
-    }
+    await login(data);
   };
+
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+    } else if (user) {
+      router.replace("/(app)/home");
+    }
+  }, [error, user]);
 
   const handleDevLogin = () => {
     setValue('email', 'user@example.com');
