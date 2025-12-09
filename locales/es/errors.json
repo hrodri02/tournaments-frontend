@@ -23,5 +23,11 @@
     "EMAIL_ALREADY_CONFIRMED": "Tu dirección de correo electrónico ya ha sido confirmada.",
     "PASSWORD_ALREADY_RESET": "Tu contraseña ya ha sido restablecida.",
     "NOT_TEAM_OWNER": "Debes ser el propietario del equipo para realizar esta acción.",
-    "GAME_INACTIVE": "El juego está actualmente inactivo y no se puede actualizar."
+    "GAME_INACTIVE": "El juego está actualmente inactivo y no se puede actualizar.",
+    "INVALID_RESPONSE_BODY": "No se pudo analizar el cuerpo de la respuesta.",
+    "VALIDATION": {
+        "name": {
+            "Size": "El nombre debe tener entre 2 y 255 caracteres."
+        }
+    }
 }

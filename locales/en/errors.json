@@ -23,5 +23,11 @@
     "EMAIL_ALREADY_CONFIRMED": "Your email address has already been confirmed.",
     "PASSWORD_ALREADY_RESET": "Your password has already been reset.",
     "NOT_TEAM_OWNER": "You must be the team owner to perform this action.",
-    "GAME_INACTIVE": "The game is currently inactive and cannot be updated."
+    "GAME_INACTIVE": "The game is currently inactive and cannot be updated.",
+    "INVALID_RESPONSE_BODY": "Failed to parse the response body.",
+    "VALIDATION": {
+        "name": {
+            "Size": "Name must be between 2 and 255 characters."
+        }
+    }
 }
