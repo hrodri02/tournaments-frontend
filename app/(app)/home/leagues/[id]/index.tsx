@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function LeagueScreen() {
   const navigation = useNavigation();
-  const { t } = useTranslation('home');
+  const { t } = useTranslation(['home', 'errors']);
   const { id } = useLocalSearchParams();
   const dispatch = useAppDispatch();
   const leagueId = Number(id);
@@ -52,6 +52,12 @@ export default function LeagueScreen() {
     }
   }, [navigation, league?.name]);
 
+  const getFetchGamesErrorMessage = (): string => {
+    const error = gamesError!
+    const message = t(`errors:${error.errorKey}`);
+    return message;
+  }
+
   let view: React.JSX.Element = <></>;
   if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
     view = <FlatList
@@ -73,7 +79,7 @@ export default function LeagueScreen() {
   }
   else {
     view = <View style={styles.loadingContainer}>
-      <Text>{gamesError}</Text>
+      <Text>{getFetchGamesErrorMessage()}</Text>
     </View>
   }
 
