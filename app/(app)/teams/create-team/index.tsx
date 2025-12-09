@@ -159,6 +159,10 @@ export default function CreateTeamPage() {
                 errorMessage = t(translationKey) + "\n";
             }
         }
+        else {
+            const translationKey = createError!.errorKey
+            errorMessage = t(translationKey)
+        }
         return errorMessage;
     }
 
