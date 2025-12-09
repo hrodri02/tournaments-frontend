@@ -115,20 +115,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(errorMessage);
       }
 
-      const data = await response.json()
+      const user = await response.json()
       const headers = response.headers
-      const authorization = headers.get("Authorization")
-      const token = authorization?.substring(TOKEN_PREFIX_LENTH)
-
+      const authorization = headers.get("Authorization") ?? ""
+      const token = authorization.substring(TOKEN_PREFIX_LENTH)
       // Store auth data
       await Promise.all([
-        setStorageItemAsync(TOKEN_KEY, token!),
-        setStorageItemAsync(USER_KEY, JSON.stringify(data)),
+        setStorageItemAsync(TOKEN_KEY, token),
+        setStorageItemAsync(USER_KEY, JSON.stringify(user)),
       ]);
 
       setState({
-        user: data.user,
-        token: data.token,
+        user: user,
+        token: token,
         isAuthenticated: true,
         isLoading: false,
         error: null,
