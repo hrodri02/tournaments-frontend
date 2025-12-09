@@ -126,6 +126,18 @@ export default function ApplicationsPage() {
         }
     }, [updateStatus]);
 
+    const getFetchLeagueApplicationsErrorMessage = (): string => {
+        const error = fetchError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
+    const getUpdateTeamApplicationsErrorMessage = (): string => {
+        const error = updateError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
     let view: React.JSX.Element = <></>;
     if ((fetchStatus === 'idle' || fetchStatus === 'succeeded') &&
         updateStatus === 'idle') {
@@ -151,12 +163,12 @@ export default function ApplicationsPage() {
     }
     else if (fetchStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{fetchError}</Text>
+            <Text>{getFetchLeagueApplicationsErrorMessage()}</Text>
         </View>
     }
     else if (updateStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{updateError}</Text>
+            <Text>{getUpdateTeamApplicationsErrorMessage()}</Text>
         </View>
     }
     

@@ -35,7 +35,7 @@ import { useTranslation } from 'react-i18next';
 export default function JoinLeague() {
     const dispatch = useAppDispatch();
     const { id } = useLocalSearchParams();
-    const { t } = useTranslation('teams');
+    const { t } = useTranslation(['teams', 'errors']);
     const teamId = Number(id);
     const fetchStatus = useAppSelector(selectApplicationsFetchStatus);
     const fetchError = useAppSelector(selectApplicationsFetchError);
@@ -120,6 +120,18 @@ export default function JoinLeague() {
         }
     }, [createStatus]);
 
+    const getFetchTeamApplicationsErrorMessage = (): string => {
+        const error = fetchError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
+    const getCreateTeamApplicationsErrorMessage = (): string => {
+        const error = createError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
     let view: React.JSX.Element = <></>;
     if ((fetchStatus === 'idle' || fetchStatus === 'succeeded') &&
         createStatus === 'idle') {
@@ -145,12 +157,12 @@ export default function JoinLeague() {
     }
     else if (fetchStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{fetchError}</Text>
+            <Text>{getFetchTeamApplicationsErrorMessage()}</Text>
         </View>
     }
     else if (createStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{createError}</Text>
+            <Text>{getCreateTeamApplicationsErrorMessage()}</Text>
         </View>
     }
     
