@@ -1,4 +1,5 @@
 {
+    "NETWORK_UNAVAILABLE": "Fallo de red.",
     "INVALID_CREDENTIALS": "El nombre de usuario o la contraseña no son válidos.",
     "DISABLED_ACCOUNT": "Tu cuenta ha sido deshabilitada temporalmente.",
     "LOCKED_ACCOUNT": "Tu cuenta ha sido bloqueada. Por favor, contacta a soporte.",

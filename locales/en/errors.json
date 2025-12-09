@@ -1,4 +1,5 @@
 {
+    "NETWORK_UNAVAILABLE": "Network failure.",
     "INVALID_CREDENTIALS": "Username or password is invalid.",
     "DISABLED_ACCOUNT": "Your account has been temporarily disabled.",
     "LOCKED_ACCOUNT": "Your account has been locked. Please contact support.",
