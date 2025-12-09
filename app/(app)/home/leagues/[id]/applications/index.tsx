@@ -37,7 +37,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 export default function ApplicationsPage() {
-    const { t } = useTranslation('home');
+    const { t } = useTranslation(['home', 'errors']);
     const dispatch = useAppDispatch();
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
