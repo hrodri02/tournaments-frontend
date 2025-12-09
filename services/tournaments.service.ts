@@ -1,4 +1,4 @@
-import {Platform} from 'react-native'
+import { Platform } from 'react-native'
 import {
     GameResponse, 
     GameStat, 
@@ -15,7 +15,8 @@ import {
     CreateApplicationRequest,
     UpdateApplicationRequest
 } from "@/entities";
-import {getStorageItemAsync, TOKEN_KEY} from '@/store/auth/authStorage';
+import { ErrorDetails, HttpError } from '@/entities/error';
+import { getStorageItemAsync, TOKEN_KEY } from '@/store/auth/authStorage';
 
 const API_URL = Platform.select({
   android: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // Android emulator
@@ -126,6 +127,25 @@ const httpRequest = async<T> (url: string, httpMethod: string, reqBody: any | un
             headers: headers,
             body: reqBody ? JSON.stringify(reqBody) : undefined
         });
+
+        if (!response.ok) {
+            let errorData: ErrorDetails | null = null;
+        
+            try {
+                // Read the full error body
+                errorData = await response.json() as ErrorDetails;
+            } catch (e) {
+                // If JSON parsing fails (e.g., server returned plain text or HTML for the error)
+                errorData = {
+                    timestamp: new Date().toISOString(),
+                    status: response.status,
+                    errorKey: "INVALID_RESPONSE_BODY",
+                };
+            }
+            
+            // Throw the custom HttpError, carrying the full structured payload
+            throw new HttpError(response.status, errorData);
+        }
 
         const data: T = await response.json()
         return data
