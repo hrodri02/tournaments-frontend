@@ -65,7 +65,7 @@ export default function TeamsPage() {
     const [selectedId, setSelectedId] = useState<number>(-1);
     const dispatch = useAppDispatch();
     const { user } = useAuth();
-    const { t } = useTranslation('teams');
+    const { t } = useTranslation(['teams', 'errors']);
     const fetchStatus = useAppSelector(selectTeamsFetchStatus)
     const fetchError = useAppSelector(selectTeamsFetchError)
     const teamInvitesUpdateStatus = useAppSelector(selectTeamInvitesUpdateStatus)
@@ -244,6 +244,12 @@ export default function TeamsPage() {
         }
     };
 
+    const getFetchTeamsErrorMessage = (): string => {
+        const error = fetchError!
+        const message = t(`errors:${error.errorKey}`)
+        return message
+    }
+
     let view: React.JSX.Element = <></>;
     if ((fetchStatus === 'idle' || fetchStatus === 'succeeded') &&
     (teamInvitesUpdateStatus === 'idle' || teamInvitesUpdateStatus === 'succeeded')) {
@@ -260,7 +266,7 @@ export default function TeamsPage() {
     }
     else if (fetchStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{fetchError}</Text>
+            <Text>{getFetchTeamsErrorMessage()}</Text>
         </View>
     }
     else if (teamInvitesUpdateStatus === 'failed') {
