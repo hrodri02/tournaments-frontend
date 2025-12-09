@@ -51,7 +51,7 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
             <Controller
                 control={control}
                 name="gameStatType"
-                rules={{ required: 'Game stat type is required' }}
+                rules={{ required: t('game.stat_type_is_required') }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
                     <Text style={styles.pickerLabel}>{t('game.select_game_stat_label')}</Text>
@@ -72,7 +72,7 @@ export default function GameStatForm({ homeTeam, awayTeam, onCancel, onSubmit }:
             <Controller
                 control={control}
                 name="playerId"
-                rules={{ required: 'Player is required' }}
+                rules={{ required: t('game.player_is_required') }}
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                     <>
                     <Text style={styles.pickerLabel}>{t('game.select_player_label')}</Text>

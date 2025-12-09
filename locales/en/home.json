@@ -34,6 +34,8 @@
         "save_button": "Save",
         "goal_option": "Goal",
         "yellow_card_option": "Yellow card",
-        "red_card_option": "Red card"
+        "red_card_option": "Red card",
+        "stat_type_is_required": "Game stat type is required",
+        "player_is_required": "Player is required"
     }
 }

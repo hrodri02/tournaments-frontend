@@ -34,6 +34,8 @@
         "save_button": "Guardar",
         "goal_option": "Gol",
         "yellow_card_option": "Tarjeta amarilla",
-        "red_card_option": "Tarjeta roja"
+        "red_card_option": "Tarjeta roja",
+        "stat_type_is_required": "Se requiere el tipo de estadística",
+        "player_is_required": "Se requerie jugador"
     }
 }
