@@ -15,11 +15,12 @@ import { RootState } from "@/store/store";
 import { createAppAsyncThunk } from "@/hooks/useStore";
 import { addTeams } from "../teams/teamsSlice";
 import { upsertManyPlayers } from "../players/playersSlice";
+import { ErrorDetails, HttpError } from "@/entities/error";
 
 // Define the shape of our leagues state
 interface LeaguesState extends EntityState<League, number> {
   status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
+  error: ErrorDetails | null;
 }
 
 // Create an entity adapter for normalized league state
@@ -34,33 +35,44 @@ const initialState: LeaguesState = leaguesAdapter.getInitialState({
 // Thunk for async fetching leagues
 export const fetchLeagues = createAppAsyncThunk(
   "leagues/fetchLeagues",
-  async (status: LeagueStatus | undefined, thunkApi) => {
-    const leagues = await getLeagues(status);
-    const teamResponses = leagues.flatMap(league => league.teams);
-    const teams = teamResponses.map(response => {
-      const { playerDTOs, invites, invitees, ...teamData } = response;
-      const playerIds = playerDTOs? playerDTOs.map(player => player.id): [];
-      const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
-      return { playerIds, inviteeIds, ...teamData};
-    });
-    if (teams.length > 0) {
-      thunkApi.dispatch(addTeams({teams: teams}));
+  async (status: LeagueStatus | undefined, { dispatch, rejectWithValue } ) => {
+    try {
+      const leagues = await getLeagues(status);
+      const teamResponses = leagues.flatMap(league => league.teams);
+      const teams = teamResponses.map(response => {
+        const { playerDTOs, invites, invitees, ...teamData } = response;
+        const playerIds = playerDTOs? playerDTOs.map(player => player.id): [];
+        const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
+        return { playerIds, inviteeIds, ...teamData};
+      });
+      if (teams.length > 0) {
+        dispatch(addTeams({teams: teams}));
+      }
+      const allPlayers = teamResponses.flatMap(teamResponse => {
+        const playersInTeam = teamResponse.playerDTOs? teamResponse.playerDTOs : [];
+        const invitees = teamResponse.invitees? teamResponse.invitees : [];
+        return playersInTeam.concat(invitees);
+      });
+      const uniquePlayersMap = new Map<number, Player>();
+      allPlayers.forEach(player => {
+        uniquePlayersMap.set(player.id, player);
+      });
+      // create an array of the unique players using the map
+      const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
+      if (playersToStore.length > 0) {
+        dispatch(upsertManyPlayers({players: playersToStore}));
+      }
+      return leagues;
     }
-    const allPlayers = teamResponses.flatMap(teamResponse => {
-      const playersInTeam = teamResponse.playerDTOs? teamResponse.playerDTOs : [];
-      const invitees = teamResponse.invitees? teamResponse.invitees : [];
-      return playersInTeam.concat(invitees);
-    });
-    const uniquePlayersMap = new Map<number, Player>();
-    allPlayers.forEach(player => {
-      uniquePlayersMap.set(player.id, player);
-    });
-     // create an array of the unique players using the map
-    const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
-    if (playersToStore.length > 0) {
-      thunkApi.dispatch(upsertManyPlayers({players: playersToStore}));
+    catch (err) {
+      if (err instanceof HttpError) {
+        // Here, we reject the promise with the structured error details
+        // The Redux slice will store this payload under the 'rejected' action
+        return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
     }
-    return leagues;
   },
   {
     // Only fetch if the current status is idle
@@ -107,7 +119,7 @@ const leaguesSlice = createSlice({
       })
       .addCase(fetchLeagues.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Unknown Error";
+        state.error = action.payload as ErrorDetails;
       });
   },
 });

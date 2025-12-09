@@ -29,7 +29,7 @@ export default function HomeScreen() {
   const dispatch = useAppDispatch();
   const leaguesStatus = useAppSelector(selectLeaguesStatus);
   const leaguesError = useAppSelector(selectLeaguesError);
-  const { t } = useTranslation('home');
+  const { t } = useTranslation(['home', 'errors']);
 
   useEffect(() => {
     if (leaguesStatus === 'idle') {
@@ -80,6 +80,12 @@ export default function HomeScreen() {
     );
   }
 
+  const getFetchLeaguesErrorMessage = (): string => {
+    const error = leaguesError!
+    const message = t(`errors:${error.errorKey}`);
+    return message
+  }
+
   let view: React.JSX.Element = <></>
   if (leaguesStatus === "idle" || leaguesStatus === "succeeded") {
     view = <SectionList
@@ -101,7 +107,7 @@ export default function HomeScreen() {
   else if (leaguesStatus === "failed") {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorView}>{leaguesError}</Text>
+        <Text style={styles.errorView}>{getFetchLeaguesErrorMessage()}</Text>
       </View>
     );
   }
