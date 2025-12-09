@@ -2,7 +2,6 @@ import { RootState } from "@/store/store";
 import { 
     CreateTeamRequest, 
     TeamResponse,
-    GetTeamsResponse, 
     Team,
     Player,
     TeamInvite
