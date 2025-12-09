@@ -40,7 +40,7 @@ interface CreateTeamFormData {
 
 export default function CreateTeamPage() {
     const MAX_PLAYERS = 24;
-    const { t } = useTranslation(['teams', 'common']);
+    const { t } = useTranslation(['teams', 'common', 'errors']);
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -66,12 +66,14 @@ export default function CreateTeamPage() {
     );
 
     useEffect(() => {
-        if (createStatus === 'succeeded' && lastTeamCreated) {
+        if (createStatus === 'succeeded' || createStatus === 'failed') {
             // slight delay to show success:
             const timer = setTimeout(() => {
                 dispatch(resetCreateTeamState())
-                router.back();
-            }, 2000);
+                if (createStatus === 'succeeded' && lastTeamCreated) {
+                    router.back();
+                }
+            }, 3000);
             return () => clearTimeout(timer);
             
             // Option 2: Navigate to the *newly created team's* detail page (more advanced)
@@ -148,10 +150,23 @@ export default function CreateTeamPage() {
         }
     };
 
+    const getCreateErrorMessage = (): string => {
+        let errorMessage = "";
+        if (createError?.errorKey === "VALIDATION_FAILED") {
+            const validationErrors = createError?.validationErrors? createError?.validationErrors : [];
+            for (const error of validationErrors) {
+                const translationKey = `errors:VALIDATION.${error.field}.${error.errorKey}`;
+                errorMessage = t(translationKey) + "\n";
+            }
+        }
+        return errorMessage;
+    }
+
     let view: React.JSX.Element = <></>;
-    if (createStatus === 'idle') {
+    if (createStatus === 'idle' || createStatus === 'failed') {
         view = <View style={styles.container}>
             <View style={styles.main}>
+                {createError && <Text style={styles.errorText}>{getCreateErrorMessage()}</Text>}
                 <Controller
                     control={control}
                     name="teamName"
@@ -211,7 +226,6 @@ export default function CreateTeamPage() {
                         rightOpenValue={-150}
                     />
                 </View>
-                
             </View>
             <Pressable
                 onPress={handleSubmit(onCreateTeamButtonPressed)}
@@ -252,11 +266,6 @@ export default function CreateTeamPage() {
             <Ionicons name="checkmark-circle" size={32} color="green" />
         </View>
     }
-    else {
-        view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{createError}</Text>
-        </View>
-    }
 
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
@@ -292,6 +301,7 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
+        textAlign: 'center',
         fontSize: 12,
         marginBottom: 5,
     },
