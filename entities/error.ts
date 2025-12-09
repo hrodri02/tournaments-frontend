@@ -17,7 +17,7 @@ export interface ErrorDetails {
   timestamp: string;
   status: number;
   errorKey: string; // General error key (e.g., "VALIDATION_FAILED", "USER_NOT_FOUND")
-  validationErrors: ValidationErrorDetail[];
+  validationErrors?: ValidationErrorDetail[];
 }
 
 /**
