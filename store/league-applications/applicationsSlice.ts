@@ -11,6 +11,7 @@ import {
     CreateApplicationRequest, 
     UpdateApplicationRequest,
 } from "@/entities/index";
+import { ErrorDetails, HttpError } from "@/entities/error";
 import { 
     getApplications, 
     postApplyToLeague, 
@@ -21,13 +22,13 @@ import { addTeams } from "../teams/teamsSlice";
 
 interface ApplicationsState extends EntityState<Application, number> {
     fetchLeaugeApplicationsStatus: "idle" | "loading" | "succeeded" | "failed";
-    fetchLeaugeApplicationsError: string | null;
+    fetchLeaugeApplicationsError: ErrorDetails | null;
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
-    fetchError: string | null;
+    fetchError: ErrorDetails | null;
     createStatus: "idle" | "loading" | "succeeded" | "failed";
-    createError: string | null;
+    createError: ErrorDetails | null;
     updateStatus: "idle" | "loading" | "succeeded" | "failed";
-    updateError: string | null;
+    updateError: ErrorDetails | null;
     deleteStatus: "idle" | "loading" | "succeeded" | "failed";
     deleteError: string | null;
 }
@@ -59,9 +60,20 @@ interface UpdateApplicationPayload {
 
 export const fetchTeamApplications = createAppAsyncThunk(
     "applications/fetchTeamApplications",
-    async (teamId: number) => {
-        const applications = await getApplications(teamId);
-        return applications;
+    async (teamId: number, { rejectWithValue }) => {
+        try {
+            const applications = await getApplications(teamId);
+            return applications;
+        }
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -74,19 +86,30 @@ export const fetchTeamApplications = createAppAsyncThunk(
 
 export const fetchLeagueApplications = createAppAsyncThunk(
     "applications/fetchLeagueApplications",
-    async (leagueId: number, thunkApi) => {
-        const applications = await getApplications(undefined, leagueId);
-        const teams = applications.map(app => {
-            const teamResponse = app.team;
-            const { playerDTOs, invites, invitees, ...teamData } = teamResponse;
-            const playerIds = playerDTOs? playerDTOs.map(player => player.id) : [];
-            const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
-            return {playerIds, inviteeIds, ...teamData};
-        });
-        if (teams && teams.length > 0) {
-            thunkApi.dispatch(addTeams({teams: teams}));
+    async (leagueId: number, { dispatch, rejectWithValue }) => {
+        try {
+            const applications = await getApplications(undefined, leagueId);
+            const teams = applications.map(app => {
+                const teamResponse = app.team;
+                const { playerDTOs, invites, invitees, ...teamData } = teamResponse;
+                const playerIds = playerDTOs? playerDTOs.map(player => player.id) : [];
+                const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
+                return {playerIds, inviteeIds, ...teamData};
+            });
+            if (teams && teams.length > 0) {
+                dispatch(addTeams({teams: teams}));
+            }
+            return applications;
         }
-        return applications;
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" })
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -99,10 +122,21 @@ export const fetchLeagueApplications = createAppAsyncThunk(
 
 export const createApplication = createAppAsyncThunk(
     "applications/createApplication",
-    async (payload: CreateApplicationPayload) => {
-        const { leagueId, requestBody } = payload;
-        const application = await postApplyToLeague(leagueId, requestBody);
-        return application;
+    async (payload: CreateApplicationPayload, { rejectWithValue }) => {
+        try {
+            const { leagueId, requestBody } = payload;
+            const application = await postApplyToLeague(leagueId, requestBody);
+            return application;
+        }
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -115,17 +149,28 @@ export const createApplication = createAppAsyncThunk(
 
 export const updateApplication = createAppAsyncThunk(
     "applications/updateApplication",
-    async (payload: UpdateApplicationPayload, thunkApi) => {
-        const { applicationId, requestBody } = payload;
-        const application = await putApplication(applicationId, requestBody);
-        if (application.status === 'ACCEPTED') {
-            const { league } = application;
-            const { teams, ...leagueData } = league;
-            const teamIds = teams.map(team => team.id);
-            const leagueToStore = {teamIds, ...leagueData};
-            thunkApi.dispatch(updateLeague({league: leagueToStore}));
+    async (payload: UpdateApplicationPayload, { dispatch, rejectWithValue }) => {
+        try {
+            const { applicationId, requestBody } = payload;
+            const application = await putApplication(applicationId, requestBody);
+            if (application.status === 'ACCEPTED') {
+                const { league } = application;
+                const { teams, ...leagueData } = league;
+                const teamIds = teams.map(team => team.id);
+                const leagueToStore = {teamIds, ...leagueData};
+                dispatch(updateLeague({league: leagueToStore}));
+            }
+            return application;
         }
-        return application;
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -177,7 +222,7 @@ const applicationsSlice = createSlice({
             })
             .addCase(fetchTeamApplications.rejected, (state, action) => {
                 state.fetchStatus = "failed";
-                state.fetchError = action.error.message ?? "Unknown Error";
+                state.fetchError = action.payload as ErrorDetails;
             })
             .addCase(fetchLeagueApplications.pending, (state) => {
                 state.fetchLeaugeApplicationsStatus = "loading";
@@ -197,7 +242,7 @@ const applicationsSlice = createSlice({
             })
             .addCase(fetchLeagueApplications.rejected, (state, action) => {
                 state.fetchLeaugeApplicationsStatus = "failed";
-                state.fetchLeaugeApplicationsError = action.error.message ?? "Unknown Error";
+                state.fetchLeaugeApplicationsError = action.payload as ErrorDetails;
             })
             .addCase(createApplication.pending, (state) => {
                 state.createStatus = "loading";
@@ -214,7 +259,7 @@ const applicationsSlice = createSlice({
             })
             .addCase(createApplication.rejected, (state, action) => {
                 state.createStatus = "failed";
-                state.createError = action.error.message ?? "Unknown Error";
+                state.createError = action.payload as ErrorDetails;
             })
             .addCase(updateApplication.pending, (state) => {
                 state.updateStatus = "loading";
@@ -231,7 +276,7 @@ const applicationsSlice = createSlice({
             })
             .addCase(updateApplication.rejected, (state, action) => {
                 state.updateStatus = "failed";
-                state.updateError = action.error.message ?? "Unknown Error";
+                state.updateError = action.payload as ErrorDetails;
             })
     },
 });
