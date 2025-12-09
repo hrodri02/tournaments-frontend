@@ -1,10 +1,25 @@
-import { Tabs } from "expo-router";
+import { Tabs, Slot, Redirect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { View, ActivityIndicator } from 'react-native';
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AppLayout() {
   const { t } = useTranslation('common');
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    // Show a loading indicator while the SecureStore data is being read
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+  else if (!user) {
+    return <Redirect href="/login" />
+  }
 
   return (
     <ProtectedRoute>
