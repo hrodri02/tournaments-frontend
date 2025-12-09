@@ -10,9 +10,7 @@ import {
 import { 
     TeamInvite,
     CreateTeamInviteRequest, 
-    TeamInviteResponse,
     TeamInviteStatus, 
-    AcceptInviteResponse
 } from "@/entities/index";
 import { ErrorDetails, HttpError } from "@/entities/error";
 import { 
