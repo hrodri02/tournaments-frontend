@@ -7,6 +7,7 @@ import {
     Player,
     TeamInvite
 } from "@/entities/index";
+import { ErrorDetails, HttpError } from "@/entities/error";
 import { upsertManyPlayers } from "@/store/players/playersSlice";
 import { upsertManyTeamInvites } from "@/store/team-invites/teamInvitesSlice";
 import { getTeams, postTeam } from "@/services/tournaments.service";
@@ -23,7 +24,7 @@ interface TeamsState extends EntityState<Team, number> {
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
     fetchError: string | null;
     createStatus: "idle" | "loading" | "succeeded" | "failed";
-    createError: string | null;
+    createError: ErrorDetails | null;
     updateStatus: "idle" | "loading" | "succeeded" | "failed";
     updateError: string | null;
     deleteStatus: "idle" | "loading" | "succeeded" | "failed";
@@ -97,18 +98,28 @@ const getAllTeamInvitesOfTeams = (teams: TeamResponse[]): TeamInvite[] => {
 
 export const createTeam = createAppAsyncThunk(
     "teams/createTeam",
-    async (requestBody: CreateTeamRequest, thunkApi): Promise<TeamResponse> => {
-        const team = await postTeam(requestBody);
-        const inviteResponses = team.invites;
-        const invitesToStore = inviteResponses.map(inviteResponse => {
-            const {player, ...inviteData} = inviteResponse
-            const playerId = player.id
-            return {playerId, ...inviteData}
-        })
-        if (invitesToStore.length > 0) {
-            thunkApi.dispatch(upsertManyTeamInvites({ invites: invitesToStore }))
+    async (requestBody: CreateTeamRequest, { dispatch, rejectWithValue}) => {
+        try {
+            const team = await postTeam(requestBody);
+            const inviteResponses = team.invites;
+            const invitesToStore = inviteResponses.map(inviteResponse => {
+                const {player, ...inviteData} = inviteResponse
+                const playerId = player.id
+                return {playerId, ...inviteData}
+            })
+            if (invitesToStore.length > 0) {
+                dispatch(upsertManyTeamInvites({ invites: invitesToStore }))
+            }
+            return team;
+        } catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE", message: "Network failure" });
         }
-        return team;
     },
     {
         // Only fetch if the current status is idle
@@ -193,8 +204,8 @@ const teamsSlice = createSlice({
                 teamsAdapter.addOne(state, {...teamData, playerIds, inviteeIds });
             })
             .addCase(createTeam.rejected, (state, action) => {
+                state.createError = action.payload as ErrorDetails; 
                 state.createStatus = "failed";
-                state.createError = action.error.message ?? "Unknown Error";
             })
     }
 });
