@@ -43,7 +43,7 @@ interface PlayerIdToInviteIdMap {
 
 export default function Invites() {
     const MAX_PLAYERS = 24;
-    const { t } = useTranslation('teams');
+    const { t } = useTranslation(['teams', 'errors']);
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const navigation = useNavigation();
     const dispatch = useAppDispatch();
@@ -162,6 +162,18 @@ export default function Invites() {
         }
     }, [createStatus]);
 
+    const getCreateTeamInviteErrorMessage = (): string => {
+        const error = createError!
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
+    const getUpdateTeamInviteErrorMessage = (): string => {
+        const error = updateError!
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
     let view: React.JSX.Element = <></>;
     if ((updateStatus === 'idle' || updateStatus === 'succeeded') &&
         (createStatus === 'idle' || createStatus === 'succeeded')) 
@@ -194,12 +206,12 @@ export default function Invites() {
     }
     else if (updateStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{updateError}</Text>
+            <Text>{getUpdateTeamInviteErrorMessage()}</Text>
         </View>
     }
     else if (createStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{createError}</Text>
+            <Text>{getCreateTeamInviteErrorMessage()}</Text>
         </View>
     }
 

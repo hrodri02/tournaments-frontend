@@ -245,9 +245,15 @@ export default function TeamsPage() {
     };
 
     const getFetchTeamsErrorMessage = (): string => {
-        const error = fetchError!
-        const message = t(`errors:${error.errorKey}`)
-        return message
+        const error = fetchError!;
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
+    const getUpdateTeamInviteErrorMessage = (): string => {
+        const error = teamInvitesUpdateError!;
+        const message = t(`errors:${error.errorKey}`);
+        return message;
     }
 
     let view: React.JSX.Element = <></>;
@@ -271,7 +277,7 @@ export default function TeamsPage() {
     }
     else if (teamInvitesUpdateStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{teamInvitesUpdateError}</Text>
+            <Text>{getUpdateTeamInviteErrorMessage()}</Text>
         </View>
     }
 
