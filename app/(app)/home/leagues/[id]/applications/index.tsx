@@ -34,8 +34,10 @@ import {
 import {
     makeSelectTeamsByIds
 } from '@/store/teams/teamsSlice';
+import { useTranslation } from 'react-i18next';
 
 export default function ApplicationsPage() {
+    const { t } = useTranslation(['home', 'errors']);
     const dispatch = useAppDispatch();
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
@@ -80,7 +82,7 @@ export default function ApplicationsPage() {
                     updateRow(rowMap, String(data.item.id), 'REJECTED')
                 }
             >
-                <Text style={styles.backTextWhite}>Reject</Text>
+                <Text style={styles.backTextWhite}>{t('applications.reject_button')}</Text>
             </Pressable>
             <Pressable
                 style={[styles.backRightBtn, styles.backRightBtnLeft]}
@@ -88,7 +90,7 @@ export default function ApplicationsPage() {
                     updateRow(rowMap, String(data.item.id), 'ACCEPTED')
                 }
             >
-                <Text style={styles.backTextWhite}>Accept</Text>
+                <Text style={styles.backTextWhite}>{t('applications.accept_button')}</Text>
             </Pressable>
         </View>
     );
@@ -124,6 +126,18 @@ export default function ApplicationsPage() {
         }
     }, [updateStatus]);
 
+    const getFetchLeagueApplicationsErrorMessage = (): string => {
+        const error = fetchError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
+    const getUpdateTeamApplicationsErrorMessage = (): string => {
+        const error = updateError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
     let view: React.JSX.Element = <></>;
     if ((fetchStatus === 'idle' || fetchStatus === 'succeeded') &&
         updateStatus === 'idle') {
@@ -138,7 +152,7 @@ export default function ApplicationsPage() {
     }
     else if (updateStatus === 'succeeded') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>Application successfully updated.</Text>
+            <Text>{t('applications.success_message')}</Text>
             <Ionicons name="checkmark-circle" size={32} color="green" />
         </View>
     }
@@ -149,12 +163,12 @@ export default function ApplicationsPage() {
     }
     else if (fetchStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{fetchError}</Text>
+            <Text>{getFetchLeagueApplicationsErrorMessage()}</Text>
         </View>
     }
     else if (updateStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{updateError}</Text>
+            <Text>{getUpdateTeamApplicationsErrorMessage()}</Text>
         </View>
     }
     

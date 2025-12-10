@@ -1,0 +1,9 @@
+{
+    "greeting": "Welcome!",
+    "name_placeholder": "Name",
+    "email_placeholder": "Email",
+    "password_placeholder": "Password",
+    "button": "Register",
+    "button_loading": "Registering...",
+    "login_link": "Already have an account? Login"
+}

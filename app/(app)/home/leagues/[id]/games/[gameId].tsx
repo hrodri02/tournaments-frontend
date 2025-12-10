@@ -23,12 +23,15 @@ import { makeSelectDenormalizedGame } from '@/store/games/gamesSlice';
 import { 
     fetchGameStats, 
     makeSelectDenormalizedStats,
-    selectGameStatsFetchStatus, 
+    selectGameStatsFetchStatus,
+    selectGameStatsFetchError, 
     createGameStat, 
     selectGameStatsCreateStatus, 
+    selectGameStatsCreateError,
     resetCreateGameStatStatus 
 } from '@/store/gamestats/gameStatsSlice';
 import { format } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 import { 
     GameStatType, 
     filterStats, 
@@ -40,11 +43,13 @@ import {
 import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 import EditGameStatForm from '@/components/EditGameStatForm';
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height; 
 
 export default function Game() {
     const { user, isLoading } = useAuth();
+    const { t, i18n } = useTranslation(['home', 'common', 'errors']);
     const [modalVisible, setModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const dispatch = useAppDispatch()
@@ -59,9 +64,12 @@ export default function Game() {
     const { showActionSheetWithOptions } = useActionSheet();
     const homeTeam = game.homeTeam
     const awayTeam = game.awayTeam
-    const formattedDate = format(game.gameDateTime, 'eee, MMM d')
+    const locale = (['en', 'en-US'].includes(i18n.language))? enUS : es;
+    const formattedDate = format(game.gameDateTime, 'eee, MMM d', {locale: locale});
     const gameStatsStatus = useAppSelector(selectGameStatsFetchStatus)
+    const fetchError = useAppSelector(selectGameStatsFetchError);
     const createStatus = useAppSelector(selectGameStatsCreateStatus)
+    const createError = useAppSelector(selectGameStatsCreateError);
     const selectGameStatsOfGame = useMemo(
         () => makeSelectDenormalizedStats(gameID),
         []
@@ -90,7 +98,7 @@ export default function Game() {
     }, [navigation, homeTeam, awayTeam]);
 
     const handlePress = () => {
-        const options = ['Add', 'Edit', 'Cancel'];
+        const options = [t('game.add_option'), t('common:edit_button'), t('common:cancel_button')];
         const destructiveButtonIndex = 2;
         const cancelButtonIndex = 3;
 
@@ -116,6 +124,7 @@ export default function Game() {
     };
 
     useLayoutEffect(() => {
+        console.log(user)
         if (user && !isLoading) {
             if (user.appUserRole === 'ADMIN' && isGameActive(game)) {
                 navigation.setOptions({
@@ -174,19 +183,31 @@ export default function Game() {
         setEditModalVisible(!editModalVisible)
     }
 
+    const getFetchGameStatsErrorMessage = (): string => {
+        const error = fetchError!
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
+    const getCreateGameStatErrorMessage = (): string => {
+        const error = createError!
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
     let view: React.JSX.Element = <></>;
     if (gameStatsStatus === 'loading' || createStatus === 'loading') {
         view = <ActivityIndicator size="large" color="#0000ff" />
     }
     else if (gameStatsStatus === 'failed') {
-        view = <Text>Game stats not found</Text>
+        view = <Text>{getFetchGameStatsErrorMessage()}</Text>
     }
     else if (createStatus === 'failed') {
-        view = <Text>Could not create stat</Text>
+        view = <Text>{getCreateGameStatErrorMessage()}</Text>
     }
     else if (gameStatsStatus === 'succeeded') {
         view = <View>
-            <Text style={styles.date}>{formattedDate} at {game.address}</Text>
+            <Text style={styles.date}>{formattedDate} {t('game.at_text')} {game.address}</Text>
             
             <View style={styles.gameStatView}> 
                 <View style={styles.teamLogo}> 
@@ -224,13 +245,13 @@ export default function Game() {
 
             <View style={styles.gameStatView} >
                 <Text style={[styles.text, styles.equalWidth]}>{homeTeamYellowCards}</Text>
-                <Text style={[styles.text, styles.equalWidth]}> Yellow Cards </Text>
+                <Text style={[styles.text, styles.equalWidth]}>{t('game.yellow_cards_label')}</Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamYellowCards}</Text>
             </View>
 
             <View style={styles.gameStatView}> 
                 <Text style={[styles.text, styles.equalWidth]}>{homeTeamRedCards}</Text>
-                <Text style={[styles.text, styles.equalWidth]}> Red Cards </Text>
+                <Text style={[styles.text, styles.equalWidth]}>{t('game.red_cards_label')}</Text>
                 <Text style={[styles.text, styles.equalWidth]}>{awayTeamRedCards}</Text>
             </View>
 

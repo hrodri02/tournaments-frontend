@@ -3,7 +3,9 @@ import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 
 import { Link } from 'expo-router';
 import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
+import { es, enUS } from 'date-fns/locale';
 import { useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -47,15 +49,17 @@ const styles = StyleSheet.create({
 })
 
 export function GameExcerpt({ game, style }: GameExcerptProps) {
+    const { t, i18n } = useTranslation('league');
+    const locale = (['en-US', 'en'].includes(i18n.language))? enUS : es;
     const date = Date.parse(game.gameDateTime);
-    const formattedDate = format(date, 'eee, MMM d pp');
+    const formattedDate = format(date, 'eee, MMM d pp', {locale: locale});
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
 
     return (
         <Link href={{
-            pathname: '/(app)/home/leagues/[leagueId]/games/[gameId]',
-            params: {leagueId: leagueId, gameId: game.id}
+            pathname: '/(app)/home/leagues/[id]/games/[gameId]',
+            params: {id: leagueId, gameId: game.id}
         }} asChild>
             <Pressable>
             <View style={style}>

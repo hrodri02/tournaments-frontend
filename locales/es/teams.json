@@ -1,0 +1,48 @@
+{
+    "title": "Equipos",
+    "invites_label": "Invitaciones",
+    "decline_button": "Rechazar",
+    "accept_button": "Aceptar",
+    "invite_players_message": "Número máximo de jugadores:",
+    "create_team": {
+        "title": "Crear equipo",
+        "team_name_label": "Nombre del Equipo",
+        "team_name_placeholder": "Introduce el nombre del equipo",
+        "upload_team_logo_label": "Subir logotipo del equipo",
+        "upload_img_message": "Sube un archivo PNG o JPG de menos de 8 MB.",
+        "invite_players_label": "Invitar a jugadores",
+        "button": "Crear Equipo",
+        "success_message": "Equipo creado exitosamente."
+    },
+    "edit_email": {
+        "title": "Editar Correo Electrónico",
+        "button": "Enviar",
+        "error_message": "Por favor, introduce una dirección de correo electrónico válida."
+    },
+    "detail": {
+        "players_label": "Jugadores",
+        "invites_option": "Invitaciones",
+        "join_league_option": "Únete a una Liga"
+    },
+    "pending_invites": {
+        "revoke_button": "Revocar",
+        "pending_label": "Pendiente",
+        "accepted_label": "Aceptada",
+        "declined_label": "Rechazada",
+        "revoked_label": "Revocada"
+    },
+    "invites": {
+        "title": "Invita a un Amigo",
+        "button": "Agrega Correo Electrónico",
+        "error_message": "Por favor, introduce una dirección de correo electrónico válida."
+    },
+    "join_a_league": {
+        "join_button": "Unirse",
+        "success_message": "Solicitud enviada exitosamente."
+    },
+    "goal_keeper_label": "Portero",
+    "defender_label": "Defensor",
+    "midfielder_label": "Mediocampista",
+    "striker_label": "Delantero",
+    "winger_label": "Extremo"
+}

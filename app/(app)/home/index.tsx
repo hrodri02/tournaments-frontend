@@ -17,6 +17,7 @@ import {
 import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
 import { LeagueStatus, League } from '@/entities';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 interface LeagueSection {
     title: string | null;
@@ -28,6 +29,7 @@ export default function HomeScreen() {
   const dispatch = useAppDispatch();
   const leaguesStatus = useAppSelector(selectLeaguesStatus);
   const leaguesError = useAppSelector(selectLeaguesError);
+  const { t } = useTranslation(['home', 'errors']);
 
   useEffect(() => {
     if (leaguesStatus === 'idle') {
@@ -52,9 +54,9 @@ export default function HomeScreen() {
   const currentLeagues = useAppSelector(selectCurrentLeagues);
   const previousLeagues = useAppSelector(selectPreviousLeagues);
   const sectionsWithIndex: LeagueSection[] = [
-    { title: 'Upcoming Leagues', data: upcomingLeagues },
-    { title: 'Current Leagues', data: currentLeagues },
-    { title: 'Previous Leagues', data: previousLeagues },
+    { title: t('section_one_title'), data: upcomingLeagues },
+    { title: t('section_two_title'), data: currentLeagues },
+    { title: t('section_three_title'), data: previousLeagues },
   ].map((section, index) => ({
     ...section,
     sectionIndex: index,
@@ -78,6 +80,12 @@ export default function HomeScreen() {
     );
   }
 
+  const getFetchLeaguesErrorMessage = (): string => {
+    const error = leaguesError!
+    const message = t(`errors:${error.errorKey}`);
+    return message
+  }
+
   let view: React.JSX.Element = <></>
   if (leaguesStatus === "idle" || leaguesStatus === "succeeded") {
     view = <SectionList
@@ -99,7 +107,7 @@ export default function HomeScreen() {
   else if (leaguesStatus === "failed") {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorView}>{leaguesError}</Text>
+        <Text style={styles.errorView}>{getFetchLeaguesErrorMessage()}</Text>
       </View>
     );
   }

@@ -10,10 +10,9 @@ import {
 import { 
     TeamInvite,
     CreateTeamInviteRequest, 
-    TeamInviteResponse,
     TeamInviteStatus, 
-    AcceptInviteResponse
 } from "@/entities/index";
+import { ErrorDetails, HttpError } from "@/entities/error";
 import { 
     postTeamInvite, 
     postRevokeTeamInvite, 
@@ -26,9 +25,9 @@ interface TeamInvitesState extends EntityState<TeamInvite, number> {
     fetchStatus: "idle" | "loading" | "succeeded" | "failed";
     fetchError: string | null;
     createStatus: "idle" | "loading" | "succeeded" | "failed";
-    createError: string | null;
+    createError: ErrorDetails | null;
     updateStatus: "idle" | "loading" | "succeeded" | "failed";
-    updateError: string | null;
+    updateError: ErrorDetails | null;
     deleteStatus: "idle" | "loading" | "succeeded" | "failed";
     deleteError: string | null;
 }
@@ -57,12 +56,23 @@ interface CreateTeamInvitePayload {
 
 export const createTeamInvite = createAppAsyncThunk(
     "teamInvites/createTeamInvite",
-    async (payload: CreateTeamInvitePayload, thunkApi): Promise<TeamInviteResponse> => {
-        const { teamId, requestBody } = payload;
-        const teamInvite = await postTeamInvite(teamId, requestBody);
-        const { player } = teamInvite
-        thunkApi.dispatch(addPlayer({player: player}))
-        return teamInvite;
+    async (payload: CreateTeamInvitePayload, { dispatch, rejectWithValue }) => {
+        try {
+            const { teamId, requestBody } = payload;
+            const teamInvite = await postTeamInvite(teamId, requestBody);
+            const { player } = teamInvite
+            dispatch(addPlayer({player: player}))
+            return teamInvite;
+        }
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -75,9 +85,20 @@ export const createTeamInvite = createAppAsyncThunk(
 
 export const revokeTeamInvite = createAppAsyncThunk(
     "teamInvites/revokeTeamInvite",
-    async (inviteId: number): Promise<TeamInviteResponse> => {
-        const teamInvite = await postRevokeTeamInvite(inviteId);
-        return teamInvite;
+    async (inviteId: number, { rejectWithValue }) => {
+        try {
+            const teamInvite = await postRevokeTeamInvite(inviteId);
+            return teamInvite;
+        }
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -90,9 +111,20 @@ export const revokeTeamInvite = createAppAsyncThunk(
 
 export const acceptTeamInvite = createAppAsyncThunk(
     "teamInvites/acceptTeamInvite",
-    async (inviteId: number, thunkApi): Promise<AcceptInviteResponse> => {
-        const response = await postAcceptTeamInvite(inviteId);
-        return response;
+    async (inviteId: number, { rejectWithValue }) => {
+        try {
+            const response = await postAcceptTeamInvite(inviteId);
+            return response;
+        }
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -105,9 +137,20 @@ export const acceptTeamInvite = createAppAsyncThunk(
 
 export const declineTeamInvite = createAppAsyncThunk(
     "teamInvites/declineTeamInvite",
-    async (inviteId: number): Promise<TeamInviteResponse> => {
-        const teamInvite = await postDeclineTeamInvite(inviteId);
-        return teamInvite;
+    async (inviteId: number, { rejectWithValue }) => {
+        try {
+            const teamInvite = await postDeclineTeamInvite(inviteId);
+            return teamInvite;
+        }
+        catch (err) {
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
     },
     {
         // Only fetch if the current status is idle
@@ -150,7 +193,7 @@ const teamInvitesSlice = createSlice({
             })
             .addCase(createTeamInvite.rejected, (state, action) => {
                 state.createStatus = "failed";
-                state.createError = action.error.message ?? "Unknown Error";
+                state.createError = action.payload as ErrorDetails;
             })
             .addCase(revokeTeamInvite.pending, (state) => {
                 state.updateStatus = "loading";
@@ -163,7 +206,7 @@ const teamInvitesSlice = createSlice({
             })
             .addCase(revokeTeamInvite.rejected, (state, action) => {
                 state.updateStatus = "failed";
-                state.updateError = action.error.message ?? "Unknown Error";
+                state.updateError = action.payload as ErrorDetails;
             })
             .addCase(acceptTeamInvite.pending, (state) => {
                 state.updateStatus = "loading";
@@ -180,7 +223,7 @@ const teamInvitesSlice = createSlice({
             })
             .addCase(acceptTeamInvite.rejected, (state, action) => {
                 state.updateStatus = "failed";
-                state.updateError = action.error.message ?? "Unknown Error";
+                state.updateError = action.payload as ErrorDetails;
             })
             .addCase(declineTeamInvite.pending, (state) => {
                 state.updateStatus = "loading";
@@ -193,7 +236,7 @@ const teamInvitesSlice = createSlice({
             })
             .addCase(declineTeamInvite.rejected, (state, action) => {
                 state.updateStatus = "failed";
-                state.updateError = action.error.message ?? "Unknown Error";
+                state.updateError = action.payload as ErrorDetails;
             })
     }
 });

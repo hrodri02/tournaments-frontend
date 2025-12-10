@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ViewStyle, Text, StyleSheet } from 'react-native';
-import { Player, PositionDisplay } from '@/entities/index';
+import { Player, Position } from '@/entities/index';
+import { useTranslation } from 'react-i18next';
 
 type PlayerExcerptProps = {
     player: Player;
@@ -8,6 +9,15 @@ type PlayerExcerptProps = {
 }
 
 export function PlayerExcerpt({ player, style }: PlayerExcerptProps) {
+    const { t } = useTranslation('teams')
+    const PositionDisplay: Record<Position, string> = {
+        'GOAL_KEEPER': t('goal_keeper_label'),
+        'DEFENDER': t('defender_label'),
+        'MIDFIELDER': t('midfielder_label'),
+        'STRIKER': t('striker_label'),
+        'WINGER': t('winger_label')
+    };
+
     return (
         <View style={style}>
             <Text style={styles.title}>{player.firstName} {player.lastName}</Text>

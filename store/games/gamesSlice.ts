@@ -15,6 +15,7 @@ import {
   TeamInviteResponse,
   GameResponse
 } from "@/entities/index";
+import { ErrorDetails, HttpError } from "@/entities/error";
 import { getGames } from "@/services/tournaments.service";
 import { addGameStats, selectStatIdToStatMap } from "../gamestats/gameStatsSlice";
 import { selectPlayerIdToPlayerMap } from "@/store/players/playersSlice";
@@ -23,7 +24,7 @@ import { selectTeamIdToTeamMap } from "@/store/teams/teamsSlice";
 // Define the shape of our games state
 interface GamesState extends EntityState<Game, number> {
   status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
+  error: ErrorDetails | null;
 }
 
 // Create an entity adapter for normalized games state
@@ -38,19 +39,30 @@ const initialState: GamesState = gamesAdapter.getInitialState({
 // Thunk for async fetching games
 export const fetchGames = createAppAsyncThunk(
   "games/fetchGames",
-  async (_, thunkApi) => {
-    const games = await getGames();
-    // store stats associate with this game in gameStatSlice
-    const statResponses = games.flatMap(game => game.stats);
-    const stats = statResponses.map(statResponse => {
-      const { player, ...statData } = statResponse;
-      const playerId = player.id;
-      return { playerId, ...statData };
-    });
-    if (stats.length > 0) {
-      thunkApi.dispatch(addGameStats({stats: stats}));
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const games = await getGames();
+      // store stats associate with this game in gameStatSlice
+      const statResponses = games.flatMap(game => game.stats);
+      const stats = statResponses.map(statResponse => {
+        const { player, ...statData } = statResponse;
+        const playerId = player.id;
+        return { playerId, ...statData };
+      });
+      if (stats.length > 0) {
+        dispatch(addGameStats({stats: stats}));
+      }
+      return games;
     }
-    return games;
+    catch (err) {
+      if (err instanceof HttpError) {
+        // Here, we reject the promise with the structured error details
+        // The Redux slice will store this payload under the 'rejected' action
+        return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
   },
   {
       // Only fetch if the current status is idle
@@ -86,7 +98,7 @@ const gamesSlice = createSlice({
       })
       .addCase(fetchGames.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Unknown Error";
+        state.error = action.payload as ErrorDetails;
       });
   },
 });

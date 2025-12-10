@@ -32,6 +32,7 @@ import {
 } from '@/store/team-invites/teamInvitesSlice';
 import { handleAcceptTeamInvite } from '@/store/thunks/teamOrchestratorThunks';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface TeamIdToInviteIdMap {
     [teamId: number] : number;
@@ -64,6 +65,7 @@ export default function TeamsPage() {
     const [selectedId, setSelectedId] = useState<number>(-1);
     const dispatch = useAppDispatch();
     const { user } = useAuth();
+    const { t } = useTranslation(['teams', 'errors']);
     const fetchStatus = useAppSelector(selectTeamsFetchStatus)
     const fetchError = useAppSelector(selectTeamsFetchError)
     const teamInvitesUpdateStatus = useAppSelector(selectTeamInvitesUpdateStatus)
@@ -87,8 +89,8 @@ export default function TeamsPage() {
     );
     const teamsInvitedTo = useAppSelector(selectTeamsFromIds);
     const sectionsWithIndex: TeamsSection[] = [
-        { title: 'Teams', data: teams, isSectionHeader: true, isSwipeable: false },
-        { title: 'Invites', data: teamsInvitedTo, isSectionHeader: true, isSwipeable: false },
+        { title: t('title'), data: teams, isSectionHeader: true, isSwipeable: false },
+        { title: t('invites_label'), data: teamsInvitedTo, isSectionHeader: true, isSwipeable: false },
     ].map((section, index) => ({
         ...section,
         sectionIndex: index,
@@ -199,13 +201,13 @@ export default function TeamsPage() {
                 style={[styles.backRightBtn, styles.backRightBtnRight]}
                 onPress={() => deleteRow(rowMap, rowKey)} 
             >
-                <Text style={styles.backTextWhite}>Decline</Text>
+                <Text style={styles.backTextWhite}>{t('decline_button')}</Text>
             </Pressable>
             <Pressable
                 style={[styles.backRightBtn, styles.backRightBtnLeft]}
                 onPress={() => acceptRow(rowMap, rowKey)} 
             >
-                <Text style={styles.backTextWhite}>Accept</Text>
+                <Text style={styles.backTextWhite}>{t('accept_button')}</Text>
             </Pressable>
         </View>
     );
@@ -242,6 +244,18 @@ export default function TeamsPage() {
         }
     };
 
+    const getFetchTeamsErrorMessage = (): string => {
+        const error = fetchError!;
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
+    const getUpdateTeamInviteErrorMessage = (): string => {
+        const error = teamInvitesUpdateError!;
+        const message = t(`errors:${error.errorKey}`);
+        return message;
+    }
+
     let view: React.JSX.Element = <></>;
     if ((fetchStatus === 'idle' || fetchStatus === 'succeeded') &&
     (teamInvitesUpdateStatus === 'idle' || teamInvitesUpdateStatus === 'succeeded')) {
@@ -258,12 +272,12 @@ export default function TeamsPage() {
     }
     else if (fetchStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{fetchError}</Text>
+            <Text>{getFetchTeamsErrorMessage()}</Text>
         </View>
     }
     else if (teamInvitesUpdateStatus === 'failed') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{teamInvitesUpdateError}</Text>
+            <Text>{getUpdateTeamInviteErrorMessage()}</Text>
         </View>
     }
 

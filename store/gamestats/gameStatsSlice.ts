@@ -12,6 +12,7 @@ import {
   GameStatUpdateFailure,
   Player 
 } from "@/entities/index";
+import { ErrorDetails, HttpError } from "@/entities/error";
 import { 
   getGameStats, 
   postGameStat, 
@@ -23,15 +24,15 @@ import { selectPlayerIdToPlayerMap } from "@/store/players/playersSlice";
 // Define the shape of our game stats state
 interface GameStatsState extends EntityState<GameStat, number> {
   fetchStatus: "idle" | "loading" | "succeeded" | "failed";
-  fetchError: string | null;
+  fetchError: ErrorDetails | null;
   createStatus: "idle" | "loading" | "succeeded" | "failed";
-  createError: string | null;
+  createError: ErrorDetails | null;
   updateStatus: "idle" | "loading" | "succeeded" | "failed";
-  updateError: string | null;
+  updateError: ErrorDetails | null;
   batchUpdateSuccesses: GameStat[];
   batchUpdateFailures: GameStatUpdateFailure[] | null;
   deleteStatus: "idle" | "loading" | "succeeded" | "failed";
-  deleteError: string | null;
+  deleteError: ErrorDetails | null;
 }
 
 const gameStatsAdapter = createEntityAdapter<GameStat>();
@@ -53,9 +54,20 @@ const initialState: GameStatsState = gameStatsAdapter.getInitialState({
 // Thunk for async fetching game stats
 export const fetchGameStats = createAppAsyncThunk(
   "gameStats/fetchGameStats",
-  async () => {
-    const gameStats = await getGameStats();
-    return gameStats;
+  async (_, { rejectWithValue }) => {
+    try {
+      const gameStats = await getGameStats();
+      return gameStats;
+    }
+    catch (err) {
+      if (err instanceof HttpError) {
+        // Here, we reject the promise with the structured error details
+        // The Redux slice will store this payload under the 'rejected' action
+        return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
   },
   {
       // Only fetch if the current status is idle
@@ -69,9 +81,20 @@ export const fetchGameStats = createAppAsyncThunk(
 // Thunk for async creating game stats
 export const createGameStat = createAppAsyncThunk(
   "gameStats/createGameStat",
-  async (stat: any) => {
-    const gameStat = await postGameStat(stat);
-    return gameStat;
+  async (stat: any, { rejectWithValue }) => {
+    try {
+      const gameStat = await postGameStat(stat);
+      return gameStat;
+    }
+    catch (err) {
+      if (err instanceof HttpError) {
+        // Here, we reject the promise with the structured error details
+        // The Redux slice will store this payload under the 'rejected' action
+        return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
   },
   {
       // Only fetch if the current status is idle
@@ -85,9 +108,20 @@ export const createGameStat = createAppAsyncThunk(
 // Thunk for async updating game stats
 export const updateGameStats = createAppAsyncThunk(
   "gameStats/updateGameStats",
-  async (stats: GameStat[]) => {
-    const response = await batchUpdateGameStats(stats);
-    return response;
+  async (stats: GameStat[], { rejectWithValue }) => {
+    try {
+      const response = await batchUpdateGameStats(stats);
+      return response;
+    }
+    catch (err) {
+      if (err instanceof HttpError) {
+        // Here, we reject the promise with the structured error details
+        // The Redux slice will store this payload under the 'rejected' action
+        return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
   },
   {
       // Only fetch if the current status is idle
@@ -101,9 +135,20 @@ export const updateGameStats = createAppAsyncThunk(
 // Thunk for async deleting game stats
 export const deleteGameStatFromStore = createAppAsyncThunk(
   "gameStats/deleteGameStat",
-  async (statId: number) => {
-    const gameStat = await deleteGameStat(statId);
-    return gameStat;
+  async (statId: number, { rejectWithValue }) => {
+    try {
+      const gameStat = await deleteGameStat(statId);
+      return gameStat;
+    }
+    catch (err) {
+      if (err instanceof HttpError) {
+        // Here, we reject the promise with the structured error details
+        // The Redux slice will store this payload under the 'rejected' action
+        return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
   },
   {
       // Only fetch if the current status is idle
@@ -151,7 +196,7 @@ const gameStatsSlice = createSlice({
       })
       .addCase(fetchGameStats.rejected, (state, action) => {
         state.fetchStatus = "failed";
-        state.fetchError = action.error.message ?? "Unknown Error";
+        state.fetchError = action.payload as ErrorDetails;
       })
       .addCase(createGameStat.pending, (state) => {
         state.createStatus = "loading";
@@ -163,7 +208,7 @@ const gameStatsSlice = createSlice({
       })
       .addCase(createGameStat.rejected, (state, action) => {
         state.createStatus = "failed";
-        state.createError = action.error.message ?? "Unknown Error";
+        state.createError = action.payload as ErrorDetails;
       })
       .addCase(updateGameStats.pending, (state) => {
         state.updateStatus = "loading";
@@ -182,7 +227,7 @@ const gameStatsSlice = createSlice({
       })
       .addCase(updateGameStats.rejected, (state, action) => {
         state.updateStatus = "failed";
-        state.updateError = action.error.message ?? "Unknown Error";
+        state.updateError = action.payload as ErrorDetails;
         state.batchUpdateFailures = null;
       })
       .addCase(deleteGameStatFromStore.pending, (state) => {
@@ -195,7 +240,7 @@ const gameStatsSlice = createSlice({
       })
       .addCase(deleteGameStatFromStore.rejected, (state, action) => {
         state.deleteStatus = "failed";
-        state.deleteError = action.error.message ?? "Unknown Error";
+        state.deleteError = action.payload as ErrorDetails;
       });
   },
 });

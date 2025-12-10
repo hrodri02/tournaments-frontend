@@ -27,6 +27,7 @@ import {
     resetCreateTeamState
 } from '@/store/teams/teamsSlice';
 import EditEmailForm from '@/components/EditEmailForm';
+import { useTranslation } from 'react-i18next';
 
 interface EmailItem {
     key: string;
@@ -39,6 +40,7 @@ interface CreateTeamFormData {
 
 export default function CreateTeamPage() {
     const MAX_PLAYERS = 24;
+    const { t } = useTranslation(['teams', 'common', 'errors']);
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -61,15 +63,17 @@ export default function CreateTeamPage() {
     const lastTeamId = (teamIds.length > 0)? teamIds[teamIds.length - 1] : null
     const lastTeamCreated = useAppSelector(state =>
         lastTeamId ? selectTeamById(state, lastTeamId) : null 
-    )
+    );
 
     useEffect(() => {
-        if (createStatus === 'succeeded' && lastTeamCreated) {
+        if (createStatus === 'succeeded' || createStatus === 'failed') {
             // slight delay to show success:
             const timer = setTimeout(() => {
                 dispatch(resetCreateTeamState())
-                router.back();
-            }, 2000);
+                if (createStatus === 'succeeded' && lastTeamCreated) {
+                    router.back();
+                }
+            }, 3000);
             return () => clearTimeout(timer);
             
             // Option 2: Navigate to the *newly created team's* detail page (more advanced)
@@ -82,7 +86,6 @@ export default function CreateTeamPage() {
         const isEmailTaken = fields.some(emailItem => emailItem.key === email)
         if (email && !isEmailTaken) {
             append({key: email})
-            console.log(`Added email: ${email}`);
         }
         setInviteModalVisible(false)
         setSelectedIndex(-1); 
@@ -104,7 +107,7 @@ export default function CreateTeamPage() {
             setInviteModalVisible(true)
         }
         else {
-            alert('You can have up to ' + MAX_PLAYERS + ' players in your team.');
+            alert(`${t('invite_players_message')} ${MAX_PLAYERS}`);
         }
     }
 
@@ -147,22 +150,39 @@ export default function CreateTeamPage() {
         }
     };
 
+    const getCreateErrorMessage = (): string => {
+        let errorMessage = "";
+        if (createError?.errorKey === "VALIDATION_FAILED") {
+            const validationErrors = createError?.validationErrors? createError?.validationErrors : [];
+            for (const error of validationErrors) {
+                const translationKey = `errors:VALIDATION.${error.field}.${error.errorKey}`;
+                errorMessage = t(translationKey) + "\n";
+            }
+        }
+        else {
+            const translationKey = createError!.errorKey
+            errorMessage = t(translationKey)
+        }
+        return errorMessage;
+    }
+
     let view: React.JSX.Element = <></>;
-    if (createStatus === 'idle') {
+    if (createStatus === 'idle' || createStatus === 'failed') {
         view = <View style={styles.container}>
             <View style={styles.main}>
+                {createError && <Text style={styles.errorText}>{getCreateErrorMessage()}</Text>}
                 <Controller
                     control={control}
                     name="teamName"
                     rules={{ required: 'Team name is required' }}
                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <View style={styles.marginAtBottom}>
-                            <Text style={styles.text}>Team Name</Text>
+                            <Text style={styles.text}>{t('create_team.team_name_label')}</Text>
                             <TextInput
                                 style={styles.input}
                                 onChangeText={onChange}
                                 value={value}
-                                placeholder="Enter team name"
+                                placeholder={t('create_team.team_name_placeholder')}
                                 placeholderTextColor="#AAAAAA"
                             />
                             {error && <Text style={styles.errorText}>{error.message}</Text>}
@@ -170,12 +190,12 @@ export default function CreateTeamPage() {
                     )}
                 />
 
-                <Text style={styles.text}>Upload Team Logo</Text>
-                <Text style={[styles.subtext, styles.marginAtBottom]}>Upload a PNG or JPG under 8MB.</Text>
+                <Text style={styles.text}>{t('create_team.upload_team_logo_label')}</Text>
+                <Text style={[styles.subtext, styles.marginAtBottom]}>{t('create_team.upload_img_message')}</Text>
 
-                <Text style={styles.text}>Invite Players</Text>
+                <Text style={styles.text}>{t('create_team.invite_players_label')}</Text>
                 <View style={styles.horizontalFlexContainer}>
-                    <Text style={styles.subtext}>You can have up {MAX_PLAYERS} players in your team.</Text>
+                    <Text style={styles.subtext}>{t('invite_players_message')} {MAX_PLAYERS}</Text>
                     <Pressable onPress={showInviteFriendModal}>
                         <FontAwesome6 name="user-plus" size={16} color="black" /> 
                     </Pressable>
@@ -195,7 +215,7 @@ export default function CreateTeamPage() {
                                     style={[styles.backRightBtn, styles.backRightBtnLeft]}
                                     onPress={() => editRow(rowMap, data.item.key)}
                                 >
-                                    <Text style={styles.backTextWhite}>Edit</Text>
+                                    <Text style={styles.backTextWhite}>{t('common:edit_button')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.backRightBtn, styles.backRightBtnRight]}
@@ -203,20 +223,19 @@ export default function CreateTeamPage() {
                                         deleteRow(rowMap, data.item.key)
                                     }}
                                 >
-                                    <Text style={styles.backTextWhite}>Delete</Text>
+                                    <Text style={styles.backTextWhite}>{t('common:delete_button')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
                         rightOpenValue={-150}
                     />
                 </View>
-                
             </View>
             <Pressable
                 onPress={handleSubmit(onCreateTeamButtonPressed)}
                 style={styles.buttonContainer}
             >
-                <Text style={styles.buttonText}>Create Team</Text>
+                <Text style={styles.buttonText}>{t('create_team.button')}</Text>
             </Pressable>
 
             <Modal
@@ -247,13 +266,8 @@ export default function CreateTeamPage() {
     }
     else if (createStatus === 'succeeded' && lastTeamCreated) {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>Team {lastTeamCreated.name} successfully created.</Text>
+            <Text>{t('create_team.success_message')}</Text>
             <Ionicons name="checkmark-circle" size={32} color="green" />
-        </View>
-    }
-    else {
-        view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{createError}</Text>
         </View>
     }
 
@@ -291,6 +305,7 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
+        textAlign: 'center',
         fontSize: 12,
         marginBottom: 5,
     },

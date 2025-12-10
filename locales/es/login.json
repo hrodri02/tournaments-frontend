@@ -1,0 +1,9 @@
+{
+  "greeting": "¡Bienvenido!",
+  "button": "Inicie sesión",
+  "button_loading": "Iniciando sesión",
+  "username_placeholder": "Correo Electrónico",
+  "password_placeholder": "Contraseña",
+  "dev_button": "Datos de Desarrollador",
+  "create_account_link": "¿No tienes una cuenta? Regístrate"
+}

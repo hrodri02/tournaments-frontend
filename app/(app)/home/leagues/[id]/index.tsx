@@ -22,9 +22,11 @@ import {
 } from '@/store/games/gamesSlice';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectDenormalizedGames } from '@/store/games/gamesSlice';
+import { useTranslation } from 'react-i18next';
 
 export default function LeagueScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation(['home', 'errors']);
   const { id } = useLocalSearchParams();
   const dispatch = useAppDispatch();
   const leagueId = Number(id);
@@ -50,10 +52,16 @@ export default function LeagueScreen() {
     }
   }, [navigation, league?.name]);
 
+  const getFetchGamesErrorMessage = (): string => {
+    const error = gamesError!
+    const message = t(`errors:${error.errorKey}`);
+    return message;
+  }
+
   let view: React.JSX.Element = <></>;
   if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
     view = <FlatList
-      ListHeaderComponent={<Text style={styles.header}>Schedule</Text>}
+      ListHeaderComponent={<Text style={styles.header}>{t('league.schedule_title')}</Text>}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       data={games}
       renderItem={({ item }) => (
@@ -71,7 +79,7 @@ export default function LeagueScreen() {
   }
   else {
     view = <View style={styles.loadingContainer}>
-      <Text>{gamesError}</Text>
+      <Text>{getFetchGamesErrorMessage()}</Text>
     </View>
   }
 

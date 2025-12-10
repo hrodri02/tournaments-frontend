@@ -1,0 +1,9 @@
+{
+    "greeting": "¡Bienvenido!",
+    "name_placeholder": "Nombre",
+    "email_placeholder": "Correo Electrónico",
+    "password_placeholder": "Contraseña",
+    "button": "Regístrese",
+    "button_loading": "Registrando...",
+    "login_link": "¿Ya tienes una cuenta? Iniciar sesión"
+}

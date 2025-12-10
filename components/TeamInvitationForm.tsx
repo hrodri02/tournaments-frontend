@@ -1,5 +1,12 @@
-import React, {useState} from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { 
+    View, 
+    Text, 
+    TextInput, 
+    Pressable, 
+    StyleSheet 
+} from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface TeamInvitationFormProps {
     onInvite: (email: string) => void;
@@ -7,6 +14,7 @@ interface TeamInvitationFormProps {
 }
 
 export default function TeamInvitationForm({ onInvite, onClose}: TeamInvitationFormProps) {
+    const { t } = useTranslation(['teams', 'common']);
     const [email, setEmail] = useState('');
 
     const handleAddEmailPress = () => {
@@ -22,25 +30,25 @@ export default function TeamInvitationForm({ onInvite, onClose}: TeamInvitationF
             onClose();
         } else {
             // Handle case where input is empty
-            alert('Please enter a valid email address.');
+            alert(t('invites.error_message'));
         }
     };
 
     return (
         <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Invite a Friend</Text>
+            <Text style={styles.modalTitle}>{t('invites.title')}</Text>
             <TextInput
                 style={[styles.input, styles.whiteBackground]}
                 onChangeText={setEmail}
                 value={email}
-                placeholder="Enter email"
+                placeholder={t('common:email_placeholder')}
             />
 
             <Pressable
                 onPress={handleAddEmailPress}
                 style={styles.buttonContainer}
             >
-                <Text style={styles.buttonText}>Add Email</Text>
+                <Text style={styles.buttonText}>{t('invites.button')}</Text>
             </Pressable>
         </View>
     );

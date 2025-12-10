@@ -32,6 +32,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { useForm, Controller } from 'react-hook-form';
 import { FontAwesome6 } from "@expo/vector-icons";
+import { useTranslation } from 'react-i18next';
 
 type EditGameStatFormProps = {
     stats: GameStatResponse[],
@@ -45,9 +46,9 @@ export interface EditGameStatFormData {
     statIdToplayerId: {[key: string]: number}
 }
 
-// TODO: fetch players from player slice
 export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }: EditGameStatFormProps) {
     const dispatch = useAppDispatch();
+    const { t } = useTranslation(['home', 'common', 'errors']);
     const goalStats = filterStats(stats, GameStatType.goal)
     const yellowCardStats = filterStats(stats, GameStatType.yellowCard)
     const redCardStats = filterStats(stats, GameStatType.redCard)
@@ -106,6 +107,18 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
         return failure ? failure[0] : undefined
     }
 
+    const getUpdateGameStatErrorMessage = (): string => {
+        const error = updateError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
+    const getDeleteGameStatErrorMessage = (): string => {
+        const error = deleteError!
+        const message = t(`errors:${error.errorKey}`);
+        return message
+    }
+
     let view: React.JSX.Element = <></>;
     if (deleteStatus === 'loading' || updateStatus === 'loading') {
         view = <ActivityIndicator size="large" color="#0000ff" />
@@ -122,9 +135,9 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 style={styles.sectionList}
                 scrollEnabled={false}
                 sections={[
-                    { title: 'Goals', data: goalStats },
-                    { title: 'Yellow Cards', data: yellowCardStats },
-                    { title: 'Red Cards', data: redCardStats },
+                    { title: t('game.goals_label'), data: goalStats },
+                    { title: t('game.yellow_cards_label'), data: yellowCardStats },
+                    { title: t('game.red_cards_label'), data: redCardStats },
                 ]}
                 renderItem={({ item }) => {
                     const failed = updateFailed(item)
@@ -133,7 +146,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                             <Controller
                                 control={control}
                                 name={`statIdToplayerId.${item.id.toString()}`}
-                                rules={{ required: 'Player is required' }}
+                                rules={{ required: t('game.player_is_required') }}
                                 render={({ field: { onChange, value }, fieldState: { error } }) =>
                                 (
                                     <>
@@ -161,7 +174,7 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                                 style={styles.deleteButton}
                                 onPress={() => handleDeleteStatButtonPressed(item)}
                             >
-                                <Text style={styles.deleteButtonText}>Delete</Text>
+                                <Text style={styles.deleteButtonText}>{t('common:delete_button')}</Text>
                             </TouchableOpacity>
 
                             {updateStatus === 'succeeded' && failed && <Text style={styles.errorText}>{failed.message}</Text>}
@@ -175,22 +188,22 @@ export default function EditGameStatForm({ stats, homeTeam, awayTeam, onCancel }
                 )}
             />
 
+            {updateError && <Text style={styles.errorText}>{getUpdateGameStatErrorMessage()}</Text>}
+            
+            {deleteError && <Text style={styles.errorText}>{getDeleteGameStatErrorMessage()}</Text>}
+
             <TouchableOpacity
                 style={styles.modalButton}
                 onPress={handleSubmit(onFormSubmitted)}
             >
-                <Text style={styles.modalButtonText}>Save</Text>
+                <Text style={styles.modalButtonText}>{t('game.save_button')}</Text>
             </TouchableOpacity>
-
-            {updateError && <Text style={styles.errorText}>{updateError}</Text>}
-            
-            {deleteError && <Text style={styles.errorText}>{deleteError}</Text>}
             
             <TouchableOpacity
                 style={styles.modalButton}
                 onPress={onCancel}
             >
-                <Text style={styles.modalButtonText}>Dismiss</Text>
+                <Text style={styles.modalButtonText}>{t('common:cancel_button')}</Text>
             </TouchableOpacity>
         </>
     }

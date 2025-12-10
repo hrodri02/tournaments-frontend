@@ -3,11 +3,18 @@ import { StyleSheet, Text, SectionList, TouchableOpacity, ActivityIndicator } fr
 import { MyAccountExcerpt } from '@/components/MyAccountExcerpt';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 export default function SettingsScreen() {
   const { logout, isLoading } = useAuth();
-  const myAccountSectionItems = ['Become an Admin', 'Change City (Puebla)', 'Delete Account'];
-  const pathnames = ['', '', ''];
+  const { t } = useTranslation('settings');
+  const myAccountSectionItems = [
+    t('become_an_admin_label'), 
+    t('language_preference_label'), 
+    t('change_city_label'), 
+    t('delete_account_label')
+  ];
+  const pathnames = ['', '/(app)/settings/language-preference', '', ''];
 
   return (
     <SafeAreaProvider>
@@ -15,7 +22,7 @@ export default function SettingsScreen() {
         <SectionList
           style={styles.sectionList}
           sections={[
-            {title: 'My Account', data: myAccountSectionItems},
+            {title: t('my_account_title'), data: myAccountSectionItems},
           ]}
           renderItem={({item, index}) => 
             <MyAccountExcerpt style={styles.item} pathname={pathnames[index]}>{item}</MyAccountExcerpt>
@@ -32,7 +39,7 @@ export default function SettingsScreen() {
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Log Out</Text>
+            <Text style={styles.buttonText}>{t('logout_button')}</Text>
           )}
         </TouchableOpacity>
       </SafeAreaView>

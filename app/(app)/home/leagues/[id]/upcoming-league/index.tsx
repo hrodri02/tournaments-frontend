@@ -17,10 +17,16 @@ import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectTeamsByIds } from '@/store/teams/teamsSlice';
 import { TeamExcerpt } from '@/components/TeamExcerpt';
 import { LeagueDetail, LeagueDetailExcerpt } from '@/components/LeagueDetailExcerpt';
+import { useTranslation } from 'react-i18next';
+import { parseISO, format } from 'date-fns';
+import { es, enUS } from 'date-fns/locale'
 
 export default function UpcomingLeaguePage() {
     const router = useRouter();
     const navigation = useNavigation();
+    const { t, i18n } = useTranslation(['home', 'common']);
+    const currentLanguage = i18n.language;
+    const locale = currentLanguage === 'en-US'? enUS : es;
     const { user, isLoading } = useAuth();
     const { showActionSheetWithOptions } = useActionSheet();
     const { id } = useLocalSearchParams();
@@ -31,17 +37,20 @@ export default function UpcomingLeaguePage() {
         [league]
     );
     const teams = useAppSelector(selectTeamsByIds);
+    const startDate = parseISO(league.startDate)
+    const formattedStartDate = format(startDate, 'MMMM d y', {locale: locale});
     const leagueDetails: LeagueDetail[] = [
         {
             id: 1, 
             iconName: "calendar-outline", 
-            description: 'Start Date', 
-            text: `${league.startDate}`},
+            description: t('upcoming_league.start_date_label'), 
+            text: formattedStartDate
+        },
         {
             id: 2, 
             iconName: "time-outline", 
-            description: 'Duration', 
-            text: `${league.durationInWeeks} weeks`
+            description: t('upcoming_league.duration_label'), 
+            text: `${league.durationInWeeks} ${t('upcoming_league.weeks_label')}`
         },
     ];
     
@@ -52,7 +61,7 @@ export default function UpcomingLeaguePage() {
     }, [navigation, league?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = ['Applications', 'Cancel'];
+        const options = [t('upcoming_league.applications_label'), t('common:cancel_button')];
         const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(
@@ -98,7 +107,7 @@ export default function UpcomingLeaguePage() {
         <SafeAreaView style={styles.container}>
             <FlatList
                 style={styles.topFlatList}
-                ListHeaderComponent={<View><Text style={styles.sectionHeader}>League Details</Text></View>}
+                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('upcoming_league.section_one_title')}</Text></View>}
                 data={leagueDetails}
                 renderItem={({item}) => 
                     <LeagueDetailExcerpt detail={item} style={styles.item}/>
@@ -108,7 +117,7 @@ export default function UpcomingLeaguePage() {
             <FlatList
                 style={styles.bottomFlatList}
                 ItemSeparatorComponent={() => <View style={styles.itemSeparator}/>}
-                ListHeaderComponent={<View><Text style={styles.sectionHeader}>Teams</Text></View>}
+                ListHeaderComponent={<View><Text style={styles.sectionHeader}>{t('upcoming_league.section_two_title')}</Text></View>}
                 data={teams}
                 renderItem={({item}) => <TeamExcerpt style={styles.item} team={item}/>}
                 keyExtractor={item => String(item.id)}

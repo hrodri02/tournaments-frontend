@@ -1,0 +1,14 @@
+{
+    "my_account_title": "Mi Cuenta",
+    "become_an_admin_label": "Conviértete en Administrador",
+    "language_preference_label": "Preferencia de Idioma",
+    "change_city_label": "Cambiar Ciudad",
+    "delete_account_label": "Eliminar Cuenta",
+    "logout_button": "Cerrar Sesión",
+    "language_preference": {
+        "title": "Preferencia de Idioma",
+        "choose_preferred_language_label": "Elige tu idioma preferido",
+        "en_option": "Inglés",
+        "es_option": "Español"
+    }
+}

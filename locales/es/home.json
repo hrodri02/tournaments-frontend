@@ -1,0 +1,41 @@
+{
+    "section_one_title": "Próximas Ligas",
+    "section_two_title": "Ligas Actuales",
+    "section_three_title": "Ligas Anteriores",
+    "starts_label": "Comienza",
+    "started_label": "Comenzó",
+    "ended_label": "Finalizó",
+    "upcoming_league": {
+        "section_one_title": "Detalles de la Liga",
+        "section_two_title": "Equipos",
+        "start_date_label": "Fecha de Inicio",
+        "duration_label": "Duración",
+        "weeks_label": "semanas",
+        "applications_label": "Aplicaciones"
+    },
+    "league": {
+        "schedule_title": "Cronograma"
+    },
+    "applications": {
+        "reject_button": "Rechazar",
+        "accept_button": "Aceptar",
+        "success_message": "Aplicación actualizada exitosamente."
+    },
+    "game": {
+        "at_text": "en el",
+        "goals_label": "Goles",
+        "yellow_cards_label": "Tarjetas Amarillas",
+        "red_cards_label": "Tarjetas Rojas",
+        "add_option": "Agregar",
+        "select_game_stat_label": "Seleccionar el tipo de estadística",
+        "select_game_stat_picker_label": "Seleccionar el tipo de estadística...",
+        "select_player_label": "Seleccionar Jugador",
+        "select_player_picker_label": "Seleccionar Jugador...",
+        "save_button": "Guardar",
+        "goal_option": "Gol",
+        "yellow_card_option": "Tarjeta amarilla",
+        "red_card_option": "Tarjeta roja",
+        "stat_type_is_required": "Se requiere el tipo de estadística",
+        "player_is_required": "Se requerie jugador"
+    }
+}
