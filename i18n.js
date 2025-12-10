@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import en_errors from './locales/en/errors.json';
 import es_errors from './locales/es/errors.json';
@@ -17,9 +16,7 @@ import en_settings from './locales/en/settings.json';
 import es_settings from './locales/es/settings.json';
 import en_teams from './locales/en/teams.json';
 import es_teams from './locales/es/teams.json';
-// don't want to use this?
-// have a look at the Quick start guide 
-// for passing in lng and translations on init
+
 const resources = {
   en: {
     errors: en_errors,
@@ -42,10 +39,6 @@ const resources = {
 };
 
 i18n
-  // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
-  // learn more: https://github.com/i18next/i18next-http-backend
-  // want your translations to be loaded from a professional CDN? => https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn
-  //.use(Backend)
   // detect user language
   // learn more: https://github.com/i18next/i18next-browser-languageDetector
   .use(LanguageDetector)
