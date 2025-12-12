@@ -9,7 +9,7 @@ import {
 import { ErrorDetails, HttpError } from "@/entities/error";
 import { upsertManyPlayers } from "@/store/players/playersSlice";
 import { upsertManyTeamInvites } from "@/store/team-invites/teamInvitesSlice";
-import { getTeams, postTeam } from "@/services/tournaments.service";
+import { getTeams, postTeam, putTeam } from "@/services/tournaments.service";
 import {
   createSlice,
   createEntityAdapter,
@@ -25,7 +25,7 @@ interface TeamsState extends EntityState<Team, number> {
     createStatus: "idle" | "loading" | "succeeded" | "failed";
     createError: ErrorDetails | null;
     updateStatus: "idle" | "loading" | "succeeded" | "failed";
-    updateError: string | null;
+    updateError: ErrorDetails | null;
     deleteStatus: "idle" | "loading" | "succeeded" | "failed";
     deleteError: string | null;
 }
@@ -42,6 +42,11 @@ const initialState: TeamsState = teamsAdapter.getInitialState({
     deleteStatus: "idle",
     deleteError: null
 });
+
+interface UpdateTeamPayload {
+    teamId: number;
+    updatedTeam: CreateTeamRequest;
+}
 
 export const fetchTeams = createAppAsyncThunk(
     "teams/getTeams",
@@ -140,6 +145,41 @@ export const createTeam = createAppAsyncThunk(
     }
 );
 
+export const updateTeamRequest = createAppAsyncThunk(
+    "teams/updateTeam",
+    async (payload: UpdateTeamPayload, { dispatch, rejectWithValue}) => {
+        try {
+            const team = await putTeam(payload.teamId, payload.updatedTeam);
+            const inviteResponses = team.invites ?? [];
+            const invitesToStore = inviteResponses.map(inviteResponse => {
+                const {player, ...inviteData} = inviteResponse
+                const playerId = player.id
+                return {playerId, ...inviteData}
+            })
+            if (invitesToStore.length > 0) {
+                dispatch(upsertManyTeamInvites({ invites: invitesToStore }))
+            }
+            return team;
+        } catch (err) {
+            console.log(err);
+            if (err instanceof HttpError) {
+                // Here, we reject the promise with the structured error details
+                // The Redux slice will store this payload under the 'rejected' action
+                return rejectWithValue(err.details); 
+            }
+            // Handle unexpected errors (e.g., network down)
+            return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+        }
+    },
+    {
+        // Only fetch if the current status is idle
+        condition(arg, thunkApi) {
+            const teamUpdateStatus = selectTeamsUpdateStatus(thunkApi.getState());
+            return teamUpdateStatus === "idle";
+        },
+    }
+);
+
 interface UpdateTeamAction {
     team: Team;
 }
@@ -162,6 +202,10 @@ const teamsSlice = createSlice({
         resetCreateTeamState: (state) => {
             state.createStatus = 'idle'
             state.createError = null
+        },
+        resetUpdateTeamState: (state) => {
+            state.updateStatus = 'idle'
+            state.updateError = null
         },
         updateTeam: (state, action: PayloadAction<UpdateTeamAction>) => {
             const updatedTeam = action.payload.team
@@ -217,6 +261,21 @@ const teamsSlice = createSlice({
                 state.createStatus = "failed";
                 state.createError = action.payload as ErrorDetails; 
             })
+            .addCase(updateTeamRequest.pending, (state) => {
+                state.updateStatus = "loading";
+                state.updateError = null;
+            })
+            .addCase(updateTeamRequest.fulfilled, (state, action) => {
+                state.updateStatus = "succeeded";
+                const { playerDTOs, invites, invitees, ...teamData } = action.payload;
+                const playerIds = (playerDTOs && playerDTOs.length > 0)? playerDTOs.map(player => player.id) : []
+                const inviteeIds = (invitees && invitees.length > 0)? invitees.map(invitee => invitee.id) : []
+                teamsAdapter.updateOne(state, {id: teamData.id, changes: {...teamData, playerIds, inviteeIds}});
+            })
+            .addCase(updateTeamRequest.rejected, (state, action) => {
+                state.updateStatus = "failed";
+                state.updateError = action.payload as ErrorDetails; 
+            })
     }
 });
 
@@ -224,7 +283,8 @@ export const {
     resetCreateTeamState, 
     resetFetchState, 
     updateTeam,
-    addTeams
+    addTeams,
+    resetUpdateTeamState
 } = teamsSlice.actions
 export default teamsSlice.reducer;
 
