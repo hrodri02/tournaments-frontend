@@ -40,8 +40,9 @@
     },
     "upload_team_logo": {
         "title": "Upload Team Logo",
-        "message": "Upload a PNG or JPG under 8MB.",
+        "message": "Upload a PNG or JPG under 1 MB.",
         "button": "Upload Image",
+        "file_size_error": "Max file size:",
         "success_message": "Team logo successfully uploaded.",
         "skip_button": "Skip"
     },

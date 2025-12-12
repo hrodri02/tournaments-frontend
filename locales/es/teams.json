@@ -40,8 +40,9 @@
     },
     "upload_team_logo": {
         "title": "Subir logotipo del equipo",
-        "message": "Sube un archivo PNG o JPG de menos de 8 MB.",
+        "message": "Sube un archivo PNG o JPG de menos de 1 MB.",
         "button": "Subir Imagen",
+        "file_size_error": "Tamaño máximo del archivo:",
         "success_message": "El logotipo del equipo se ha subido correctamente.",
         "skip_button": "Saltar"
     },
