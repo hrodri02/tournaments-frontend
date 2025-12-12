@@ -48,6 +48,13 @@ export default function TeamsTabLayout() {
                 }}
             />
             <Stack.Screen name="create-team/index" options={{title: t('create_team.title')}}/>
+            <Stack.Screen 
+                name="[id]/upload-team-logo/index" 
+                options={{
+                    title: t('upload_team_logo.title'),
+                    headerLeft: () => null
+                }}
+            />
         </Stack>
     );
 }
