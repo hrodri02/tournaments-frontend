@@ -24,6 +24,9 @@ const API_URL = Platform.select({
   default: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // fallback
 });
 
+const API_GATEWAY_ENPOINT = 'https://pn600vb2d8.execute-api.us-east-1.amazonaws.com/test';
+const S3_BUCKET_ENDPOINT = 'https://tutor-notes-bucket.s3.amazonaws.com';
+
 export const postGameStat = async (stat: any): Promise<GameStat> => {
     const url = `${API_URL}/gamestats`
     return httpRequest(url, 'POST', stat)
@@ -57,6 +60,11 @@ export const getTeams = async (): Promise<GetTeamsResponse> => {
 export const postTeam = async (requestBody: CreateTeamRequest): Promise<TeamResponse> => {
     const url = `${API_URL}/teams`
     return httpRequest<TeamResponse>(url, 'POST', requestBody)
+}
+
+export const putTeam = async (teamId: number, requestBody: CreateTeamRequest): Promise<TeamResponse> => {
+    const url = `${API_URL}/teams/${teamId}`
+    return httpRequest<TeamResponse>(url, 'PUT', requestBody)
 }
 
 export const postTeamInvite = async (teamId: number, requestBody: CreateTeamInviteRequest): Promise<TeamInviteResponse> => {
@@ -110,13 +118,63 @@ export const putApplication = async (applicationId: number, requestBody: UpdateA
     return httpRequest<ApplicationResponse>(url, 'PUT', requestBody);
 }
 
-const httpRequest = async<T> (url: string, httpMethod: string, reqBody: any | undefined = undefined): Promise<T> => {
-    try {
-        const jwt = await getStorageItemAsync(TOKEN_KEY)
+export async function uploadImageToS3(localFileUri: string) {
+    let fileExtension = localFileUri.split('.').pop();
+    let contentType = `image/${fileExtension}`;
 
+    // --- 1. Get Presigned URL from API Gateway ---
+    const signedUrlEndpoint = `${API_GATEWAY_ENPOINT}/signedURL?action=put`;
+    const { uploadURL, key } = await httpRequest<any>(signedUrlEndpoint, 'GET');
+
+    if (!uploadURL) {
+        throw new Error("FAILED_TO_GET_SIGNED_URL");
+    }
+
+    let blob;
+    try {
+        // This fetch call uses the local URI to retrieve the file data as a Blob
+        const localFetchResponse = await fetch(localFileUri);
+        blob = await localFetchResponse.blob();
+    } catch (err) {
+        throw new Error("FAILED_TO_READ_FILE");
+    }
+
+    // --- 2. Perform the PUT Upload to S3 ---
+    try {
         const headers: HeadersInit = {
-            "Content-Type": "application/json",
+            "Content-Type": contentType,
         };
+        const uploadResponse = await fetch(
+            uploadURL, // The S3 presigned URL
+            {
+                method: 'PUT',
+                headers: headers,
+                body: blob
+            }
+        );
+
+        if (uploadResponse.status >= 200 && uploadResponse.status < 300) {
+            return `${S3_BUCKET_ENDPOINT}/${key}`;
+        } else {
+            // Log S3 error details if available
+            console.error(`Details: ${uploadResponse.body}`);
+            throw new Error("S3_UPLOAD_ERROR");
+        }
+    } catch (error) {
+        throw new Error("S3_UPLOAD_ERROR");
+    }
+}
+
+const httpRequest = async<T> (
+    url: string, 
+    httpMethod: string,
+    reqBody: any | undefined = undefined
+): Promise<T> => 
+{
+    try {
+        const jwt = await getStorageItemAsync(TOKEN_KEY);
+
+        const headers: Record<string, string> = {"Content-Type": "application/json"}
 
         if (jwt) {
             headers["Authorization"] = `Bearer ${jwt}`;

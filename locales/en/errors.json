@@ -26,6 +26,9 @@
     "NOT_TEAM_OWNER": "You must be the team owner to perform this action.",
     "GAME_INACTIVE": "The game is currently inactive and cannot be updated.",
     "INVALID_RESPONSE_BODY": "Failed to parse the response body.",
+    "FAILED_TO_GET_SIGNED_URL": "Backend did not return a valid upload URL.",
+    "FAILED_TO_READ_FILE": "Could not read local file.",
+    "S3_UPLOAD_ERROR": "The file upload to the cloud failed.",
     "VALIDATION": {
         "name": {
             "Size": "Name must be between 2 and 255 characters."

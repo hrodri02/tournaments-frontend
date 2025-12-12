@@ -7,7 +7,7 @@ import {
     TextInput, 
     Pressable, 
     TouchableOpacity, 
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
@@ -71,13 +71,10 @@ export default function CreateTeamPage() {
             const timer = setTimeout(() => {
                 dispatch(resetCreateTeamState())
                 if (createStatus === 'succeeded' && lastTeamCreated) {
-                    router.back();
+                    router.replace(`/teams/${lastTeamCreated.id}/upload-team-logo`);
                 }
-            }, 3000);
+            }, 2000);
             return () => clearTimeout(timer);
-            
-            // Option 2: Navigate to the *newly created team's* detail page (more advanced)
-            // router.replace(`/teams/${lastTeamCreated.id}`);
         }
     }, [createStatus, lastTeamCreated]);
 
@@ -111,7 +108,7 @@ export default function CreateTeamPage() {
         }
     }
 
-    function onCreateTeamButtonPressed(data: CreateTeamFormData) {
+    async function onCreateTeamButtonPressed(data: CreateTeamFormData) {
         const now: Date = new Date();
         const emails = data.emails.map(item => item.key);
         const isoString: string = now.toISOString();
@@ -189,9 +186,6 @@ export default function CreateTeamPage() {
                         </View>
                     )}
                 />
-
-                <Text style={styles.text}>{t('create_team.upload_team_logo_label')}</Text>
-                <Text style={[styles.subtext, styles.marginAtBottom]}>{t('create_team.upload_img_message')}</Text>
 
                 <Text style={styles.text}>{t('create_team.invite_players_label')}</Text>
                 <View style={styles.horizontalFlexContainer}>
