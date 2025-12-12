@@ -8,8 +8,6 @@
         "title": "Crear equipo",
         "team_name_label": "Nombre del Equipo",
         "team_name_placeholder": "Introduce el nombre del equipo",
-        "upload_team_logo_label": "Subir logotipo del equipo",
-        "upload_img_message": "Sube un archivo PNG o JPG de menos de 8 MB.",
         "invite_players_label": "Invitar a jugadores",
         "button": "Crear Equipo",
         "success_message": "Equipo creado exitosamente."
@@ -39,6 +37,13 @@
     "join_a_league": {
         "join_button": "Unirse",
         "success_message": "Solicitud enviada exitosamente."
+    },
+    "upload_team_logo": {
+        "title": "Subir logotipo del equipo",
+        "message": "Sube un archivo PNG o JPG de menos de 8 MB.",
+        "button": "Subir Imagen",
+        "success_message": "El logotipo del equipo se ha subido correctamente.",
+        "skip_button": "Saltar"
     },
     "goal_keeper_label": "Portero",
     "defender_label": "Defensor",
