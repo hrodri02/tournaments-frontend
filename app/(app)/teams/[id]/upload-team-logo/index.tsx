@@ -7,11 +7,13 @@ import {
     Image, 
     Alert, 
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
+    Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons'; 
 import * as ImagePicker from 'expo-image-picker';
+import { File } from 'expo-file-system';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { 
     updateTeamRequest,
@@ -27,9 +29,11 @@ import { CreateTeamRequest } from '@/entities';
 export default function UploadTeamLogo() {
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [s3error, setS3error] = useState<string | null>(null);
+    const [fileSizeError, setFileSizeError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation(['teams', 'errors']);
     const { id } = useLocalSearchParams();
+    const MAX_SIZE_BYTES = 1 * 1024 * 1024;
     const teamId = Number(id);
     const dispatch = useAppDispatch();
     const updateStatus = useAppSelector(selectTeamsUpdateStatus);
@@ -58,11 +62,23 @@ export default function UploadTeamLogo() {
 
         // 3. Handle the result
         if (!result.canceled) {
-            // The result object has an 'assets' array when 'allowsMultipleSelection' is false
-            // and we take the first asset's URI.
-            setImageUri(result.assets[0].uri);
-            console.log('Selected Image URI:', result.assets[0].uri);
-            // NOTE: This URI is a local path on the device, perfect for immediate display or for uploading.
+            const selectedAsset = result.assets[0];
+            setImageUri(selectedAsset.uri);
+            
+            let fileSize;
+            if (Platform.OS === 'web') {
+                const file = selectedAsset.file;
+                fileSize = file!.size;
+            }
+            else {
+                const fileInfo = new File(selectedAsset.uri).info();
+                fileSize = fileInfo.size;
+            }
+            
+            if (fileSize! > MAX_SIZE_BYTES) {
+                const message = t('upload_team_logo.file_size_error');
+                setFileSizeError(message);    
+            }
         }
     };
 
@@ -110,6 +126,10 @@ export default function UploadTeamLogo() {
         router.back();
     }
 
+    const convertBytesToMB = (bytes: number): number => {
+        return bytes / (1024 * 1024);
+    }
+
     let view: React.JSX.Element = <></>;
     if (isLoading) {
         view = <View style={[styles.container, styles.perfectCentering]}>
@@ -128,13 +148,14 @@ export default function UploadTeamLogo() {
                         style={styles.image} 
                     />
                 )}
-                {updateError && <Text style={styles.errorText}>{getUpdateErrorMessage()}</Text>}
+                {fileSizeError && <Text style={styles.errorText}>{fileSizeError} {convertBytesToMB(MAX_SIZE_BYTES)} MB</Text>}
                 {s3error && <Text style={styles.errorText}>{s3error}</Text>}
+                {updateError && <Text style={styles.errorText}>{getUpdateErrorMessage()}</Text>}
             </View>
             <Pressable 
                 onPress={uploadImage} 
-                style={[styles.buttonContainer, imageUri === null && styles.buttonDisabled]}
-                disabled={imageUri === null}
+                style={[styles.buttonContainer, (imageUri === null || fileSizeError) && styles.buttonDisabled]}
+                disabled={imageUri === null || fileSizeError !== null}
             >
                 <Text style={styles.buttonText}>{t('upload_team_logo.button')}</Text>
             </Pressable>
