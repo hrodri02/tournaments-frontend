@@ -118,12 +118,18 @@ export const putApplication = async (applicationId: number, requestBody: UpdateA
     return httpRequest<ApplicationResponse>(url, 'PUT', requestBody);
 }
 
-export async function uploadImageToS3(localFileUri: string) {
+export async function uploadImageToS3(localFileUri: string, currentUrl: string | undefined) {
     let fileExtension = localFileUri.split('.').pop();
     let contentType = `image/${fileExtension}`;
 
     // --- 1. Get Presigned URL from API Gateway ---
-    const signedUrlEndpoint = `${API_GATEWAY_ENPOINT}/signedURL?action=put`;
+    let signedUrlEndpoint = `${API_GATEWAY_ENPOINT}/signedURL?action=put`;
+    if (currentUrl) {
+        const keyWithTimestamp = currentUrl.replace(`${S3_BUCKET_ENDPOINT}/`, "");
+        const index = keyWithTimestamp.indexOf("?");
+        const key = keyWithTimestamp.slice(0, index);
+        signedUrlEndpoint += `&key=${key}`;  
+    }
     const { uploadURL, key } = await httpRequest<any>(signedUrlEndpoint, 'GET');
 
     if (!uploadURL) {
