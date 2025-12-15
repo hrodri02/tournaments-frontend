@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
+import { Image } from 'expo-image';
 import {
     View,
     Text, 
     Pressable, 
-    Image, 
     Alert, 
     StyleSheet,
     ActivityIndicator,
@@ -85,12 +85,13 @@ export default function UploadTeamLogo() {
     const uploadImage = async () => {
         try {
             setIsLoading(true);
-            const imageUrl = await uploadImageToS3(imageUri!);
+            const imageUrl = await uploadImageToS3(imageUri!, team.logoUrl);
+            const urlWithTimestamp = `${imageUrl}?v=${new Date().getTime()}`;
             const now: Date = new Date();
             const isoString: string = now.toISOString();
             const updatedTeam: CreateTeamRequest = {
                 name: team.name,
-                logoUrl: imageUrl,
+                logoUrl: urlWithTimestamp,
                 playersToInvite: [],
                 createdAt: isoString
             };
