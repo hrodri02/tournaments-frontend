@@ -9,6 +9,7 @@ import {
     Pressable,
     FlatList
 } from 'react-native';
+import CustomHeader from '@/components/CustomHeader';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -41,6 +42,7 @@ export default function TeamDetailPage() {
 
     const handleMenuButtonPressed = () => {
         const options = [
+            t('detail.upload_team_logo'),
             t('detail.invites_option'),
             t('detail.join_league_option'),
             t('common:cancel_button')
@@ -55,12 +57,15 @@ export default function TeamDetailPage() {
             (buttonIndex) => {
                 switch (buttonIndex) {
                     case 0:
-                        router.push(`./${teamId}/invites`);
+                        router.push(`./${teamId}/upload-team-logo`);
                         break;
                     case 1:
-                        router.push(`./${teamId}/join-league`);
+                        router.push(`./${teamId}/invites`);
                         break;
                     case 2:
+                        router.push(`./${teamId}/join-league`);
+                        break;
+                    case 3:
                         break;
                 }
             }
@@ -84,6 +89,21 @@ export default function TeamDetailPage() {
             }
         }
     }, [navigation, user, isLoading, teamId, handleMenuButtonPressed]);
+
+
+    useLayoutEffect(() => {
+        if (team) {
+            navigation.setOptions({
+                headerTitle: () => (
+                    <CustomHeader
+                        key={team.logoUrl}
+                        title={team.name} 
+                        imageUrl={team.logoUrl} 
+                    />
+                )
+            });
+        }
+    }, [team, navigation]);
 
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
