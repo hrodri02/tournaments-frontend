@@ -7,6 +7,9 @@
     "started_label": "Comenzó",
     "ended_label": "Finalizó",
     "create_league_option": "Crear liga",
+    "create_league": {
+        "title": "Crear Liga"
+    },
     "upcoming_league": {
         "section_one_title": "Detalles de la Liga",
         "section_two_title": "Equipos",

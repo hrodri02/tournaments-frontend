@@ -3,6 +3,7 @@ import React, {
   useMemo,
   useLayoutEffect
 } from 'react';
+import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native'; 
 import { 
   SectionList, 
@@ -36,6 +37,7 @@ interface LeagueSection {
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  const router = useRouter();
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const dispatch = useAppDispatch();
@@ -55,7 +57,7 @@ export default function HomeScreen() {
         (buttonIndex) => {
           switch (buttonIndex) {
             case 0:
-              console.log('create league');
+              router.push('/(app)/home/create-league');
               break;
             case 1:
               console.log('cancel');

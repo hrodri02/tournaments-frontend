@@ -7,6 +7,9 @@
     "started_label": "Started",
     "ended_label": "Ended",
     "create_league_option": "Create league",
+    "create_league": {
+        "title": "Create League"
+    },
     "upcoming_league": {
         "section_one_title": "League Details",
         "section_two_title": "Teams",

@@ -15,6 +15,12 @@ export default function HomeLayout() {
         }}
       />
       <Stack.Screen 
+        name="create-league/index" 
+        options={{
+          title: t('create_league.title'),
+        }}
+      />
+      <Stack.Screen 
         name="leagues/[id]/index" 
         options={{
           headerShown: true,
