@@ -18,6 +18,7 @@
         "error_message": "Por favor, introduce una dirección de correo electrónico válida."
     },
     "detail": {
+        "upload_team_logo": "Subir el logotipo del equipo",
         "players_label": "Jugadores",
         "invites_option": "Invitaciones",
         "join_league_option": "Únete a una Liga"
