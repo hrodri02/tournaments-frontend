@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeListView, RowMap, SwipeRow } from 'react-native-swipe-list-view';
+import { ImageFetcher } from '@/components/ImageFetcher';
 import { Team } from '@/entities/index';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { 
@@ -55,7 +56,11 @@ type ItemProps = {
 type TeamsFlattenedSection = Omit<TeamsSection, 'data'> & { team: Team | null, key: string; };
 
 const Item = ({item, backgroundColor, textColor}: ItemProps) => (
-    <View style={styles.item}>
+    <View style={[styles.item, styles.horizontalContainer]}>
+        {
+            item.logoUrl &&
+            <ImageFetcher key={item.logoUrl} imageUrl={item.logoUrl}/>
+        }
         <Text style={[styles.text, {color: textColor}]}>{item.name}</Text>
     </View>
 );
@@ -165,8 +170,8 @@ export default function TeamsPage() {
                 >
                     
                     <View/>
-                    <View style={styles.rowFront}>
-                        <Pressable onPress={handlePress}>
+                    <View style={[styles.rowFront]}>
+                        <Pressable onPress={handlePress} style={{flex: 1}}>
                             <Item
                                 item={team}
                                 backgroundColor={backgroundColor}
@@ -319,11 +324,17 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 16
     },
+    horizontalContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems:'center',
+        columnGap: 10
+    },
     rowFront: {
         backgroundColor: '#CCC',
         borderBottomColor: 'black',
         borderBottomWidth: 1,
-        justifyContent: 'center',
         height: 50,
     },
     rowBack: {
