@@ -8,7 +8,13 @@
     "ended_label": "Ended",
     "create_league_option": "Create league",
     "create_league": {
-        "title": "Create League"
+        "title": "Create League",
+        "name_label": "Name",
+        "name_placeholder": "Enter league name",
+        "duration_label": "Duration in Weeks",
+        "duration_placeholder": "Enter league duration in weeks",
+        "start_date_label": "Start Date",
+        "button": "Create League"
     },
     "upcoming_league": {
         "section_one_title": "League Details",

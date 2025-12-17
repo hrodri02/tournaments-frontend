@@ -8,7 +8,13 @@
     "ended_label": "Finalizó",
     "create_league_option": "Crear liga",
     "create_league": {
-        "title": "Crear Liga"
+        "title": "Crear Liga",
+        "name_label": "Nombre de la Liga",
+        "name_placeholder": "Ingrese el nombre de la liga",
+        "duration_label": "Duración en semanas",
+        "duration_placeholder": "Ingrese la duración de la liga en semanas.",
+        "start_date_label": "Fecha de Inicio",
+        "button": "Crear Liga"
     },
     "upcoming_league": {
         "section_one_title": "Detalles de la Liga",
