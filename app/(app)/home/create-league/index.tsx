@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
     StyleSheet, 
     Text, 
     View, 
     TextInput, 
     Pressable,
-    TouchableWithoutFeedback, 
-    Keyboard,
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import UniversalDatePicker from '@/components/UniversalDatePicker';
+import DismissKeyboard from '@/components/DismissKeyboard';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -31,14 +30,14 @@ export default function CreateLeague() {
     });
 
     function onCreateLeagueButtonPressed(data: CreateLeagueFormData) {
-        
+        console.log(data);
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <SafeAreaView style={styles.safeAreaContainer}>
-                <View style={styles.container}>
-                    <View style={styles.main}>
+        <DismissKeyboard>
+            <SafeAreaView style={styles.container}>
+                <View style={[styles.container, styles.marginAtTop]}>
+                    <View style={styles.container}>
                         <Controller
                             control={control}
                             name="leagueName"
@@ -83,7 +82,7 @@ export default function CreateLeague() {
                             render={({ field: { onChange, value }, fieldState: { error } }) => (
                                 <View style={styles.marginAtBottom}>
                                     <Text style={styles.label}>{t('create_league.start_date_label')}</Text>
-                                    <DateTimePicker
+                                    <UniversalDatePicker
                                         testID="dateTimePicker"
                                         value={value}
                                         mode={'date'}
@@ -102,20 +101,16 @@ export default function CreateLeague() {
                     </Pressable>
                 </View>
             </SafeAreaView>
-        </TouchableWithoutFeedback>
+        </DismissKeyboard>
     );
 }
 
 const styles = StyleSheet.create({
-    safeAreaContainer: {
-        flex: 1
-    },
     container: {
-        flex: 1,
-        margin: 12
-    },
-    main: {
         flex: 1
+    },
+    marginAtTop: {
+        margin: 12
     },
     marginAtBottom: {
         marginBottom: 20
