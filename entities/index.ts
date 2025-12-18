@@ -1,4 +1,4 @@
-import {User} from "@/entities/auth";
+import { User } from "@/entities/auth";
 
 export type Position = 'GOAL_KEEPER' | 'DEFENDER' | 'MIDFIELDER' | 'STRIKER' | 'WINGER';
 
@@ -10,6 +10,7 @@ export interface CreateLeagueRequest {
     name: string;
     startDate: string;
     durationInWeeks: number;
+    logoUrl?: string;
 }
 
 export interface CreateTeamRequest {
@@ -169,6 +170,7 @@ export interface LeagueResponse {
     durationInWeeks: number;
     name: string;
     status: LeagueStatus;
+    logoUrl?: string;
     teams: TeamResponse[];
 }
 
@@ -178,6 +180,7 @@ export interface League {
     durationInWeeks: number;
     name: string;
     status: LeagueStatus;
+    logoUrl?: string;
     teamIds: number[];
 }
 
