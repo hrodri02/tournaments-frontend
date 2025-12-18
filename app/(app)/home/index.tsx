@@ -60,9 +60,6 @@ export default function HomeScreen() {
               router.push('/(app)/home/create-league');
               break;
             case 1:
-              console.log('cancel');
-              break;
-            case 2: 
               break;
           }
         }
