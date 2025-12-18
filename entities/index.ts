@@ -6,6 +6,12 @@ export interface Player extends User {
     position: Position;
 }
 
+export interface CreateLeagueRequest {
+    name: string;
+    startDate: string;
+    durationInWeeks: number;
+}
+
 export interface CreateTeamRequest {
   name: string;
   logoUrl?: string;
