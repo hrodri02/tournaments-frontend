@@ -151,7 +151,7 @@ export default function CreateLeague() {
     }
     else if (createStatus === 'succeeded') {
         view = <View style={[styles.container, styles.perfectCentering]}>
-            <Text>{t('create_team.success_message')}</Text>
+            <Text>{t('create_league.success_message')}</Text>
             <Ionicons name="checkmark-circle" size={32} color="green" />
         </View>
     }
