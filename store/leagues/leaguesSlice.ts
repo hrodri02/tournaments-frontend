@@ -1,5 +1,6 @@
-import { getLeagues } from "@/services/tournaments.service";
+import { getLeagues, postLeague } from "@/services/tournaments.service";
 import { 
+  CreateLeagueRequest,
   League, 
   LeagueStatus, 
   Player,
@@ -21,6 +22,8 @@ import { ErrorDetails, HttpError } from "@/entities/error";
 interface LeaguesState extends EntityState<League, number> {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: ErrorDetails | null;
+  createStatus: "idle" | "loading" | "succeeded" | "failed";
+  createError: ErrorDetails | null;
 }
 
 // Create an entity adapter for normalized league state
@@ -30,6 +33,8 @@ const leaguesAdapter = createEntityAdapter<League>();
 const initialState: LeaguesState = leaguesAdapter.getInitialState({
   status: "idle",
   error: null,
+  createStatus: "idle",
+  createError: null
 });
 
 // Thunk for async fetching leagues
@@ -83,6 +88,20 @@ export const fetchLeagues = createAppAsyncThunk(
   }
 );
 
+export const createLeague = createAppAsyncThunk(
+  "leagues/createLeague",
+  async (requestBody: CreateLeagueRequest, { dispatch, rejectWithValue } ) => {
+    const league = await postLeague(requestBody);
+    return league;
+  },
+  {
+    condition(arg, thunkApi) {
+      const createStatus = selectLeaguesCreateStatus(thunkApi.getState());
+      return createStatus === "idle";
+    },
+  }
+);
+
 interface UpdateLeagueAction {
   league: League;
 }
@@ -99,6 +118,10 @@ const leaguesSlice = createSlice({
     updateLeague: (state, action: PayloadAction<UpdateLeagueAction>) => {
       const updatedLeague = action.payload.league;
       leaguesAdapter.updateOne(state, {id: updatedLeague.id, changes: updatedLeague});
+    },
+    resetLeaguesCreateState: (state) => {
+      state.createStatus = "idle";
+      state.createError = null;
     }
   },
   extraReducers: (builder) => {
@@ -120,11 +143,27 @@ const leaguesSlice = createSlice({
       .addCase(fetchLeagues.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as ErrorDetails;
+      })
+      .addCase(createLeague.pending, (state) => {
+        state.createStatus = "loading";
+        state.createError = null;
+      })
+      .addCase(createLeague.fulfilled, (state, action) => {
+        state.createStatus = "succeeded";
+        const leagueResponse = action.payload;
+        const { teams, ...leagueData } = leagueResponse;
+        const teamIds = teams.map(team => team.id);
+        const league = { teamIds, ...leagueData};
+        leaguesAdapter.addOne(state, league);
+      })
+      .addCase(createLeague.rejected, (state, action) => {
+        state.createStatus = "failed";
+        state.createError = action.payload as ErrorDetails;
       });
   },
 });
 
-export const { resetLeaguesState, updateLeague } = leaguesSlice.actions;
+export const { resetLeaguesState, updateLeague, resetLeaguesCreateState } = leaguesSlice.actions;
 export default leaguesSlice.reducer;
 
 //
@@ -147,6 +186,12 @@ export const selectLeaguesStatus = (state: RootState) =>
 
 export const selectLeaguesError = (state: RootState) =>
   selectLeaguesState(state).error;
+
+export const selectLeaguesCreateStatus = (state: RootState) =>
+  selectLeaguesState(state).createStatus;
+
+export const selectLeaguesCreateError = (state: RootState) =>
+  selectLeaguesState(state).createError;
 
 // Memoized selector factory to filter leagues by status
 export const makeSelectLeaguesByStatus = (status: LeagueStatus) =>
