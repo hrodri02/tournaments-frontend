@@ -18,7 +18,12 @@
         "success_message": "League successfully created."
     },
     "upload_league_logo": {
-        "title": "Upload League Logo"
+        "title": "Upload League Logo",
+        "message": "Upload a PNG or JPG under 1 MB.",
+        "button": "Upload Image",
+        "file_size_error": "Max file size:",
+        "skip_button": "Skip",
+        "success_message": "League logo successfully uploaded."
     },
     "upcoming_league": {
         "section_one_title": "League Details",

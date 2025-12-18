@@ -18,7 +18,12 @@
         "success_message": "Liga creada con éxito."
     },
     "upload_league_logo": {
-        "title": "Subir Logotipo de la Liga"
+        "title": "Subir Logotipo de la Liga",
+        "message": "Sube un archivo PNG o JPG de menos de 1 MB.",
+        "button": "Subir Imagen",
+        "file_size_error": "Tamaño máximo del archivo:",
+        "skip_button": "Saltar",
+        "success_message": "El logotipo de la liga se ha subido correctamente."
     },
     "upcoming_league": {
         "section_one_title": "Detalles de la Liga",
