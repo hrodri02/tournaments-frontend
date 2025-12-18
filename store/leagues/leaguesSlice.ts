@@ -1,4 +1,4 @@
-import { getLeagues, postLeague } from "@/services/tournaments.service";
+import { getLeagues, postLeague, putLeague } from "@/services/tournaments.service";
 import { 
   CreateLeagueRequest,
   League, 
@@ -24,6 +24,8 @@ interface LeaguesState extends EntityState<League, number> {
   error: ErrorDetails | null;
   createStatus: "idle" | "loading" | "succeeded" | "failed";
   createError: ErrorDetails | null;
+  updateStatus: "idle" | "loading" | "succeeded" | "failed";
+  updateError: ErrorDetails | null;
 }
 
 // Create an entity adapter for normalized league state
@@ -34,7 +36,9 @@ const initialState: LeaguesState = leaguesAdapter.getInitialState({
   status: "idle",
   error: null,
   createStatus: "idle",
-  createError: null
+  createError: null,
+  updateStatus: "idle",
+  updateError: null
 });
 
 // Thunk for async fetching leagues
@@ -90,14 +94,55 @@ export const fetchLeagues = createAppAsyncThunk(
 
 export const createLeague = createAppAsyncThunk(
   "leagues/createLeague",
-  async (requestBody: CreateLeagueRequest, { dispatch, rejectWithValue } ) => {
-    const league = await postLeague(requestBody);
-    return league;
+  async (requestBody: CreateLeagueRequest, { rejectWithValue } ) => {
+    try {
+      const league = await postLeague(requestBody);
+      return league;
+    }
+    catch (err) {
+      if (err instanceof HttpError) {
+          // Here, we reject the promise with the structured error details
+          // The Redux slice will store this payload under the 'rejected' action
+          return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
   },
   {
     condition(arg, thunkApi) {
       const createStatus = selectLeaguesCreateStatus(thunkApi.getState());
       return createStatus === "idle";
+    },
+  }
+);
+
+interface UpdateLeaguePayload {
+  leagueId: number;
+  requestBody: CreateLeagueRequest;
+}
+
+export const updateLeagueRequest = createAppAsyncThunk(
+  "leagues/updateLeague",
+  async (payload: UpdateLeaguePayload, { rejectWithValue } ) => {
+    try {
+      const league = await putLeague(payload.leagueId, payload.requestBody);
+      return league;
+    }
+    catch (err) {
+      if (err instanceof HttpError) {
+          // Here, we reject the promise with the structured error details
+          // The Redux slice will store this payload under the 'rejected' action
+          return rejectWithValue(err.details); 
+      }
+      // Handle unexpected errors (e.g., network down)
+      return rejectWithValue({ errorKey: "NETWORK_UNAVAILABLE" });
+    }
+  },
+  {
+    condition(arg, thunkApi) {
+      const updateStatus = selectLeaguesUpdateStatus(thunkApi.getState());
+      return updateStatus === "idle";
     },
   }
 );
@@ -122,7 +167,11 @@ const leaguesSlice = createSlice({
     resetLeaguesCreateState: (state) => {
       state.createStatus = "idle";
       state.createError = null;
-    }
+    },
+    resetLeaguesUpdateState: (state) => {
+      state.updateStatus = "idle";
+      state.updateError = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -159,11 +208,32 @@ const leaguesSlice = createSlice({
       .addCase(createLeague.rejected, (state, action) => {
         state.createStatus = "failed";
         state.createError = action.payload as ErrorDetails;
+      })
+      .addCase(updateLeagueRequest.pending, (state) => {
+        state.updateStatus = "loading";
+        state.updateError = null;
+      })
+      .addCase(updateLeagueRequest.fulfilled, (state, action) => {
+        state.updateStatus = "succeeded";
+        const leagueResponse = action.payload;
+        const { teams, ...leagueData } = leagueResponse;
+        const teamIds = teams.map(team => team.id);
+        const league = { teamIds, ...leagueData};
+        leaguesAdapter.updateOne(state, {id: league.id, changes: league});
+      })
+      .addCase(updateLeagueRequest.rejected, (state, action) => {
+        state.updateStatus = "failed";
+        state.updateError = action.payload as ErrorDetails;
       });
   },
 });
 
-export const { resetLeaguesState, updateLeague, resetLeaguesCreateState } = leaguesSlice.actions;
+export const { 
+  resetLeaguesState, 
+  updateLeague, 
+  resetLeaguesCreateState,
+  resetLeaguesUpdateState
+} = leaguesSlice.actions;
 export default leaguesSlice.reducer;
 
 //
@@ -192,6 +262,12 @@ export const selectLeaguesCreateStatus = (state: RootState) =>
 
 export const selectLeaguesCreateError = (state: RootState) =>
   selectLeaguesState(state).createError;
+
+export const selectLeaguesUpdateStatus = (state: RootState) =>
+  selectLeaguesState(state).updateStatus;
+
+export const selectLeaguesUpdateError = (state: RootState) =>
+  selectLeaguesState(state).updateError;
 
 // Memoized selector factory to filter leagues by status
 export const makeSelectLeaguesByStatus = (status: LeagueStatus) =>
