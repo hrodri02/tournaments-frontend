@@ -14,7 +14,8 @@
         "duration_label": "Duración en semanas",
         "duration_placeholder": "Ingrese la duración de la liga en semanas.",
         "start_date_label": "Fecha de Inicio",
-        "button": "Crear Liga"
+        "button": "Crear Liga",
+        "success_message": "Liga creada con éxito."
     },
     "upcoming_league": {
         "section_one_title": "Detalles de la Liga",
