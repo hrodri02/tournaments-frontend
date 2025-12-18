@@ -124,7 +124,6 @@ export default function Game() {
     };
 
     useLayoutEffect(() => {
-        console.log(user)
         if (user && !isLoading) {
             if (user.appUserRole === 'ADMIN' && isGameActive(game)) {
                 navigation.setOptions({

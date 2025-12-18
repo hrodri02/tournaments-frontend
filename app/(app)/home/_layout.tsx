@@ -8,7 +8,18 @@ export default function HomeLayout() {
     <Stack screenOptions={{
       headerTitleAlign: 'center',
     }}>
-      <Stack.Screen name="index" options={{headerShown: false}}/>
+      <Stack.Screen 
+        name="index" 
+        options={{
+          title: t('title'),
+        }}
+      />
+      <Stack.Screen 
+        name="create-league/index" 
+        options={{
+          title: t('create_league.title'),
+        }}
+      />
       <Stack.Screen 
         name="leagues/[id]/index" 
         options={{

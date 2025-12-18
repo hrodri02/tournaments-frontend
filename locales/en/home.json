@@ -1,10 +1,22 @@
 {
+    "title": "Leagues",
     "section_one_title": "Upcoming Leagues",
     "section_two_title": "Current Leagues",
     "section_three_title": "Previous Leagues",
     "starts_label": "Starts",
     "started_label": "Started",
     "ended_label": "Ended",
+    "create_league_option": "Create league",
+    "create_league": {
+        "title": "Create League",
+        "name_label": "Name",
+        "name_placeholder": "Enter league name",
+        "duration_label": "Duration in Weeks",
+        "duration_placeholder": "Enter league duration in weeks",
+        "start_date_label": "Start Date",
+        "button": "Create League",
+        "success_message": "League successfully created."
+    },
     "upcoming_league": {
         "section_one_title": "League Details",
         "section_two_title": "Teams",

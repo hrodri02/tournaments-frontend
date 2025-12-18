@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { 
+  useEffect, 
+  useMemo,
+  useLayoutEffect
+} from 'react';
+import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native'; 
 import { 
   SectionList, 
   StyleSheet, 
@@ -6,7 +12,9 @@ import {
   Text, 
   ActivityIndicator,
   SectionListRenderItemInfo,
+  Pressable,
 } from 'react-native';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
   fetchLeagues, 
@@ -17,6 +25,8 @@ import {
 import { LeagueExcerpt } from '@/store/leagues/LeagueExcerpt'
 import { LeagueStatus, League } from '@/entities';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useTranslation } from 'react-i18next';
 
 interface LeagueSection {
@@ -26,10 +36,60 @@ interface LeagueSection {
 }
 
 export default function HomeScreen() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const navigation = useNavigation();
+  const { showActionSheetWithOptions } = useActionSheet();
   const dispatch = useAppDispatch();
   const leaguesStatus = useAppSelector(selectLeaguesStatus);
   const leaguesError = useAppSelector(selectLeaguesError);
-  const { t } = useTranslation(['home', 'errors']);
+  const { t } = useTranslation(['home', 'errors', 'common']);
+
+  const handleMenuButtonPress = () => {
+    const options = [t('create_league_option'), t('common:cancel_button')];
+    const cancelButtonIndex = options.length - 1;
+
+    showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        (buttonIndex) => {
+          switch (buttonIndex) {
+            case 0:
+              router.push('/(app)/home/create-league');
+              break;
+            case 1:
+              console.log('cancel');
+              break;
+            case 2: 
+              break;
+          }
+        }
+      );
+    };
+
+  useLayoutEffect(() => {
+    if (user) {
+      if (user.appUserRole === 'ADMIN') {
+        navigation.setOptions({
+          headerRight: () => (
+            <Pressable
+              style={styles.rightNavButton}
+              onPress={handleMenuButtonPress}
+            >
+              <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
+            </Pressable>
+          )
+        });
+      }
+      else {
+        navigation.setOptions({
+          headerRight: undefined
+        });
+      }
+    }
+  }, [navigation, user, handleMenuButtonPress])
 
   useEffect(() => {
     if (leaguesStatus === 'idle') {
@@ -120,6 +180,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  rightNavButton: {
+    marginHorizontal: 20,
+  },
   container: {
     flex: 1,
     justifyContent: 'center'

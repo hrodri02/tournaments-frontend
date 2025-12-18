@@ -13,7 +13,8 @@ import {
     AcceptInviteResponse,
     ApplicationResponse,
     CreateApplicationRequest,
-    UpdateApplicationRequest
+    UpdateApplicationRequest,
+    CreateLeagueRequest
 } from "@/entities";
 import { ErrorDetails, HttpError } from '@/entities/error';
 import { getStorageItemAsync, TOKEN_KEY } from '@/store/auth/authStorage';
@@ -96,6 +97,11 @@ export const getLeagues = async (status: LeagueStatus | undefined = undefined): 
     
     return httpRequest<LeagueResponse[]>(url.toString(), 'GET'); 
 };
+
+export const postLeague = async (requestBody: CreateLeagueRequest): Promise<LeagueResponse> => {
+    const url = `${API_URL}/leagues`;
+    return httpRequest<LeagueResponse>(url, 'POST', requestBody);
+}
 
 export const postApplyToLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {
     const url = `${API_URL}/leagues/${leagueId}/applications`;
