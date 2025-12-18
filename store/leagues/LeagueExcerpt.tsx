@@ -6,8 +6,7 @@ import { parseISO, format, addWeeks } from 'date-fns';
 import { es, enUS } from 'date-fns/locale'
 import { type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-
-const screenHeight = Dimensions.get('window').height;
+import { ImageFetcher } from '@/components/ImageFetcher';
 
 type LeagueExcerptProps = {
     league: League;
@@ -17,23 +16,7 @@ type LeagueExcerptProps = {
     imageSideLength?: number;
 }
 
-const styles = StyleSheet.create({
-    image: {
-        borderRadius: 10,
-    },
-    itemHeader: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    itemSubheader: {
-        fontSize: 12,
-    },
-    leagueDetails: {
-        justifyContent: 'center',
-    }
-});
-
-export function LeagueExcerpt({ league, pathname, style, clickable = false, imageSideLength = screenHeight * 0.1 }: LeagueExcerptProps) {
+export function LeagueExcerpt({ league, pathname, style, clickable = false, imageSideLength = 36 }: LeagueExcerptProps) {
     const { t, i18n } = useTranslation('home');
     const currentLanguage = i18n.language;
     const locale = currentLanguage === 'en-US'? enUS : es;
@@ -63,10 +46,15 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
 
     const content = (
         <View style={style}>
-            <Image 
-                style={[styles.image, {width: imageSideLength, height: imageSideLength } ]} 
-                source={require('@/assets/images/liga_mx_logo.jpeg')}
-            />
+            {
+                league.logoUrl ?
+                <ImageFetcher key={league.logoUrl} imageUrl={league.logoUrl}/> : 
+                <Image 
+                    style={{width: imageSideLength, height: imageSideLength, borderRadius: imageSideLength / 2 }} 
+                    source={require('@/assets/images/liga_mx_logo.jpeg')}
+                />
+            }
+            
             <View style={styles.leagueDetails}>
                 <Text style={styles.itemHeader}>{league.name}</Text>
                 {renderLeagueDateText(league)}
@@ -86,3 +74,16 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
     
     return content;
 }
+
+const styles = StyleSheet.create({
+    itemHeader: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    itemSubheader: {
+        fontSize: 12,
+    },
+    leagueDetails: {
+        justifyContent: 'center',
+    }
+});
