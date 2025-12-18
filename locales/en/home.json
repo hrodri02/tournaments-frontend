@@ -17,6 +17,9 @@
         "button": "Create League",
         "success_message": "League successfully created."
     },
+    "upload_league_logo": {
+        "title": "Upload League Logo"
+    },
     "upcoming_league": {
         "section_one_title": "League Details",
         "section_two_title": "Teams",

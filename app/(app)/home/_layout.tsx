@@ -21,6 +21,13 @@ export default function HomeLayout() {
         }}
       />
       <Stack.Screen 
+        name="leagues/[id]/upload-league-logo/index" 
+        options={{
+            title: t('upload_league_logo.title'),
+            headerLeft: () => null
+        }}
+      />
+      <Stack.Screen 
         name="leagues/[id]/index" 
         options={{
           headerShown: true,

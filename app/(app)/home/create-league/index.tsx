@@ -18,7 +18,9 @@ import {
     selectLeaguesCreateStatus, 
     selectLeaguesCreateError,
     createLeague,
-    resetLeaguesCreateState
+    resetLeaguesCreateState,
+    selectLeagueIds,
+    selectLeagueById
 } from '@/store/leagues/leaguesSlice';
 import { useTranslation } from 'react-i18next';
 import { CreateLeagueRequest } from '@/entities';
@@ -33,6 +35,11 @@ export default function CreateLeague() {
     const dispatch = useAppDispatch();
     const createStatus = useAppSelector(selectLeaguesCreateStatus);
     const createError = useAppSelector(selectLeaguesCreateError);
+    const leagueIds = useAppSelector(selectLeagueIds);
+    const lastLeagueId = (leagueIds.length > 0)? leagueIds[leagueIds.length - 1] : null
+    const lastLeagueCreated = useAppSelector(state =>
+        lastLeagueId ? selectLeagueById(state, lastLeagueId) : null 
+    );
     const { t } = useTranslation(['home', 'errors']);
     const { control, handleSubmit } = useForm<CreateLeagueFormData>({
         defaultValues: {
@@ -56,8 +63,8 @@ export default function CreateLeague() {
             // slight delay to show success:
             const timer = setTimeout(() => {
                 dispatch(resetLeaguesCreateState())
-                if (createStatus === 'succeeded') {
-                    router.back();
+                if (createStatus === 'succeeded' && lastLeagueCreated) {
+                    router.replace(`/home/leagues/${lastLeagueCreated.id}/upload-league-logo`);
                 }
             }, 3000);
             return () => clearTimeout(timer);

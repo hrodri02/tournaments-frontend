@@ -17,6 +17,9 @@
         "button": "Crear Liga",
         "success_message": "Liga creada con éxito."
     },
+    "upload_league_logo": {
+        "title": "Subir Logotipo de la Liga"
+    },
     "upcoming_league": {
         "section_one_title": "Detalles de la Liga",
         "section_two_title": "Equipos",
