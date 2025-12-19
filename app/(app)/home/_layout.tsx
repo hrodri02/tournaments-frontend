@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useTranslation } from 'react-i18next';
 
 export default function HomeLayout() {
-  const { t } = useTranslation('home');
+  const { t } = useTranslation(['home', 'common']);
 
   return (
     <Stack screenOptions={{
@@ -23,7 +23,7 @@ export default function HomeLayout() {
       <Stack.Screen 
         name="leagues/[id]/upload-league-logo/index" 
         options={{
-            title: t('upload_league_logo.title'),
+            title: t('common:upload_image.title'),
             headerLeft: () => null
         }}
       />
