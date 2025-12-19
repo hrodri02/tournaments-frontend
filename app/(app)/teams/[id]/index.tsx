@@ -34,12 +34,6 @@ export default function TeamDetailPage() {
     );
     const playersInTeam = useAppSelector(selectPlayersInTeam)
 
-    useLayoutEffect(() => {
-        if (team?.name) {
-            navigation.setOptions({ title: team.name });
-        }
-    }, [navigation, team?.name]);
-
     const handleMenuButtonPressed = () => {
         const options = [
             t('detail.upload_team_logo'),
@@ -89,7 +83,6 @@ export default function TeamDetailPage() {
             }
         }
     }, [navigation, user, isLoading, teamId, handleMenuButtonPressed]);
-
 
     useLayoutEffect(() => {
         if (team) {
