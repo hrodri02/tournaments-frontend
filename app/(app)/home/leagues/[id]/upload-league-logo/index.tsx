@@ -87,8 +87,6 @@ export default function UploadLeagueLogoPage() {
             setIsLoading(true);
             const imageUrl = await uploadImageToS3(imageUri!, league.logoUrl);
             const urlWithTimestamp = `${imageUrl}?v=${new Date().getTime()}`;
-            const now: Date = new Date();
-            const isoString: string = now.toISOString();
             const updatedLeague: CreateLeagueRequest = {
                 name: league.name,
                 startDate: league.startDate,
@@ -105,12 +103,14 @@ export default function UploadLeagueLogoPage() {
     }
 
     useEffect(() => {
-        if (updateStatus === 'succeeded') {
+        if (updateStatus === 'succeeded' || updateStatus === 'failed') {
             setIsLoading(false);
             // slight delay to show success:
             const timer = setTimeout(() => {
                 dispatch(resetLeaguesUpdateState())
-                router.back();
+                if (updateStatus === 'succeeded') {
+                    router.back();
+                }
             }, 3000);
             return () => clearTimeout(timer);
         }
@@ -118,9 +118,20 @@ export default function UploadLeagueLogoPage() {
 
 
     const getUpdateErrorMessage = (): string => {
-        const error = updateError!;
-        const message = t(`errors:${error.errorKey}`);
-        return message;
+        let errorMessage = "";
+        const error = updateError!
+        if (error.errorKey === "VALIDATION_FAILED") {
+            const validationErrors = error.validationErrors? error.validationErrors : [];
+            for (const error of validationErrors) {
+                const translationKey = `errors:VALIDATION.${error.field}.${error.errorKey}`;
+                errorMessage = t(translationKey) + "\n";
+            }
+        }
+        else {
+            const translationKey = error.errorKey
+            errorMessage = t(translationKey)
+        }
+        return errorMessage;
     }
 
     const skipUpload = () => {

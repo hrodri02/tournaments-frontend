@@ -3,17 +3,21 @@ import React, {
   useLayoutEffect, 
   useMemo 
 } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { 
   FlatList, 
   StyleSheet, 
   View, 
   Text, 
-  ActivityIndicator, 
+  ActivityIndicator,
+  Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { 
   selectGamesStatus, 
@@ -25,7 +29,10 @@ import { makeSelectDenormalizedGames } from '@/store/games/gamesSlice';
 import { useTranslation } from 'react-i18next';
 
 export default function LeagueScreen() {
+  const router = useRouter();
   const navigation = useNavigation();
+  const { user } = useAuth();
+  const { showActionSheetWithOptions } = useActionSheet();
   const { t } = useTranslation(['home', 'errors']);
   const { id } = useLocalSearchParams();
   const dispatch = useAppDispatch();
@@ -51,6 +58,52 @@ export default function LeagueScreen() {
       navigation.setOptions({ title: league.name });
     }
   }, [navigation, league?.name]);
+
+  const handleMenuButtonPressed = () => {
+    const options = [
+      t('upcoming_league.upload_league_logo_option'),
+      t('common:cancel_button'),
+    ];
+    const cancelButtonIndex = options.length - 1;
+
+    showActionSheetWithOptions(
+    {
+      options,
+      cancelButtonIndex,
+    },
+    (buttonIndex) => {
+      switch (buttonIndex) {
+        case 0: 
+          router.push(`./${leagueId}/upload-league-logo`);
+          break;
+        case 1:
+          break;
+        }
+      }
+    );
+  };
+
+  useLayoutEffect(() => {
+    if (user) {
+      if (user.appUserRole === 'ADMIN') {
+        navigation.setOptions({
+          headerRight: () => (
+            <Pressable
+                style={styles.topRightNavButton}
+                onPress={handleMenuButtonPressed}
+            >
+                <FontAwesome6 name="ellipsis-vertical" size={24} color="black" />
+            </Pressable>
+          )
+        });
+      }
+      else {
+        navigation.setOptions({
+          headerRight: undefined
+        });
+      }
+    }
+  }, [navigation, user, handleMenuButtonPressed]);
 
   const getFetchGamesErrorMessage = (): string => {
     const error = gamesError!
@@ -91,6 +144,9 @@ export default function LeagueScreen() {
 }
 
 const styles = StyleSheet.create({
+  topRightNavButton: {
+    marginHorizontal: 20,
+  },
   container: {
     flex: 1,
   },
