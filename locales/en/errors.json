@@ -32,6 +32,9 @@
     "VALIDATION": {
         "name": {
             "Size": "Name must be between 2 and 255 characters."
+        },
+        "startDate": {
+            "Future": "Must be a future date."
         }
     }
 }
