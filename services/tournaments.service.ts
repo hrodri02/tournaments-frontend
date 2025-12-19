@@ -103,6 +103,11 @@ export const postLeague = async (requestBody: CreateLeagueRequest): Promise<Leag
     return httpRequest<LeagueResponse>(url, 'POST', requestBody);
 }
 
+export const putLeague = async (leagueId: number, requestBody: CreateLeagueRequest): Promise<LeagueResponse> => {
+    const url = `${API_URL}/leagues/${leagueId}`;
+    return httpRequest<LeagueResponse>(url, 'PUT', requestBody);
+}
+
 export const postApplyToLeague = async (leagueId: number, requestBody: CreateApplicationRequest): Promise<ApplicationResponse> => {
     const url = `${API_URL}/leagues/${leagueId}/applications`;
     return httpRequest<ApplicationResponse>(url, 'POST', requestBody);

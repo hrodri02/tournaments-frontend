@@ -17,13 +17,22 @@
         "button": "Create League",
         "success_message": "League successfully created."
     },
+    "upload_league_logo": {
+        "title": "Upload League Logo",
+        "message": "Upload a PNG or JPG under 1 MB.",
+        "button": "Upload Image",
+        "file_size_error": "Max file size:",
+        "skip_button": "Skip",
+        "success_message": "League logo successfully uploaded."
+    },
     "upcoming_league": {
         "section_one_title": "League Details",
         "section_two_title": "Teams",
         "start_date_label": "Start Date",
         "duration_label": "Duration",
         "weeks_label": "weeks",
-        "applications_label": "Applications"
+        "applications_label": "Applications",
+        "upload_league_logo_option": "Upload league logo"
     },
     "league": {
         "schedule_title": "Schedule"

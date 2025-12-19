@@ -17,13 +17,22 @@
         "button": "Crear Liga",
         "success_message": "Liga creada con éxito."
     },
+    "upload_league_logo": {
+        "title": "Subir Logotipo de la Liga",
+        "message": "Sube un archivo PNG o JPG de menos de 1 MB.",
+        "button": "Subir Imagen",
+        "file_size_error": "Tamaño máximo del archivo:",
+        "skip_button": "Saltar",
+        "success_message": "El logotipo de la liga se ha subido correctamente."
+    },
     "upcoming_league": {
         "section_one_title": "Detalles de la Liga",
         "section_two_title": "Equipos",
         "start_date_label": "Fecha de Inicio",
         "duration_label": "Duración",
         "weeks_label": "semanas",
-        "applications_label": "Aplicaciones"
+        "applications_label": "Aplicaciones",
+        "upload_league_logo_option": "Subir logotipo de la liga"
     },
     "league": {
         "schedule_title": "Cronograma"

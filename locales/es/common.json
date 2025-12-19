@@ -5,5 +5,13 @@
     "email_placeholder": "Correo Electrónico",
     "cancel_button": "Cancelar",
     "delete_button": "Borrar",
-    "edit_button": "Editar"
+    "edit_button": "Editar",
+    "upload_image": {
+        "title": "Subir Logotipo",
+        "message": "Sube un archivo PNG o JPG de menos de 1 MB.",
+        "button": "Subir Imagen",
+        "file_size_error": "Tamaño máximo del archivo:",
+        "skip_button": "Saltar",
+        "success_message": "El logotipo se ha subido correctamente."
+    }
 }

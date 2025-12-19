@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function TeamsTabLayout() {
     const router = useRouter(); 
-    const { t } = useTranslation('teams');
+    const { t } = useTranslation(['teams', 'common']);
 
     return (
         <Stack screenOptions={{
@@ -51,7 +51,7 @@ export default function TeamsTabLayout() {
             <Stack.Screen 
                 name="[id]/upload-team-logo/index" 
                 options={{
-                    title: t('upload_team_logo.title'),
+                    title: t('common:upload_image.title'),
                     headerLeft: () => null
                 }}
             />
