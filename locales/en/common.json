@@ -5,5 +5,13 @@
     "email_placeholder": "Email",
     "cancel_button": "Cancel",
     "delete_button": "Delete",
-    "edit_button": "Edit"
+    "edit_button": "Edit",
+    "upload_image": {
+        "title": "Upload Logo",
+        "message": "Upload a PNG or JPG under 1 MB.",
+        "button": "Upload Image",
+        "file_size_error": "Max file size:",
+        "skip_button": "Skip",
+        "success_message": "Logo successfully uploaded."
+    }
 }
