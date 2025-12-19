@@ -72,9 +72,20 @@ export default function CreateLeague() {
     }, [createStatus]);
 
     const getCreateErrorMessage = (): string => {
+        let errorMessage = "";
         const error = createError!
-        const message = t(`errors:${error.errorKey}`);
-        return message;
+        if (error.errorKey === "VALIDATION_FAILED") {
+            const validationErrors = error.validationErrors? error.validationErrors : [];
+            for (const error of validationErrors) {
+                const translationKey = `errors:VALIDATION.${error.field}.${error.errorKey}`;
+                errorMessage = t(translationKey) + "\n";
+            }
+        }
+        else {
+            const translationKey = error.errorKey
+            errorMessage = t(translationKey)
+        }
+        return errorMessage;
     }
 
     let view: React.JSX.Element = <></>;
