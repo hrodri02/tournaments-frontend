@@ -31,7 +31,8 @@
         "start_date_label": "Start Date",
         "duration_label": "Duration",
         "weeks_label": "weeks",
-        "applications_label": "Applications"
+        "applications_label": "Applications",
+        "upload_league_logo_option": "Upload league logo"
     },
     "league": {
         "schedule_title": "Schedule"

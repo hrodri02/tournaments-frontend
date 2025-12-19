@@ -61,7 +61,11 @@ export default function UpcomingLeaguePage() {
     }, [navigation, league?.name]);
 
     const handleMenuButtonPressed = () => {
-        const options = [t('upcoming_league.applications_label'), t('common:cancel_button')];
+        const options = [
+            t('upcoming_league.applications_label'), 
+            t('upcoming_league.upload_league_logo_option'),
+            t('common:cancel_button'),
+        ];
         const cancelButtonIndex = options.length - 1;
 
         showActionSheetWithOptions(
@@ -75,6 +79,9 @@ export default function UpcomingLeaguePage() {
                     router.push(`./applications`);
                     break;
                 case 1:
+                    router.push(`./upload-league-logo`);
+                    break;
+                case 2:
                     break;
                 }
             }

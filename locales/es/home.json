@@ -31,7 +31,8 @@
         "start_date_label": "Fecha de Inicio",
         "duration_label": "Duración",
         "weeks_label": "semanas",
-        "applications_label": "Aplicaciones"
+        "applications_label": "Aplicaciones",
+        "upload_league_logo_option": "Subir logotipo de la liga"
     },
     "league": {
         "schedule_title": "Cronograma"
