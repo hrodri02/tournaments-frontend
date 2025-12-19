@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import CustomHeader from '@/components/CustomHeader';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
@@ -54,10 +55,18 @@ export default function LeagueScreen() {
   }, [dispatch, gamesStatus]);
 
   useLayoutEffect(() => {
-    if (league?.name) {
-      navigation.setOptions({ title: league.name });
+    if (league) {
+      navigation.setOptions({
+        headerTitle: () => (
+          <CustomHeader
+            key={league.logoUrl}
+            title={league.name} 
+            imageUrl={league.logoUrl} 
+          />
+        )
+      });
     }
-  }, [navigation, league?.name]);
+  }, [league, navigation]);
 
   const handleMenuButtonPressed = () => {
     const options = [

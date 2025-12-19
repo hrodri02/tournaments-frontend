@@ -11,6 +11,7 @@ import {
     Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomHeader from '@/components/CustomHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector } from '@/hooks/useStore';
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
@@ -55,10 +56,18 @@ export default function UpcomingLeaguePage() {
     ];
     
     useLayoutEffect(() => {
-        if (league?.name) {
-            navigation.setOptions({ title: league.name });
+        if (league) {
+          navigation.setOptions({
+            headerTitle: () => (
+              <CustomHeader
+                key={league.logoUrl}
+                title={league.name} 
+                imageUrl={league.logoUrl} 
+              />
+            )
+          });
         }
-    }, [navigation, league?.name]);
+    }, [league, navigation]);
 
     const handleMenuButtonPressed = () => {
         const options = [
