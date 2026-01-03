@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { Platform, DeviceEventEmitter } from 'react-native'
 import {
     GameResponse, 
     GameStat, 
@@ -17,8 +17,13 @@ import {
     CreateLeagueRequest
 } from "@/entities";
 import { ErrorDetails, HttpError } from '@/entities/error';
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, getStorageItemAsync, setStorageItemAsync } from '@/store/auth/authStorage';
-import { DeviceEventEmitter } from 'react-native';
+import { 
+    ACCESS_TOKEN_KEY, 
+    REFRESH_TOKEN_KEY, 
+    getStorageItemAsync, 
+    setStorageItemAsync 
+} from '@/store/auth/authStorage';
+import { LOGOUT_EVENT } from '@/events';
 
 const API_URL = Platform.select({
   android: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // Android emulator

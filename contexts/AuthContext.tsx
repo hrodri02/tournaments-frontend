@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { Platform } from "react-native";
+import { Platform, DeviceEventEmitter } from "react-native";
 import {
   AuthContextType,
   AuthResponse,
@@ -25,7 +25,6 @@ import {
 import { useAppDispatch } from "@/hooks/useStore";
 import { resetFetchState } from "@/store/teams/teamsSlice";
 import { useTranslation } from "react-i18next";
-import { DeviceEventEmitter } from 'react-native';
 import { LOGOUT_EVENT } from '@/events';
 
 // TODO: Change to the API_URL from the .env file
