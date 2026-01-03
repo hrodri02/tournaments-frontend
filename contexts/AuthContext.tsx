@@ -25,6 +25,8 @@ import {
 import { useAppDispatch } from "@/hooks/useStore";
 import { resetFetchState } from "@/store/teams/teamsSlice";
 import { useTranslation } from "react-i18next";
+import { DeviceEventEmitter } from 'react-native';
+import { LOGOUT_EVENT } from '@/events';
 
 // TODO: Change to the API_URL from the .env file
 // Platform-specific API URL
@@ -209,6 +211,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }));
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    // 1. Create the listener
+    const subscription = DeviceEventEmitter.addListener(LOGOUT_EVENT, () => {
+      logout();
+    });
+
+    // 2. Clean up (Unsubscribe)
+    return () => {
+      subscription.remove();
+    };
+  }, [logout]);
 
   const clearError = useCallback(() => {
     setState((prev) => ({ ...prev, error: null }));
