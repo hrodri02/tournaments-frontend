@@ -9,6 +9,7 @@ import React, {
 import { Platform } from "react-native";
 import {
   AuthContextType,
+  AuthResponse,
   AuthState,
   LoginCredentials,
   RegisterCredentials,
@@ -16,7 +17,8 @@ import {
 import {
   getStoredAuth,
   setStorageItemAsync,
-  TOKEN_KEY,
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
   USER_KEY,
   clearStoredAuth,
 } from "@/store/auth/authStorage";
@@ -31,13 +33,13 @@ const API_URL = Platform.select({
   ios: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // iOS simulator
   default: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // fallback
 });
-const TOKEN_PREFIX_LENTH = 7;
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const initialState: AuthState = {
   user: null,
-  token: null,
+  accessToken: null,
+  refreshToken: null,
   isAuthenticated: false,
   isLoading: true,
   error: null,
@@ -54,11 +56,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     async function loadStoredAuth() {
       try {
-        const { token, user } = await getStoredAuth();
-        if (token && user) {
+        const { accessToken, refreshToken, user } = await getStoredAuth();
+        if (accessToken && refreshToken && user) {
           setState({
             user,
-            token,
+            accessToken,
+            refreshToken,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -115,19 +118,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(errorMessage);
       }
 
-      const user = await response.json()
-      const headers = response.headers
-      const authorization = headers.get("Authorization") ?? ""
-      const token = authorization.substring(TOKEN_PREFIX_LENTH)
+      const authResponse = await response.json() as AuthResponse
+      const user = authResponse.user
+      const tokens = authResponse.tokens
       // Store auth data
       await Promise.all([
-        setStorageItemAsync(TOKEN_KEY, token),
+        setStorageItemAsync(ACCESS_TOKEN_KEY, tokens.accessToken),
+        setStorageItemAsync(REFRESH_TOKEN_KEY, tokens.refreshToken),
         setStorageItemAsync(USER_KEY, JSON.stringify(user)),
       ]);
 
       setState({
         user: user,
-        token: token,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -157,17 +161,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error("Registration failed");
       }
 
-      const data = await response.json();
-
+      const authResponse = await response.json() as AuthResponse
+      const user = authResponse.user
+      const tokens = authResponse.tokens
       // Store auth data
       await Promise.all([
-        setStorageItemAsync(TOKEN_KEY, data.token),
-        setStorageItemAsync(USER_KEY, JSON.stringify(data.user)),
+        setStorageItemAsync(ACCESS_TOKEN_KEY, tokens.accessToken),
+        setStorageItemAsync(REFRESH_TOKEN_KEY, tokens.refreshToken),
+        setStorageItemAsync(USER_KEY, JSON.stringify(user)),
       ]);
 
       setState({
-        user: data.user,
-        token: data.token,
+        user: user,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -187,7 +194,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await clearStoredAuth();
       setState({
         user: null,
-        token: null,
+        accessToken: null,
+        refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
         error: null
