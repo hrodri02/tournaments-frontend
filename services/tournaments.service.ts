@@ -17,7 +17,7 @@ import {
     CreateLeagueRequest
 } from "@/entities";
 import { ErrorDetails, HttpError } from '@/entities/error';
-import { getStorageItemAsync, TOKEN_KEY } from '@/store/auth/authStorage';
+import { ACCESS_TOKEN_KEY, getStorageItemAsync } from '@/store/auth/authStorage';
 
 const API_URL = Platform.select({
   android: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // Android emulator
@@ -189,7 +189,7 @@ const httpRequest = async<T> (
 ): Promise<T> => 
 {
     try {
-        const jwt = await getStorageItemAsync(TOKEN_KEY);
+        const jwt = await getStorageItemAsync(ACCESS_TOKEN_KEY);
 
         const headers: Record<string, string> = {"Content-Type": "application/json"}
 
