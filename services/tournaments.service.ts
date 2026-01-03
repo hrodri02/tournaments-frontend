@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { Platform, DeviceEventEmitter } from 'react-native'
 import {
     GameResponse, 
     GameStat, 
@@ -17,7 +17,13 @@ import {
     CreateLeagueRequest
 } from "@/entities";
 import { ErrorDetails, HttpError } from '@/entities/error';
-import { getStorageItemAsync, TOKEN_KEY } from '@/store/auth/authStorage';
+import { 
+    ACCESS_TOKEN_KEY, 
+    REFRESH_TOKEN_KEY, 
+    getStorageItemAsync, 
+    setStorageItemAsync 
+} from '@/store/auth/authStorage';
+import { LOGOUT_EVENT } from '@/events';
 
 const API_URL = Platform.select({
   android: "http://ec2-34-225-163-243.compute-1.amazonaws.com/api/v1", // Android emulator
@@ -185,11 +191,12 @@ export async function uploadImageToS3(localFileUri: string, currentUrl: string |
 const httpRequest = async<T> (
     url: string, 
     httpMethod: string,
-    reqBody: any | undefined = undefined
+    reqBody: any | undefined = undefined,
+    isRetry: boolean = false
 ): Promise<T> => 
 {
     try {
-        const jwt = await getStorageItemAsync(TOKEN_KEY);
+        const jwt = await getStorageItemAsync(ACCESS_TOKEN_KEY);
 
         const headers: Record<string, string> = {"Content-Type": "application/json"}
 
@@ -202,6 +209,37 @@ const httpRequest = async<T> (
             headers: headers,
             body: reqBody ? JSON.stringify(reqBody) : undefined
         });
+
+        if (response.status === 401 && !isRetry) {
+            const refreshToken = await getStorageItemAsync(REFRESH_TOKEN_KEY);
+
+            if (refreshToken) {
+                try {
+                    // 1. Attempt to get a new access token
+                    const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ refreshToken })
+                    });
+
+                    if (refreshResponse.ok) {
+                        const newTokens = await refreshResponse.json(); // Expecting { accessToken, refreshToken }
+
+                        // 2. Save the new tokens
+                        await setStorageItemAsync(ACCESS_TOKEN_KEY, newTokens.accessToken);
+                        await setStorageItemAsync(REFRESH_TOKEN_KEY, newTokens.refreshToken);
+
+                        // 3. RETRY the original request with the new token
+                        return httpRequest(url, httpMethod, reqBody, true);
+                    }
+                } catch (refreshError) {
+                    console.error("Token refresh failed", refreshError);
+                }
+            }
+            
+            DeviceEventEmitter.emit(LOGOUT_EVENT); // 📢 Tell everyone we need to logout
+            throw new Error("SESSION_EXPIRED");
+        }
 
         if (!response.ok) {
             let errorData: ErrorDetails | null = null;

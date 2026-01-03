@@ -2,17 +2,20 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { User } from '@/entities/auth';
 
-export const TOKEN_KEY = 'auth_token';
+export const REFRESH_TOKEN_KEY = 'refresh_token';
+export const ACCESS_TOKEN_KEY = 'access_token';
 export const USER_KEY = 'auth_user';
 
-export async function getStoredAuth(): Promise<{ token: string | null; user: User | null }> {
-  const [token, userStr] = await Promise.all([
-    getStorageItemAsync(TOKEN_KEY),
+export async function getStoredAuth(): Promise<{ accessToken: string | null; refreshToken: string | null; user: User | null }> {
+  const [accessToken, refreshToken, userStr] = await Promise.all([
+    getStorageItemAsync(ACCESS_TOKEN_KEY),
+    getStorageItemAsync(REFRESH_TOKEN_KEY),
     getStorageItemAsync(USER_KEY),
   ]);
 
   return {
-    token,
+    accessToken,
+    refreshToken,
     user: userStr ? JSON.parse(userStr) : null,
   };
 }
@@ -47,7 +50,8 @@ export async function getStorageItemAsync(key: string): Promise<string | null> {
 
 export async function clearStoredAuth() {
   await Promise.all([
-    setStorageItemAsync(TOKEN_KEY, null),
+    setStorageItemAsync(ACCESS_TOKEN_KEY, null),
+    setStorageItemAsync(REFRESH_TOKEN_KEY, null),
     setStorageItemAsync(USER_KEY, null),
   ]);
 }

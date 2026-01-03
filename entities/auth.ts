@@ -1,5 +1,10 @@
 export type Role = 'USER' | 'ADMIN' | 'PLAYER';
 
+export interface AuthResponse {
+    user: User;
+    tokens: Tokens;
+}
+
 export interface User {
     id: number;
     email: string;
@@ -7,10 +12,18 @@ export interface User {
     lastName: string;
     appUserRole: Role;
 }
+
+export interface Tokens {
+    refreshToken: string;
+    accessToken: string;
+    expiresIn: number;
+    tokenType: string;
+}
   
 export interface AuthState {
     user: User | null;
-    token: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
