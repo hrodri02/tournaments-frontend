@@ -10,5 +10,8 @@
         "choose_preferred_language_label": "Elige tu idioma preferido",
         "en_option": "Inglés",
         "es_option": "Español"
-    }
+    },
+    "app_info_section": "Información de la aplicación",
+    "privacy_policy_label": "Política de Privacidad",
+    "terms_and_conditions_label": "Términos y condiciones"
 }

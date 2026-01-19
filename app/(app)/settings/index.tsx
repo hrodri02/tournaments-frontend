@@ -14,6 +14,10 @@ export default function SettingsScreen() {
     t('change_city_label'), 
     t('delete_account_label')
   ];
+  const appInfoSectionItems = [
+    t('privacy_policy_label'), 
+    t('terms_and_conditions_label'),
+  ];
   const pathnames = ['', '/(app)/settings/language-preference', '', ''];
 
   return (
@@ -23,6 +27,7 @@ export default function SettingsScreen() {
           style={styles.sectionList}
           sections={[
             {title: t('my_account_title'), data: myAccountSectionItems},
+            {title: t('app_info_section'), data: appInfoSectionItems}
           ]}
           renderItem={({item, index}) => 
             <MyAccountExcerpt style={styles.item} pathname={pathnames[index]}>{item}</MyAccountExcerpt>
