@@ -1,9 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, SectionList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { 
+  StyleSheet, 
+  Text, 
+  SectionList, 
+  TouchableOpacity, 
+  ActivityIndicator,
+} from 'react-native';
 import { MyAccountExcerpt } from '@/components/MyAccountExcerpt';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
+
+interface SettingsSection {
+  title: string;
+  data: string[];
+  pathnames: string[];
+  sectionIndex: number;
+}
 
 export default function SettingsScreen() {
   const { logout, isLoading } = useAuth();
@@ -18,19 +31,36 @@ export default function SettingsScreen() {
     t('privacy_policy_label'), 
     t('terms_and_conditions_label'),
   ];
-  const pathnames = ['', '/(app)/settings/language-preference', '', ''];
+
+  const sections: SettingsSection[] = [
+    {
+      title: t('my_account_title'), 
+      data: myAccountSectionItems,
+      pathnames: ['', '/(app)/settings/language-preference', '', '']
+    },
+    {
+      title: t('app_info_section'),
+      data: appInfoSectionItems,
+      pathnames: ['', '']
+    }
+  ].map((section, index) => ({
+    ...section,
+    sectionIndex: index
+  }));
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <SectionList
           style={styles.sectionList}
-          sections={[
-            {title: t('my_account_title'), data: myAccountSectionItems},
-            {title: t('app_info_section'), data: appInfoSectionItems}
-          ]}
-          renderItem={({item, index}) => 
-            <MyAccountExcerpt style={styles.item} pathname={pathnames[index]}>{item}</MyAccountExcerpt>
+          sections={sections}
+          renderItem={({item, index, section}) =>
+            <MyAccountExcerpt 
+              style={styles.item} 
+              pathname={section.pathnames[index]}
+            >
+              {item}
+            </MyAccountExcerpt>
           }
           renderSectionHeader={({section}) => (
             <Text style={styles.sectionHeader}>{section.title}</Text>
