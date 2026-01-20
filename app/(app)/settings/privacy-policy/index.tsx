@@ -1,5 +1,12 @@
 import React from 'react';
-import { ScrollView, Text, View, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+import { 
+    ScrollView, 
+    Text, 
+    View, 
+    StyleSheet, 
+    Linking, 
+    TouchableOpacity 
+} from 'react-native';
 
 const PrivacyPolicyPage = () => {
   const openLink = (url) => Linking.openURL(url);
