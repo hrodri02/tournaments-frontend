@@ -19,6 +19,14 @@ export default function SettingsTabLayout() {
                     headerBackButtonDisplayMode: 'minimal'
                 }}
             />
+            <Stack.Screen 
+                name="privacy-policy/index"
+                options={{
+                    title: t('settings:privacy_policy.title'),
+                    headerShown: true,
+                    headerBackButtonDisplayMode: 'minimal'
+                }}
+            />
         </Stack>
     );
 }
