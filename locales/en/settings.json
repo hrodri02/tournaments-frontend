@@ -13,5 +13,8 @@
     },
     "app_info_section": "App Info",
     "privacy_policy_label": "Privacy Policy",
-    "terms_and_conditions_label": "Terms and Conditions"
+    "terms_and_conditions_label": "Terms and Conditions",
+    "privacy_policy": {
+        "title": "Privacy Policy"
+    }
 }

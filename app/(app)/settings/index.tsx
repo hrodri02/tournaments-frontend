@@ -41,7 +41,7 @@ export default function SettingsScreen() {
     {
       title: t('app_info_section'),
       data: appInfoSectionItems,
-      pathnames: ['', '']
+      pathnames: ['/(app)/settings/privacy-policy', '']
     }
   ].map((section, index) => ({
     ...section,
