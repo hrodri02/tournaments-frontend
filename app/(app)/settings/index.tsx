@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { MyAccountExcerpt } from '@/components/MyAccountExcerpt';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +41,7 @@ export default function SettingsScreen() {
     {
       title: t('app_info_section'),
       data: appInfoSectionItems,
-      pathnames: ['/(app)/settings/privacy-policy', '']
+      pathnames: ['/(app)/settings/privacy-policy', '/(app)/settings/terms-and-conditions']
     }
   ].map((section, index) => ({
     ...section,
@@ -49,36 +49,34 @@ export default function SettingsScreen() {
   }));
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <SectionList
-          style={styles.sectionList}
-          sections={sections}
-          renderItem={({item, index, section}) =>
-            <MyAccountExcerpt 
-              style={styles.item} 
-              pathname={section.pathnames[index]}
-            >
-              {item}
-            </MyAccountExcerpt>
-          }
-          renderSectionHeader={({section}) => (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
-          )}
-        />
-        <TouchableOpacity 
-          style={[styles.button, isLoading && styles.buttonDisabled]} 
-          onPress={logout}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>{t('logout_button')}</Text>
-          )}
-        </TouchableOpacity>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
+      <SectionList
+        style={styles.sectionList}
+        sections={sections}
+        renderItem={({item, index, section}) =>
+          <MyAccountExcerpt 
+            style={styles.item} 
+            pathname={section.pathnames[index]}
+          >
+            {item}
+          </MyAccountExcerpt>
+        }
+        renderSectionHeader={({section}) => (
+          <Text style={styles.sectionHeader}>{section.title}</Text>
+        )}
+      />
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={logout}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>{t('logout_button')}</Text>
+        )}
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 

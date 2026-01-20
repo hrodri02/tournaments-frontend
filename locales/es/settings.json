@@ -15,6 +15,16 @@
     "privacy_policy_label": "Política de Privacidad",
     "terms_and_conditions_label": "Términos y condiciones",
     "privacy_policy": {
-        "title": "Política de Privacidad"
+        "title": "Política de Privacidad",
+        "paragraph": "Esta política de privacidad se aplica a la aplicación Torneos (en adelante, \"la Aplicación\") para dispositivos móviles, creada por Heriberto Rodriguez (en adelante, \"el Proveedor de servicios\") como un servicio gratuito. Este servicio se ofrece \"tal cual\".",
+        "information_collection_and_use_title": "Recopilación y uso de información",
+        "information_collection_and_use_paragraph": "La aplicación recopila información cuando la descargas y la utilizas. Esta información puede incluir:",
+        "information_collection_and_use_point_one": "La dirección de protocolo de Internet de su dispositivo (por ejemplo, dirección IP)",
+        "information_collection_and_use_point_two": "Las páginas de la aplicación que visitas",
+        "information_collection_and_use_point_three": "El sistema operativo que utilizas en tu dispositivo móvil."
+    },
+    "contact_us_title": "Contactanos",
+    "terms_and_conditions": {
+        "title": "Términos y condiciones"
     }
 }

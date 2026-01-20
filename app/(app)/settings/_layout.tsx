@@ -27,6 +27,14 @@ export default function SettingsTabLayout() {
                     headerBackButtonDisplayMode: 'minimal'
                 }}
             />
+            <Stack.Screen 
+                name="terms-and-conditions/index"
+                options={{
+                    title: t('settings:terms_and_conditions.title'),
+                    headerShown: true,
+                    headerBackButtonDisplayMode: 'minimal'
+                }}
+            />
         </Stack>
     );
 }

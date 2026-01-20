@@ -15,6 +15,16 @@
     "privacy_policy_label": "Privacy Policy",
     "terms_and_conditions_label": "Terms and Conditions",
     "privacy_policy": {
-        "title": "Privacy Policy"
+        "title": "Privacy Policy",
+        "paragraph": "This privacy policy applies to the Tournaments app (hereby referred to as \"Application\") for mobile devices that was created by Heriberto Rodriguez (hereby referred to as \"Service Provider\") as a Free service. This service is intended for use \"AS IS\".",
+        "information_collection_and_use_title": "Information Collection and Use",
+        "information_collection_and_use_paragraph": "The Application collects information when you download and use it. This information may include:",
+        "information_collection_and_use_point_one": "Your device's Internet Protocol address (e.g. IP address)",
+        "information_collection_and_use_point_two": "The pages of the Application that you visit",
+        "information_collection_and_use_point_three": "The operating system you use on your mobile device"
+    },
+    "contact_us_title": "Contact Us",
+    "terms_and_conditions": {
+        "title": "Terms and Conditions",
     }
 }
