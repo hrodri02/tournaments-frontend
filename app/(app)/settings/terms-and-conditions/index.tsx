@@ -8,8 +8,10 @@ import {
   TouchableOpacity 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 const TermsAndConditions = () => {
+  const { t } = useTranslation('settings');
   
   const openLink = async (url) => {
     const supported = await Linking.canOpenURL(url);
@@ -22,53 +24,59 @@ const TermsAndConditions = () => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         
-        <Text style={styles.mainTitle}>Terms & Conditions</Text>
+        <Text style={styles.mainTitle}>{t('terms_and_conditions.title')}</Text>
         
         <Text style={styles.paragraph}>
-          These terms and conditions apply to the Tournaments app (hereby referred to as "Application") for mobile devices that was created by Heriberto Rodriguez (hereby referred to as "Service Provider") as a Free service.
+          {t('terms_and_conditions.paragraph')}
         </Text>
 
         <Text style={styles.paragraph}>
-          Upon downloading or utilizing the Application, you are automatically agreeing to the following terms. It is strongly advised that you thoroughly read and understand these terms prior to using the Application.
+          {t('terms_and_conditions.paragraph_two')}
         </Text>
 
         <Text style={styles.paragraph}>
-          Unauthorized copying, modification of the Application, any part of the Application, or our trademarks is strictly prohibited. All intellectual property rights related to the Application remain the property of the Service Provider.
+          {t('terms_and_conditions.paragraph_three')}
         </Text>
 
-        <Text style={styles.heading}>Third-Party Services</Text>
+        <Text style={styles.heading}>
+          {t('terms_and_conditions.third_party_services_title')}
+        </Text>
         <Text style={styles.paragraph}>
-          The Application utilizes third-party services that have their own Terms and Conditions:
+          {t('terms_and_conditions.third_party_services_paragraph')}
         </Text>
         
         <TouchableOpacity onPress={() => openLink('https://policies.google.com/terms')}>
           <Text style={styles.link}>• Google Play Services</Text>
         </TouchableOpacity>
 
-        <Text style={styles.heading}>Responsibility & Usage</Text>
+        <Text style={styles.heading}>
+          {t('terms_and_conditions.responsibility_and_usage_title')}
+        </Text>
         <Text style={styles.paragraph}>
-          Some functions require an active internet connection. The Service Provider cannot be held responsible if the Application does not function at full capacity due to lack of access to Wi-Fi or data allowance.
+          {t('terms_and_conditions.responsibility_and_usage_paragraph_one')}
         </Text>
 
         <Text style={styles.paragraph}>
-          It is your responsibility to ensure that your device remains charged. If your device runs out of battery, the Service Provider cannot be held responsible for your inability to access the Service.
+          {t('terms_and_conditions.responsibility_and_usage_paragraph_two')}
         </Text>
 
-        <Text style={styles.heading}>Termination</Text>
+        <Text style={styles.heading}>
+          {t('terms_and_conditions.termination_title')}
+        </Text>
         <Text style={styles.paragraph}>
-          The Service Provider may terminate use of the application at any time without notice. Upon termination, the rights and licenses granted to you will end, and you must cease using the application.
+          {t('terms_and_conditions.termination_paragraph')}
         </Text>
 
-        <Text style={styles.heading}>Contact Us</Text>
+        <Text style={styles.heading}>{t('contact_us_title')}</Text>
         <Text style={styles.paragraph}>
-          If you have any questions or suggestions, please contact us at:
+          {t('contact_us_paragraph')}
         </Text>
         <TouchableOpacity onPress={() => openLink('mailto:hrodriguez1821@gmail.com')}>
           <Text style={styles.link}>hrodriguez1821@gmail.com</Text>
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Effective as of: 2026-01-19</Text>
+          <Text style={styles.footerText}>{t('terms_and_conditions.effective_date')}</Text>
         </View>
 
       </ScrollView>

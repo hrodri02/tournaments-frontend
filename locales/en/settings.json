@@ -24,7 +24,19 @@
         "information_collection_and_use_point_three": "The operating system you use on your mobile device"
     },
     "contact_us_title": "Contact Us",
+    "contact_us_paragraph": "If you have any questions or suggestions, please contact us at:",
     "terms_and_conditions": {
-        "title": "Terms and Conditions",
+        "title": "Terms & Conditions",
+        "paragraph": "These terms and conditions apply to the Tournaments app (hereby referred to as \"Application\") for mobile devices that was created by Heriberto Rodriguez (hereby referred to as \"Service Provider\") as a Free service.",
+        "paragraph_two": "Upon downloading or utilizing the Application, you are automatically agreeing to the following terms. It is strongly advised that you thoroughly read and understand these terms prior to using the Application.",
+        "paragraph_three": "Unauthorized copying, modification of the Application, any part of the Application, or our trademarks is strictly prohibited. All intellectual property rights related to the Application remain the property of the Service Provider.",
+        "third_party_services_title": "Third-Party Services",
+        "third_party_services_paragraph": "The Application utilizes third-party services that have their own Terms and Conditions:",
+        "responsibility_and_usage_title": "Responsibility & Usage",
+        "responsibility_and_usage_paragraph_one": "Some functions require an active internet connection. The Service Provider cannot be held responsible if the Application does not function at full capacity due to lack of access to Wi-Fi or data allowance.",
+        "responsibility_and_usage_paragraph_two": "It is your responsibility to ensure that your device remains charged. If your device runs out of battery, the Service Provider cannot be held responsible for your inability to access the Service.",
+        "termination_title": "Termination",
+        "termination_paragraph": "The Service Provider may terminate use of the application at any time without notice. Upon termination, the rights and licenses granted to you will end, and you must cease using the application.",
+        "effective_date": "Effective as of: 2026-01-19"
     }
 }
