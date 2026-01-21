@@ -10,5 +10,33 @@
         "choose_preferred_language_label": "Elige tu idioma preferido",
         "en_option": "Inglés",
         "es_option": "Español"
+    },
+    "app_info_section": "Información de la aplicación",
+    "privacy_policy_label": "Política de Privacidad",
+    "terms_and_conditions_label": "Términos y condiciones",
+    "privacy_policy": {
+        "title": "Política de Privacidad",
+        "paragraph": "Esta política de privacidad se aplica a la aplicación Torneos (en adelante, \"la Aplicación\") para dispositivos móviles, creada por Heriberto Rodriguez (en adelante, \"el Proveedor de servicios\") como un servicio gratuito. Este servicio se ofrece \"tal cual\".",
+        "information_collection_and_use_title": "Recopilación y uso de información",
+        "information_collection_and_use_paragraph": "La aplicación recopila información cuando la descargas y la utilizas. Esta información puede incluir:",
+        "information_collection_and_use_point_one": "La dirección de protocolo de Internet de su dispositivo (por ejemplo, dirección IP)",
+        "information_collection_and_use_point_two": "Las páginas de la aplicación que visitas",
+        "information_collection_and_use_point_three": "El sistema operativo que utilizas en tu dispositivo móvil."
+    },
+    "contact_us_title": "Contactanos",
+    "contact_us_paragraph": "Si tiene alguna pregunta o sugerencia, póngase en contacto con nosotros en:",
+    "terms_and_conditions": {
+        "title": "Términos y condiciones",
+        "paragraph": "Estos términos y condiciones se aplican a la aplicación Tournaments (en adelante, la \"Aplicación\") para dispositivos móviles, creada por Heriberto Rodriguez (en adelante, el \"Proveedor de servicios\") como un servicio gratuito.",
+        "paragraph_two": "Al descargar o utilizar la aplicación, usted acepta automáticamente los siguientes términos. Se recomienda encarecidamente que lea y comprenda detenidamente estos términos antes de utilizar la aplicación.",
+        "paragraph_three": "Queda estrictamente prohibida la copia o modificación no autorizada de la aplicación, de cualquier parte de la misma o de nuestras marcas registradas. Todos los derechos de propiedad intelectual relacionados con la aplicación son propiedad del proveedor del servicio.",
+        "third_party_services_title": "Servicios de Terceros",
+        "third_party_services_paragraph": "La aplicación utiliza servicios de terceros que tienen sus propios términos y condiciones:",
+        "responsibility_and_usage_title": "Responsabilidad y Uso",
+        "responsibility_and_usage_paragraph_one": "Algunas funciones requieren una conexión a internet activa. El proveedor de servicios no se hace responsable si la aplicación no funciona a pleno rendimiento debido a la falta de acceso a Wi-Fi o a la insuficiencia de datos móviles.",
+        "responsibility_and_usage_paragraph_two": "Es su responsabilidad asegurarse de que su dispositivo permanezca cargado. Si su dispositivo se queda sin batería, el proveedor de servicios no se hace responsable de su imposibilidad para acceder al servicio.",
+        "termination_title": "Terminación",
+        "termination_paragraph": "El proveedor de servicios puede rescindir el uso de la aplicación en cualquier momento y sin previo aviso. Tras la rescisión, los derechos y licencias que se le hayan otorgado finalizarán y usted deberá dejar de usar la aplicación.",
+        "effective_date": "Efectivo a partir de: 2026-01-19"
     }
 }
