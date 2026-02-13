@@ -2,8 +2,11 @@ import { getLeagues, postLeague, putLeague } from "@/services/tournaments.servic
 import { 
   CreateLeagueRequest,
   League, 
+  LeagueResponse, 
   LeagueStatus, 
   Player,
+  Team,
+  TeamResponse,
 } from "@/entities/index";
 import {
   createSlice,
@@ -48,29 +51,17 @@ export const fetchLeagues = createAppAsyncThunk(
     try {
       const leagues = await getLeagues(status);
       const teamResponses = leagues.flatMap(league => league.teams);
-      const teams = teamResponses.map(response => {
-        const { playerDTOs, invites, invitees, ...teamData } = response;
-        const playerIds = playerDTOs? playerDTOs.map(player => player.id): [];
-        const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
-        return { playerIds, inviteeIds, ...teamData};
-      });
+      
+      const teams = convertTeamResponsesToTeams(teamResponses, leagues);
       if (teams.length > 0) {
         dispatch(addTeams({teams: teams}));
       }
-      const allPlayers = teamResponses.flatMap(teamResponse => {
-        const playersInTeam = teamResponse.playerDTOs? teamResponse.playerDTOs : [];
-        const invitees = teamResponse.invitees? teamResponse.invitees : [];
-        return playersInTeam.concat(invitees);
-      });
-      const uniquePlayersMap = new Map<number, Player>();
-      allPlayers.forEach(player => {
-        uniquePlayersMap.set(player.id, player);
-      });
-      // create an array of the unique players using the map
-      const playersToStore: Player[] = Array.from(uniquePlayersMap.values());
-      if (playersToStore.length > 0) {
-        dispatch(upsertManyPlayers({players: playersToStore}));
+
+      const players = getPlayersFromTeamResponses(teamResponses);
+      if (players.length > 0) {
+        dispatch(upsertManyPlayers({players: players}));
       }
+
       return leagues;
     }
     catch (err) {
@@ -91,6 +82,55 @@ export const fetchLeagues = createAppAsyncThunk(
     },
   }
 );
+
+const convertTeamResponsesToTeams = (teamResponses: TeamResponse[], leagues: LeagueResponse[]): Team[] => {
+  // get the league ids for each team
+  const teamIdToLeagueIds = new Map<number, number[]>();
+  leagues.forEach(league => {
+    league.teams.forEach(team =>{
+      const teamId = team.id;
+      if (!teamIdToLeagueIds.has(teamId)) {
+        teamIdToLeagueIds.set(teamId, []);
+      }
+      const leagueIds = teamIdToLeagueIds.get(teamId)!;
+      leagueIds.push(league.id);
+    });
+  });
+
+  // get all the teams of all leagues including duplicates
+  const allTeams = teamResponses.map(response => {
+    const { playerDTOs, invites, invitees, ...teamData } = response;
+    const playerIds = playerDTOs? playerDTOs.map(player => player.id): [];
+    const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
+    const leagueIds = teamIdToLeagueIds.get(response.id)!;
+    return { playerIds, inviteeIds, leagueIds, ...teamData};
+  });
+
+  // get the unique teams across all leagues
+  const uniqueTeamsMap = new Map<number, Team>();
+  allTeams.forEach(team => {
+    uniqueTeamsMap.set(team.id, team);
+  });
+  const teams: Team[] = Array.from(uniqueTeamsMap.values());
+
+  return teams;
+}
+
+const getPlayersFromTeamResponses = (teamResponses: TeamResponse[]): Player[] => {
+  const allPlayers = teamResponses.flatMap(teamResponse => {
+    const playersInTeam = teamResponse.playerDTOs? teamResponse.playerDTOs : [];
+    const invitees = teamResponse.invitees? teamResponse.invitees : [];
+    return playersInTeam.concat(invitees);
+  });
+
+  const uniquePlayersMap = new Map<number, Player>();
+  allPlayers.forEach(player => {
+    uniquePlayersMap.set(player.id, player);
+  });
+  // create an array of the unique players using the map
+  const players: Player[] = Array.from(uniquePlayersMap.values());
+  return players;
+}
 
 export const createLeague = createAppAsyncThunk(
   "leagues/createLeague",
