@@ -27,6 +27,7 @@ export interface Team {
     ownerId: number;
     playerIds: number[];
     inviteeIds: number[];
+    leagueIds: number[];
 }
 
 export interface GetTeamsResponse {
