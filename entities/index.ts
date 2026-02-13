@@ -184,8 +184,6 @@ export interface League {
     teamIds: number[];
 }
 
-// TODO: rethink how whether to store players as part of team as or
-// if I should store a list of player ids and add a players slice
 export function filterStats(stats: GameStatResponse[], type: GameStatType, team: TeamResponse | undefined = undefined): GameStatResponse[] {
     return stats.filter((stat) => {
         const isPlayerInTeam = team && team.playerDTOs.some(player => player.id === stat.player.id);
