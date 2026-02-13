@@ -31,12 +31,14 @@ import {
     makeSelectApplicationsByTeamId
 } from '@/store/league-applications/applicationsSlice';
 import { useTranslation } from 'react-i18next';
+import { selectTeamById } from '@/store/teams/teamsSlice';
 
 export default function JoinLeague() {
     const dispatch = useAppDispatch();
     const { id } = useLocalSearchParams();
     const { t } = useTranslation(['teams', 'errors']);
     const teamId = Number(id);
+    const team = useAppSelector(state => selectTeamById(state, teamId));
     const fetchStatus = useAppSelector(selectApplicationsFetchStatus);
     const fetchError = useAppSelector(selectApplicationsFetchError);
     const createStatus = useAppSelector(selectApplicationsCreateStatus);
@@ -52,8 +54,10 @@ export default function JoinLeague() {
     );
     const applications = useAppSelector(selectApplicationsForTeam);
     const leagueIds = applications.map(application => application.leagueId);
-    // filter out leagues the team applied to already
-    const leagues = upcomingLeagues.filter(league => !leagueIds.includes(league.id));
+    // filter out leagues the team applied to already and is part of
+    const leagues = upcomingLeagues.filter(league => 
+        !leagueIds.includes(league.id) && !team.leagueIds.includes(league.id)
+    );
 
     useEffect(() => {
         if (fetchStatus === 'idle') {
