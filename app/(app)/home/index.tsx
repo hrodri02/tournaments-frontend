@@ -1,4 +1,6 @@
 import React, { 
+  useState,
+  useCallback,
   useEffect, 
   useMemo,
   useLayoutEffect
@@ -13,6 +15,7 @@ import {
   ActivityIndicator,
   SectionListRenderItemInfo,
   Pressable,
+  RefreshControl
 } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
@@ -44,6 +47,7 @@ export default function HomeScreen() {
   const leaguesStatus = useAppSelector(selectLeaguesStatus);
   const leaguesError = useAppSelector(selectLeaguesError);
   const { t } = useTranslation(['home', 'errors', 'common']);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleMenuButtonPress = () => {
     const options = [t('create_league_option'), t('common:cancel_button')];
@@ -90,6 +94,19 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (leaguesStatus === 'idle') {
+      dispatch(fetchLeagues());
+    }
+  }, [leaguesStatus, dispatch]);
+
+  useEffect(() => {
+    if (leaguesStatus === 'succeeded' || leaguesStatus === 'failed') {
+      setRefreshing(false);
+    }
+  }, [leaguesStatus]);
+
+  const onRefresh = useCallback(() => {
+    if (leaguesStatus === 'idle') {
+      setRefreshing(true);
       dispatch(fetchLeagues());
     }
   }, [leaguesStatus, dispatch]);
@@ -151,6 +168,12 @@ export default function HomeScreen() {
             renderItem={renderItem}
             renderSectionHeader={({ section }) => 
               <Text style={styles.sectionHeader}>{section.title}</Text>
+            }
+            refreshControl={
+              <RefreshControl 
+                refreshing={refreshing} 
+                onRefresh={onRefresh}
+              />
             }
           />
   }
