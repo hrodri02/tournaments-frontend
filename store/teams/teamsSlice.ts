@@ -195,7 +195,7 @@ const teamsSlice = createSlice({
         addTeams: (state, action: PayloadAction<AddTeamsAction>) => {
             teamsAdapter.addMany(state, action.payload.teams);
         },
-        resetFetchState: (state) => {
+        resetTeamsFetchState: (state) => {
             state.fetchStatus = 'idle';
             state.fetchError = null
         },
@@ -281,7 +281,7 @@ const teamsSlice = createSlice({
 
 export const { 
     resetCreateTeamState, 
-    resetFetchState, 
+    resetTeamsFetchState, 
     updateTeam,
     addTeams,
     resetUpdateTeamState

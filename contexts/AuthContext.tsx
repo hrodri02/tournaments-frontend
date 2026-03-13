@@ -23,7 +23,8 @@ import {
   clearStoredAuth,
 } from "@/store/auth/authStorage";
 import { useAppDispatch } from "@/hooks/useStore";
-import { resetFetchState } from "@/store/teams/teamsSlice";
+import { resetTeamsFetchState } from "@/store/teams/teamsSlice";
+import { resetLeaguesState } from "@/store/leagues/leaguesSlice";
 import { useTranslation } from "react-i18next";
 import { LOGOUT_EVENT } from '@/events';
 
@@ -201,7 +202,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isLoading: false,
         error: null
       });
-      dispatch(resetFetchState())
+      dispatch(resetTeamsFetchState());
+      dispatch(resetLeaguesState());
     } catch (error) {
       setState(prev => ({
         ...prev,
