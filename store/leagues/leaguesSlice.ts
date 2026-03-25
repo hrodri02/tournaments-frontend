@@ -102,8 +102,8 @@ const convertTeamResponsesToTeams = (teamResponses: TeamResponse[], leagues: Lea
     const { playerDTOs, invites, invitees, ...teamData } = response;
     const playerIds = playerDTOs? playerDTOs.map(player => player.id): [];
     const inviteeIds = invitees? invitees.map(invitee => invitee.id) : [];
-    const leagueIds = teamIdToLeagueIds.get(response.id)!;
-    return { playerIds, inviteeIds, leagueIds, ...teamData};
+    teamData.leagueIds = teamIdToLeagueIds.get(response.id)!;
+    return { playerIds, inviteeIds, ...teamData};
   });
 
   // get the unique teams across all leagues

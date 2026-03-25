@@ -43,6 +43,7 @@ export interface TeamResponse {
     playerDTOs: Player[];
     invites: TeamInviteResponse[];
     invitees: Player[];
+    leagueIds: number[];
 }
 
 export type TeamInviteStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'REVOKED';
