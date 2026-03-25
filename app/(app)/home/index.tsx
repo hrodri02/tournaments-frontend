@@ -15,7 +15,8 @@ import {
   ActivityIndicator,
   SectionListRenderItemInfo,
   Pressable,
-  RefreshControl
+  RefreshControl,
+  Platform
 } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
@@ -209,7 +210,17 @@ const styles = StyleSheet.create({
   },
   sectionList: {
     flex: 1,
-    paddingTop: 22,
+    ...Platform.select({
+      ios: {
+        paddingTop: 0
+      },
+      android: {
+        paddingTop: 0
+      },
+      default: {
+        paddingTop: 22
+      }
+    }),
   },
   sectionHeader: {
     paddingTop: 2,

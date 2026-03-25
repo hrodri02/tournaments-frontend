@@ -7,7 +7,8 @@ import {
     View,
     Text,
     Pressable,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
 import CustomHeader from '@/components/CustomHeader';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
@@ -127,7 +128,17 @@ const styles = StyleSheet.create({
     },
     sectionList: {
         flex: 1,
-        paddingTop: 22,
+        ...Platform.select({
+            ios: {
+                paddingTop: 0
+            },
+            android: {
+                paddingTop: 0
+            },
+            default: {
+                paddingTop: 22
+            }
+        }),
     },
     sectionHeader: {
         paddingTop: 2,

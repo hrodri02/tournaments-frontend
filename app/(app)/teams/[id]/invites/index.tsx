@@ -13,7 +13,8 @@ import {
     StyleSheet, 
     ListRenderItemInfo,
     Pressable,
-    ActivityIndicator
+    ActivityIndicator,
+    Platform
 } from 'react-native';
 import TeamInvitationForm from '@/components/TeamInvitationForm';
 import { InviteeExcerpt } from '@/components/InviteeExcerpt';
@@ -241,7 +242,17 @@ const styles = StyleSheet.create({
     },
     sectionList: {
         flex: 1,
-        paddingTop: 22
+        ...Platform.select({
+            ios: {
+                paddingTop: 0
+            },
+            android: {
+                paddingTop: 0
+            },
+            default: {
+                paddingTop: 22
+            }
+        }),
     },
     item: {
         flex: 1

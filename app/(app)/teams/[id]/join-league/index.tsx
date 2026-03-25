@@ -10,7 +10,8 @@ import {
     Pressable,
     StyleSheet, 
     ListRenderItemInfo,
-    ActivityIndicator
+    ActivityIndicator,
+    Platform
 } from 'react-native';
 import { SwipeListView, RowMap } from 'react-native-swipe-list-view';
 import Ionicons from '@expo/vector-icons/Ionicons'; 
@@ -187,7 +188,17 @@ const styles = StyleSheet.create({
     },
     sectionList: {
         flex: 1,
-        paddingTop: 22
+        ...Platform.select({
+            ios: {
+            paddingTop: 0
+            },
+            android: {
+            paddingTop: 0
+            },
+            default: {
+            paddingTop: 22
+            }
+        }),
     },
     item: {
         display: 'flex',
