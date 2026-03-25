@@ -5,6 +5,7 @@ import {
   SectionList, 
   TouchableOpacity, 
   ActivityIndicator,
+  Platform
 } from 'react-native';
 import { MyAccountExcerpt } from '@/components/MyAccountExcerpt';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -86,7 +87,17 @@ const styles = StyleSheet.create({
   },
   sectionList: {
     flex: 1,
-    paddingTop: 22,
+    ...Platform.select({
+      ios: {
+        paddingTop: 0
+      },
+      android: {
+        paddingTop: 0
+      },
+      default: {
+        paddingTop: 22
+      }
+    }),
   },
   sectionHeader: {
     paddingVertical: 2,

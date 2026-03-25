@@ -11,7 +11,8 @@ import {
     Text, 
     Pressable, 
     ActivityIndicator,
-    ListRenderItemInfo
+    ListRenderItemInfo,
+    Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeListView, RowMap, SwipeRow } from 'react-native-swipe-list-view';
@@ -307,7 +308,17 @@ const styles = StyleSheet.create({
     },
     sectionList: {
         flex: 1,
-        paddingTop: 22,
+        ...Platform.select({
+            ios: {
+                paddingTop: 0
+            },
+            android: {
+                paddingTop: 0
+            },
+            default: {
+                paddingTop: 22
+            }
+        }),
     },
     sectionHeader: {
         paddingTop: 2,
