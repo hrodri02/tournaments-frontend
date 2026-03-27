@@ -10,10 +10,10 @@ import {
     Image, 
     Dimensions, 
     TouchableOpacity, 
-    ActivityIndicator 
+    ActivityIndicator,
+    ImageBackground 
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -83,6 +83,9 @@ export default function Game() {
     const awayTeamYellowCards = countStatsForTeam(gameStatsOfGame, GameStatType.yellowCard, awayTeam)
     const homeTeamRedCards = countStatsForTeam(gameStatsOfGame, GameStatType.redCard, homeTeam)
     const awayTeamRedCards = countStatsForTeam(gameStatsOfGame, GameStatType.redCard, awayTeam)
+    const backgroundImagePath = '@/assets/images/soccer_field.jpg';
+    const defaultTeamLogoPath = '@/assets/images/liga_mx_logo.jpeg';
+    const soccerBallImagePath = '@/assets/images/soccerBall.png';
 
     useEffect(() => {
         if (gameStatsStatus === 'idle') {
@@ -205,14 +208,19 @@ export default function Game() {
         view = <Text>{getCreateGameStatErrorMessage()}</Text>
     }
     else if (gameStatsStatus === 'succeeded') {
-        view = <View>
+        view = <ImageBackground 
+                source={require(backgroundImagePath)} 
+                resizeMode="cover" 
+                style={styles.backgroundImage}
+                imageStyle={{opacity: 0.6}}
+            >
             <Text style={styles.date}>{formattedDate} {t('game.at_text')} {game.address}</Text>
             
             <View style={styles.gameStatView}> 
                 <View style={styles.teamLogo}> 
                     <Image 
                         style={styles.teamLogoImage} 
-                        source={require('@/assets/images/liga_mx_logo.jpeg')}
+                        source={require(defaultTeamLogoPath)}
                         resizeMode='contain'
                     />
                     <Text style={styles.text}>{homeTeam.name}</Text>
@@ -225,7 +233,7 @@ export default function Game() {
                 <View style={styles.teamLogo}> 
                     <Image 
                         style={styles.teamLogoImage} 
-                        source={require('@/assets/images/liga_mx_logo.jpeg')}
+                        source={require(defaultTeamLogoPath)}
                         resizeMode='contain'
                     />
                     <Text style={styles.text}>{awayTeam.name}</Text>
@@ -236,7 +244,7 @@ export default function Game() {
                 <Text style={[styles.text, styles.goalsViewItem]}>{homeTeamGoalScorers}</Text>
                 <Image 
                     style={[styles.goalsViewItem, styles.soccerBallImage]} 
-                    source={require('@/assets/images/soccerBall.png')}
+                    source={require(soccerBallImagePath)}
                     resizeMode='contain'
                 />
                 <Text style={[styles.text, styles.goalsViewItem]}>{awayTeamGoalScorers}</Text>
@@ -283,17 +291,23 @@ export default function Game() {
                     onCancel={handleCancelButtonPressedForEdit}
                 />
             </Modal>
-        </View>
+        </ImageBackground>
     }
 
     return (
-        <SafeAreaView style={[styles.container, gameStatsStatus !== 'succeeded' && styles.perfectCentering]}>
+        <View style={[styles.container, gameStatsStatus !== 'succeeded' && styles.perfectCentering]}>
             {view}
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center'
+    },
     soccerBallImage: {
         width: screenHeight * 0.04,
         height: screenHeight * 0.04,
