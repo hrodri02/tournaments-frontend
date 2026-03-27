@@ -221,7 +221,7 @@ export default function Game() {
                     <Image 
                         style={styles.teamLogoImage} 
                         source={require(defaultTeamLogoPath)}
-                        resizeMode='contain'
+                        resizeMode='cover'
                     />
                     <Text style={styles.text}>{homeTeam.name}</Text>
                 </View>
@@ -234,7 +234,7 @@ export default function Game() {
                     <Image 
                         style={styles.teamLogoImage} 
                         source={require(defaultTeamLogoPath)}
-                        resizeMode='contain'
+                        resizeMode='cover'
                     />
                     <Text style={styles.text}>{awayTeam.name}</Text>
                 </View>
@@ -313,8 +313,10 @@ const styles = StyleSheet.create({
         height: screenHeight * 0.04,
     }, 
     teamLogoImage: { 
+        borderRadius: 20,
         width: screenHeight * 0.1,
-        height: screenHeight * 0.1
+        height: screenHeight * 0.1,
+        marginBottom: 10
     }, 
     text: { 
         fontSize: 16,
