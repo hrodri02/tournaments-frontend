@@ -35,6 +35,13 @@ export default function HomeLayout() {
         }}
       />
       <Stack.Screen 
+        name="leagues/[id]/games/[gameId]" 
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal'
+        }}
+      />
+      <Stack.Screen 
         name="leagues/[id]/upcoming-league/index" 
         options={{
           title: "Upcoming League",
