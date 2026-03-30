@@ -28,8 +28,17 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
 
     const startDate = parseISO(league.startDate)
     const endDate = addWeeks(startDate, league.durationInWeeks)
-    const formattedStartDate = format(startDate, 'MMMM d y', {locale: locale});
-    const formattedEndDate = format(endDate, 'MMMM d y', {locale: locale})
+    const formattedStartDate = formatDate(startDate)
+    const formattedEndDate = formatDate(endDate)
+
+    function formatDate(startDate: Date): string {
+        const dateString = format(startDate, 'MMMM d y', {locale: locale});
+        if (locale === enUS) {
+            return dateString;
+        }
+        // capitalize the first letter
+        return dateString.charAt(0).toUpperCase() + dateString.slice(1);
+    }
 
     const renderLeagueDateText = (league: League): React.JSX.Element | null => {
         switch (league.status) {
