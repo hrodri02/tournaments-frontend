@@ -52,9 +52,21 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
     const { t, i18n } = useTranslation('league');
     const locale = (['en-US', 'en'].includes(i18n.language))? enUS : es;
     const date = Date.parse(game.gameDateTime);
-    const formattedDate = format(date, 'eee, MMM d pp', {locale: locale});
+    const formattedDate = formatDate(date);
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
+
+    function formatDate(date: number): string {
+        const dateString = format(date, 'eee, MMM d pp', {locale: locale});
+        if (locale === enUS) {
+            return dateString;
+        }
+        // capitalize the first letter of the day and month
+        return dateString.charAt(0).toUpperCase() + 
+               dateString.slice(1,5) + 
+               dateString.charAt(5).toUpperCase() + 
+               dateString.slice(6);
+    }
 
     return (
         <Link href={{

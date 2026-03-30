@@ -39,7 +39,7 @@ export default function UpcomingLeaguePage() {
     );
     const teams = useAppSelector(selectTeamsByIds);
     const startDate = parseISO(league.startDate)
-    const formattedStartDate = format(startDate, 'MMMM d y', {locale: locale});
+    const formattedStartDate = formatDate(startDate);
     const leagueDetails: LeagueDetail[] = [
         {
             id: 1, 
@@ -54,6 +54,15 @@ export default function UpcomingLeaguePage() {
             text: `${league.durationInWeeks} ${t('upcoming_league.weeks_label')}`
         },
     ];
+
+    function formatDate(startDate: Date): string {
+        const dateString = format(startDate, 'MMMM d y', {locale: locale});
+        if (locale === enUS) {
+            return dateString;
+        }
+        // capitalize the first letter
+        return dateString.charAt(0).toUpperCase() + dateString.slice(1);
+    }
     
     useLayoutEffect(() => {
         if (league) {

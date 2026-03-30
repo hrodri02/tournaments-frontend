@@ -65,7 +65,7 @@ export default function Game() {
     const homeTeam = game.homeTeam
     const awayTeam = game.awayTeam
     const locale = (['en', 'en-US'].includes(i18n.language))? enUS : es;
-    const formattedDate = format(game.gameDateTime, 'eee, MMM d', {locale: locale});
+    const formattedDate = formatDate(game.gameDateTime);
     const gameStatsStatus = useAppSelector(selectGameStatsFetchStatus)
     const fetchError = useAppSelector(selectGameStatsFetchError);
     const createStatus = useAppSelector(selectGameStatsCreateStatus)
@@ -86,6 +86,19 @@ export default function Game() {
     const backgroundImagePath = '@/assets/images/soccer_field.jpg';
     const defaultTeamLogoPath = '@/assets/images/liga_mx_logo.jpeg';
     const soccerBallImagePath = '@/assets/images/soccerBall.png';
+
+    function formatDate(date: string): string {
+        const dateString = format(date, 'eee, MMM d', {locale: locale});
+        if (locale === enUS) {
+            return dateString;
+        }
+        // capitalize the first letter of the day and month
+        return dateString.charAt(0).toUpperCase() + 
+                dateString.slice(1,5) + 
+                dateString.charAt(5).toUpperCase() + 
+                dateString.slice(6);
+    }
+
 
     useEffect(() => {
         if (gameStatsStatus === 'idle') {
