@@ -58,10 +58,7 @@ type TeamsFlattenedSection = Omit<TeamsSection, 'data'> & { team: Team | null, k
 
 const Item = ({item, backgroundColor, textColor}: ItemProps) => (
     <View style={[styles.item, styles.horizontalContainer]}>
-        {
-            item.logoUrl &&
-            <ImageFetcher key={item.logoUrl} imageUrl={item.logoUrl}/>
-        }
+        <ImageFetcher key={item.logoUrl} imageUrl={item.logoUrl}/>
         <Text style={[styles.text, {color: textColor}]}>{item.name}</Text>
     </View>
 );
@@ -375,4 +372,9 @@ const styles = StyleSheet.create({
     backTextWhite: {
         color: '#FFF',
     },
+    image: {
+        borderRadius: 20,
+        width: 36,
+        height: 36,
+    }
 });
