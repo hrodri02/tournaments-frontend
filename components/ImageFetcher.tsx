@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Image } from 'expo-image';
+import { Image, ImageSource } from 'expo-image';
 import { ActivityIndicator, StyleSheet } from 'react-native';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 type ImageFetcherProps = {
     imageUrl: string | undefined;
@@ -8,18 +9,23 @@ type ImageFetcherProps = {
 
 export function ImageFetcher({ imageUrl }: ImageFetcherProps) {
   const [loading, setLoading] = useState(true);
-  const [baseUrl, setBaseUrl] = useState<string | undefined>(undefined);
+  const [source, setSource] = useState<number | ImageSource | undefined>(undefined);
 
   useEffect(() => {
     const fetchS3Url = async () => {
       try {
         // --- Replace this with your actual URL fetching logic ---
 
-        // remove timestamp
+        // if team logo exists
         if (imageUrl) {
+          // remove timestamp
           const index = imageUrl.indexOf("?");
           const baseUrl = imageUrl.slice(0, index);
-          setBaseUrl(baseUrl);
+          // use custom team logo
+          setSource({ uri: baseUrl });
+        }
+        else {
+          setSource(DEFAULT_IMAGES.TEAM_LOGO);
         }
         // 1. If using **Public URL (Option A)**:
         // const publicUrl = `https://my-expo-assets-bucket.s3.us-east-1.amazonaws.com/${s3Key}`;
@@ -47,7 +53,7 @@ export function ImageFetcher({ imageUrl }: ImageFetcherProps) {
 
   return (
     <Image
-      source={{ uri: baseUrl }} // The final URL is passed here
+      source={source}
       style={styles.image}
     />
   );
