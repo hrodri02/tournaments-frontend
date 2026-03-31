@@ -19,6 +19,7 @@ import { selectTeamById } from '@/store/teams/teamsSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 export default function TeamDetailPage() {
     const router = useRouter();
@@ -93,6 +94,7 @@ export default function TeamDetailPage() {
                         key={team.logoUrl}
                         title={team.name} 
                         imageUrl={team.logoUrl} 
+                        defaultSource={DEFAULT_IMAGES.TEAM_LOGO}
                     />
                 )
             });
@@ -150,6 +152,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(247,247,247,1.0)',
     },
     item: {
+        flexDirection: 'row',
+        columnGap: 5,
+        alignItems: 'center',
         padding: 10,
         marginVertical: 4,
         marginHorizontal: 8,

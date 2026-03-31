@@ -7,6 +7,7 @@ import { es, enUS } from 'date-fns/locale'
 import { type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ImageFetcher } from '@/components/ImageFetcher';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 type LeagueExcerptProps = {
     league: League;
@@ -60,7 +61,7 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
                 <ImageFetcher key={league.logoUrl} imageUrl={league.logoUrl}/> : 
                 <Image 
                     style={{width: imageSideLength, height: imageSideLength, borderRadius: imageSideLength / 2 }} 
-                    source={require('@/assets/images/liga_mx_logo.jpeg')}
+                    source={DEFAULT_IMAGES.LEAGUE_LOGO}
                 />
             }
             

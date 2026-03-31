@@ -21,6 +21,7 @@ import { LeagueDetail, LeagueDetailExcerpt } from '@/components/LeagueDetailExce
 import { useTranslation } from 'react-i18next';
 import { parseISO, format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale'
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 export default function UpcomingLeaguePage() {
     const router = useRouter();
@@ -71,7 +72,8 @@ export default function UpcomingLeaguePage() {
               <CustomHeader
                 key={league.logoUrl}
                 title={league.name} 
-                imageUrl={league.logoUrl} 
+                imageUrl={league.logoUrl}
+                defaultSource={DEFAULT_IMAGES.LEAGUE_LOGO}
               />
             )
           });

@@ -44,6 +44,7 @@ import GameStatForm, { GameStatFormData } from '@/components/GameStatForm';
 import EditGameStatForm from '@/components/EditGameStatForm';
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 const screenHeight = Dimensions.get('window').height; 
 
@@ -83,9 +84,6 @@ export default function Game() {
     const awayTeamYellowCards = countStatsForTeam(gameStatsOfGame, GameStatType.yellowCard, awayTeam)
     const homeTeamRedCards = countStatsForTeam(gameStatsOfGame, GameStatType.redCard, homeTeam)
     const awayTeamRedCards = countStatsForTeam(gameStatsOfGame, GameStatType.redCard, awayTeam)
-    const backgroundImagePath = '@/assets/images/soccer_field.jpg';
-    const defaultTeamLogoPath = '@/assets/images/liga_mx_logo.jpeg';
-    const soccerBallImagePath = '@/assets/images/soccerBall.png';
 
     function formatDate(date: string): string {
         const dateString = format(date, 'eee, MMM d', {locale: locale});
@@ -222,7 +220,7 @@ export default function Game() {
     }
     else if (gameStatsStatus === 'succeeded') {
         view = <ImageBackground 
-                source={require(backgroundImagePath)} 
+                source={DEFAULT_IMAGES.FIELD_BG} 
                 resizeMode="cover" 
                 style={styles.backgroundImage}
                 imageStyle={{opacity: 0.6}}
@@ -233,7 +231,7 @@ export default function Game() {
                 <View style={styles.teamLogo}> 
                     <Image 
                         style={styles.teamLogoImage} 
-                        source={require(defaultTeamLogoPath)}
+                        source={DEFAULT_IMAGES.TEAM_LOGO}
                         resizeMode='cover'
                     />
                     <Text style={styles.text}>{homeTeam.name}</Text>
@@ -246,7 +244,7 @@ export default function Game() {
                 <View style={styles.teamLogo}> 
                     <Image 
                         style={styles.teamLogoImage} 
-                        source={require(defaultTeamLogoPath)}
+                        source={DEFAULT_IMAGES.TEAM_LOGO}
                         resizeMode='cover'
                     />
                     <Text style={styles.text}>{awayTeam.name}</Text>
@@ -257,7 +255,7 @@ export default function Game() {
                 <Text style={[styles.text, styles.goalsViewItem]}>{homeTeamGoalScorers}</Text>
                 <Image 
                     style={[styles.goalsViewItem, styles.soccerBallImage]} 
-                    source={require(soccerBallImagePath)}
+                    source={DEFAULT_IMAGES.SOCCER_BALL}
                     resizeMode='contain'
                 />
                 <Text style={[styles.text, styles.goalsViewItem]}>{awayTeamGoalScorers}</Text>
