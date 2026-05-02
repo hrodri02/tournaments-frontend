@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Platform
 } from 'react-native';
+import CheckBox from 'expo-checkbox';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
@@ -16,31 +17,45 @@ import { useTranslation } from 'react-i18next';
 interface LoginFormData {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export default function LoginForm() {
   const [ isPasswordInputFocused, setIsPasswordInputFocused ] = useState<boolean>(false);
   const [ isEmailInputFocused, setIsEmailInputFocused ] = useState<boolean>(false);
   const [ isPasswordVisible, setIsPasswordVisible ] = useState<boolean>(false);
+  const { login, dontRememberMe, isLoading, error, user, isAuthenticated, rememberMe } = useAuth();
   const { t } = useTranslation('login');
-  const { login, isLoading, error, user } = useAuth();
   const emailInputRef = React.useRef(null);
   const passwordInputRef = React.useRef(null);
-  const { control, handleSubmit, setValue } = useForm<LoginFormData>({
+  const { control, handleSubmit, setValue, watch } = useForm<LoginFormData>({
     defaultValues: {
-      email: '',
+      email: (rememberMe && user)? user.email : '',
       password: '',
+      rememberMe: rememberMe,
     },
   });
+  const rememberMeValue = watch('rememberMe');
+
+  useEffect(() => {
+    // When rememberMe is toggled OFF after logging out
+    if (!rememberMeValue && user) {
+      // Reset the email field to an empty string
+      setValue('email', '');
+      // removes the user from memory
+      dontRememberMe();
+    } 
+  }, [rememberMeValue, setValue]);
 
   const onSubmit = async (data: LoginFormData) => {
-    await login(data);
+    const { rememberMe, ...credentials } = data;
+    await login(credentials, rememberMe);
   };
 
   useEffect(() => {
     if (error) {
       console.error(error);
-    } else if (user) {
+    } else if (isAuthenticated && user) {
       router.replace("/(app)/home");
     }
   }, [error, user]);
@@ -96,9 +111,25 @@ export default function LoginForm() {
               onBlur={() => setIsPasswordInputFocused(false)}
               underlineColorAndroid="transparent"
             />
-            <Text style={styles.underlineText} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>Show</Text>
+            <Text style={styles.underlineText} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>{isPasswordVisible? 'Hide' : 'Show'}</Text>
             {error && <Text style={styles.errorText}>{error.message}</Text>}
           </Pressable>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="rememberMe"
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <View style={styles.section}>
+          <CheckBox
+            style={styles.checkbox}
+            value={value}
+            onValueChange={onChange}
+            color={value ? '#4630EB' : undefined}
+          />
+          <Text style={styles.paragraph}>Remember me</Text>
+        </View>
         )}
       />
       
@@ -207,6 +238,16 @@ const styles = StyleSheet.create({
   },
   underlineText: {
     textDecorationLine: 'underline'
+  },
+  section: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    margin: 8,
+  },
+  paragraph: {
+    fontSize: 12
   },
   devButton: {
     backgroundColor: '#000',

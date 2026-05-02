@@ -45,6 +45,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: true,
   error: null,
+  rememberMe: false
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -67,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             isAuthenticated: true,
             isLoading: false,
             error: null,
+            rememberMe: false
           });
         } else {
           setState((prev) => ({ ...prev, isLoading: false }));
@@ -85,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     loadStoredAuth();
   }, []);
 
-  const login = useCallback(async (credentials: LoginCredentials) => {
+  const login = useCallback(async (credentials: LoginCredentials, rememberMe: boolean) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
@@ -137,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isAuthenticated: true,
         isLoading: false,
         error: null,
+        rememberMe: rememberMe
       });
     } catch (error) {
       setState((prev) => ({
@@ -180,6 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isAuthenticated: true,
         isLoading: false,
         error: null,
+        rememberMe: false
       });
     } catch (error) {
       setState((prev) => ({
@@ -194,14 +198,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setState(prev => ({ ...prev, isLoading: true }));
       await clearStoredAuth();
-      setState({
-        user: null,
+      setState(prev => ({
+        user: (prev.rememberMe)? prev.user : null,
         accessToken: null,
         refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
-        error: null
-      });
+        error: null,
+        rememberMe: prev.rememberMe
+      }));
       dispatch(resetTeamsFetchState());
       dispatch(resetLeaguesState());
     } catch (error) {
@@ -212,6 +217,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }));
     }
   }, [dispatch]);
+
+  const dontRememberMe = useCallback(() => {
+    setState(prev => ({
+        ...prev,
+        user: null,
+        rememberMe: false
+      }));
+  }, []);
 
   useEffect(() => {
     // 1. Create the listener
@@ -236,8 +249,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       register,
       logout,
       clearError,
+      dontRememberMe
     }),
-    [state, login, register, logout, clearError]
+    [state, login, register, logout, clearError, dontRememberMe]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
