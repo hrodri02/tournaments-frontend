@@ -44,5 +44,5 @@ export interface AuthContextType extends AuthState {
     register: (credentials: RegisterCredentials) => Promise<void>;
     logout: () => void;
     clearError: () => void;
-    rememberMeToggle: (rememberMe: boolean) => void;
+    dontRememberMe: () => void;
 } 
