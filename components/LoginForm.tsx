@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
-import { 
+import React, { useEffect, useState } from 'react';
+import {
+  Pressable, 
   View, 
   Text, 
   TextInput, 
   TouchableOpacity, 
-  StyleSheet 
+  StyleSheet,
+  Platform
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,8 +19,13 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
+  const [ isPasswordInputFocused, setIsPasswordInputFocused ] = useState<boolean>(false);
+  const [ isEmailInputFocused, setIsEmailInputFocused ] = useState<boolean>(false);
+  const [ isPasswordVisible, setIsPasswordVisible ] = useState<boolean>(false);
   const { t } = useTranslation('login');
   const { login, isLoading, error, user } = useAuth();
+  const emailInputRef = React.useRef(null);
+  const passwordInputRef = React.useRef(null);
   const { control, handleSubmit, setValue } = useForm<LoginFormData>({
     defaultValues: {
       email: '',
@@ -54,17 +61,21 @@ export default function LoginForm() {
         name="email"
         rules={{ required: 'Email is required' }}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <View>
+          <Pressable style={[styles.inputContainer, isEmailInputFocused && styles.inputContainerFocused]} onPress={() => emailInputRef.current.focus()}>
             <TextInput
+              ref={emailInputRef}
               style={[styles.input, error && styles.inputError]}
               placeholder={t('username_placeholder')}
               value={value}
               onChangeText={onChange}
               autoCapitalize="none"
               keyboardType="email-address"
+              onFocus={() => setIsEmailInputFocused(true)}
+              onBlur={() => setIsEmailInputFocused(false)}
+              underlineColorAndroid="transparent"
             />
             {error && <Text style={styles.errorText}>{error.message}</Text>}
-          </View>
+          </Pressable>
         )}
       />
       
@@ -73,16 +84,21 @@ export default function LoginForm() {
         name="password"
         rules={{ required: 'Password is required' }}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <View>
+          <Pressable style={[styles.inputContainer, isPasswordInputFocused && styles.inputContainerFocused]} onPress={() => passwordInputRef.current.focus()}>
             <TextInput
+              ref={passwordInputRef}
               style={[styles.input, error && styles.inputError]}
               placeholder={t('password_placeholder')}
               value={value}
               onChangeText={onChange}
-              secureTextEntry
+              secureTextEntry={!isPasswordVisible}
+              onFocus={() => setIsPasswordInputFocused(true)}
+              onBlur={() => setIsPasswordInputFocused(false)}
+              underlineColorAndroid="transparent"
             />
+            <Text style={styles.underlineText} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>Show</Text>
             {error && <Text style={styles.errorText}>{error.message}</Text>}
-          </View>
+          </Pressable>
         )}
       />
       
@@ -128,14 +144,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  input: {
-    height: 50,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
+  },
+  inputContainerFocused: {
+    borderColor: '#007AFF', // The "Highlight" color
+    borderWidth: 2, // Optional: make it thicker when focused
+  },
+  input: {
+    flex: 1,
+    height: 50,
     fontSize: 16,
+    borderWidth: 0,
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none'
+      }
+    })
   },
   inputError: {
     borderColor: 'red',
@@ -173,6 +204,9 @@ const styles = StyleSheet.create({
   linkText: {
     color: '#007AFF',
     fontSize: 16,
+  },
+  underlineText: {
+    textDecorationLine: 'underline'
   },
   devButton: {
     backgroundColor: '#000',
