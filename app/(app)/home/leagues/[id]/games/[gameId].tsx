@@ -17,6 +17,7 @@ import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { ImageFetcher } from '@/components/ImageFetcher';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { makeSelectDenormalizedGame } from '@/store/games/gamesSlice';
@@ -228,11 +229,12 @@ export default function Game() {
             <Text style={styles.date}>{formattedDate} {t('game.at_text')} {game.address}</Text>
             
             <View style={styles.gameStatView}> 
-                <View style={styles.teamLogo}> 
-                    <Image 
-                        style={styles.teamLogoImage} 
-                        source={DEFAULT_IMAGES.TEAM_LOGO}
-                        resizeMode='cover'
+                <View style={styles.teamLogo}>
+                    <ImageFetcher
+                        imageStyle={styles.teamLogoImage}
+                        key={homeTeam.logoUrl}
+                        imageUrl={homeTeam.logoUrl}
+                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
                     />
                     <Text style={styles.text}>{homeTeam.name}</Text>
                 </View>
@@ -242,10 +244,11 @@ export default function Game() {
                 </View>
 
                 <View style={styles.teamLogo}> 
-                    <Image 
-                        style={styles.teamLogoImage} 
-                        source={DEFAULT_IMAGES.TEAM_LOGO}
-                        resizeMode='cover'
+                    <ImageFetcher
+                        imageStyle={styles.teamLogoImage}
+                        key={awayTeam.logoUrl}
+                        imageUrl={awayTeam.logoUrl}
+                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
                     />
                     <Text style={styles.text}>{awayTeam.name}</Text>
                 </View>

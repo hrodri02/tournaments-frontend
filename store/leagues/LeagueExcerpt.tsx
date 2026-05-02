@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
+import { 
+    View, 
+    ViewStyle, 
+    Text, 
+    StyleSheet, 
+    Pressable 
+} from 'react-native';
 import { Link } from 'expo-router';
 import { League, LeagueStatus } from '@/entities/index';
 import { parseISO, format, addWeeks } from 'date-fns';
@@ -56,15 +62,12 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
 
     const content = (
         <View style={style}>
-            {
-                league.logoUrl ?
-                <ImageFetcher key={league.logoUrl} imageUrl={league.logoUrl}/> : 
-                <Image 
-                    style={{width: imageSideLength, height: imageSideLength, borderRadius: imageSideLength / 2 }} 
-                    source={DEFAULT_IMAGES.LEAGUE_LOGO}
-                />
-            }
-            
+            <ImageFetcher
+                imageStyle={styles.leagueImage}
+                key={league.logoUrl} 
+                imageUrl={league.logoUrl} 
+                defaultImageSource={DEFAULT_IMAGES.LEAGUE_LOGO}
+            /> 
             <View style={styles.leagueDetails}>
                 <Text style={styles.itemHeader}>{league.name}</Text>
                 {renderLeagueDateText(league)}
@@ -95,5 +98,10 @@ const styles = StyleSheet.create({
     },
     leagueDetails: {
         justifyContent: 'center',
+    },
+    leagueImage: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
     }
 });

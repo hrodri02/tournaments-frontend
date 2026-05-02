@@ -1,5 +1,13 @@
 import React from 'react'; 
-import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
+import { 
+    View, 
+    ViewStyle, 
+    Text, 
+    StyleSheet, 
+    Pressable, 
+    Dimensions 
+} from 'react-native';
+import { ImageFetcher } from '@/components/ImageFetcher';
 import { Link } from 'expo-router';
 import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
@@ -79,12 +87,22 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
             <View style={style}>
                 <View style={styles.teamViews}>
                 <View style={styles.teamView}>
-                    <Image style={styles.image} source={DEFAULT_IMAGES.TEAM_LOGO}/>
+                    <ImageFetcher
+                        imageStyle={styles.image} 
+                        key={game.homeTeam.logoUrl}
+                        imageUrl={game.homeTeam.logoUrl}
+                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                    />
                     <Text style={styles.text}>{game.homeTeam.name}</Text>
                 </View>
 
                 <View style={styles.teamView}>
-                    <Image style={styles.image} source={DEFAULT_IMAGES.TEAM_LOGO}/>
+                    <ImageFetcher 
+                        imageStyle={styles.image}
+                        key={game.awayTeam.logoUrl}
+                        imageUrl={game.awayTeam.logoUrl}
+                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                    />
                     <Text style={styles.text}>{game.awayTeam.name}</Text>
                     </View>
                 </View>
