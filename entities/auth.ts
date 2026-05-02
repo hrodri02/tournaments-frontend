@@ -27,6 +27,7 @@ export interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
+    rememberMe: boolean;
 }
 
 export interface LoginCredentials {
@@ -39,8 +40,9 @@ export interface RegisterCredentials extends LoginCredentials {
 }
 
 export interface AuthContextType extends AuthState {
-    login: (credentials: LoginCredentials) => Promise<void>;
+    login: (credentials: LoginCredentials, rememberMe: boolean) => Promise<void>;
     register: (credentials: RegisterCredentials) => Promise<void>;
     logout: () => void;
     clearError: () => void;
+    dontRememberMe: () => void;
 } 
