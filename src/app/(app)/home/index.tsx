@@ -150,7 +150,8 @@ export default function HomeScreen() {
       <LeagueExcerpt 
         style={styles.item} 
         pathname={pathname} 
-        league={item} clickable={true}
+        league={item} 
+        clickable={true}
       />
     );
   }

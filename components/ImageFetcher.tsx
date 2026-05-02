@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Image } from 'expo-image';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { Image, ImageSource } from 'expo-image';
+import { ActivityIndicator, ImageStyle } from 'react-native';
 
 type ImageFetcherProps = {
-    imageUrl: string | undefined;
+  imageStyle?: ImageStyle;
+  imageUrl: string | undefined;
+  defaultImageSource: number | undefined;
 }
 
-export function ImageFetcher({ imageUrl }: ImageFetcherProps) {
+export function ImageFetcher({ imageUrl, defaultImageSource, imageStyle }: ImageFetcherProps) {
   const [loading, setLoading] = useState(true);
-  const [baseUrl, setBaseUrl] = useState<string | undefined>(undefined);
+  const [source, setSource] = useState<number | ImageSource | undefined>(undefined);
 
   useEffect(() => {
     const fetchS3Url = async () => {
       try {
         // --- Replace this with your actual URL fetching logic ---
 
-        // remove timestamp
+        // if custom image exists
         if (imageUrl) {
+          // remove timestamp
           const index = imageUrl.indexOf("?");
           const baseUrl = imageUrl.slice(0, index);
-          setBaseUrl(baseUrl);
+          // use custom image
+          setSource({ uri: baseUrl });
+        }
+        else {
+        // use default image
+          setSource(defaultImageSource);
         }
         // 1. If using **Public URL (Option A)**:
         // const publicUrl = `https://my-expo-assets-bucket.s3.us-east-1.amazonaws.com/${s3Key}`;
@@ -47,16 +55,8 @@ export function ImageFetcher({ imageUrl }: ImageFetcherProps) {
 
   return (
     <Image
-      source={{ uri: baseUrl }} // The final URL is passed here
-      style={styles.image}
+      source={source}
+      style={imageStyle}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  image: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  }
-});

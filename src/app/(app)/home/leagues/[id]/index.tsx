@@ -28,6 +28,7 @@ import {
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectDenormalizedGames } from '@/store/games/gamesSlice';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 export default function LeagueScreen() {
   const router = useRouter();
@@ -62,6 +63,7 @@ export default function LeagueScreen() {
             key={league.logoUrl}
             title={league.name} 
             imageUrl={league.logoUrl} 
+            defaultSource={DEFAULT_IMAGES.LEAGUE_LOGO}
           />
         )
       });

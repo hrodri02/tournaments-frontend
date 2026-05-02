@@ -1,11 +1,20 @@
 import React from 'react'; 
-import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
+import { 
+    View, 
+    ViewStyle, 
+    Text, 
+    StyleSheet, 
+    Pressable, 
+    Dimensions 
+} from 'react-native';
+import { ImageFetcher } from '@/components/ImageFetcher';
 import { Link } from 'expo-router';
 import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -22,6 +31,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     image: { 
+        borderRadius: 20,
         width: screenHeight * 0.1,
         height: screenHeight * 0.1,
     },
@@ -77,12 +87,22 @@ export function GameExcerpt({ game, style }: GameExcerptProps) {
             <View style={style}>
                 <View style={styles.teamViews}>
                 <View style={styles.teamView}>
-                    <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
+                    <ImageFetcher
+                        imageStyle={styles.image} 
+                        key={game.homeTeam.logoUrl}
+                        imageUrl={game.homeTeam.logoUrl}
+                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                    />
                     <Text style={styles.text}>{game.homeTeam.name}</Text>
                 </View>
 
                 <View style={styles.teamView}>
-                    <Image style={styles.image} source={require('@/assets/images/liga_mx_logo.jpeg')}/>
+                    <ImageFetcher 
+                        imageStyle={styles.image}
+                        key={game.awayTeam.logoUrl}
+                        imageUrl={game.awayTeam.logoUrl}
+                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                    />
                     <Text style={styles.text}>{game.awayTeam.name}</Text>
                     </View>
                 </View>

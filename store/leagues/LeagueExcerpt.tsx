@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, ViewStyle, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
+import { 
+    View, 
+    ViewStyle, 
+    Text, 
+    StyleSheet, 
+    Pressable 
+} from 'react-native';
 import { Link } from 'expo-router';
 import { League, LeagueStatus } from '@/entities/index';
 import { parseISO, format, addWeeks } from 'date-fns';
@@ -7,6 +13,7 @@ import { es, enUS } from 'date-fns/locale'
 import { type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ImageFetcher } from '@/components/ImageFetcher';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 type LeagueExcerptProps = {
     league: League;
@@ -55,15 +62,12 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
 
     const content = (
         <View style={style}>
-            {
-                league.logoUrl ?
-                <ImageFetcher key={league.logoUrl} imageUrl={league.logoUrl}/> : 
-                <Image 
-                    style={{width: imageSideLength, height: imageSideLength, borderRadius: imageSideLength / 2 }} 
-                    source={require('@/assets/images/liga_mx_logo.jpeg')}
-                />
-            }
-            
+            <ImageFetcher
+                imageStyle={styles.leagueImage}
+                key={league.logoUrl} 
+                imageUrl={league.logoUrl} 
+                defaultImageSource={DEFAULT_IMAGES.LEAGUE_LOGO}
+            /> 
             <View style={styles.leagueDetails}>
                 <Text style={styles.itemHeader}>{league.name}</Text>
                 {renderLeagueDateText(league)}
@@ -94,5 +98,10 @@ const styles = StyleSheet.create({
     },
     leagueDetails: {
         justifyContent: 'center',
+    },
+    leagueImage: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
     }
 });

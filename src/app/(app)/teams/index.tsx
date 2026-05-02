@@ -35,6 +35,7 @@ import {
 import { handleAcceptTeamInvite } from '@/store/thunks/teamOrchestratorThunks';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 interface TeamIdToInviteIdMap {
     [teamId: number] : number;
@@ -58,10 +59,12 @@ type TeamsFlattenedSection = Omit<TeamsSection, 'data'> & { team: Team | null, k
 
 const Item = ({item, backgroundColor, textColor}: ItemProps) => (
     <View style={[styles.item, styles.horizontalContainer]}>
-        {
-            item.logoUrl &&
-            <ImageFetcher key={item.logoUrl} imageUrl={item.logoUrl}/>
-        }
+        <ImageFetcher
+            imageStyle={styles.image}
+            key={item.logoUrl} 
+            imageUrl={item.logoUrl}
+            defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+        />
         <Text style={[styles.text, {color: textColor}]}>{item.name}</Text>
     </View>
 );
@@ -375,4 +378,9 @@ const styles = StyleSheet.create({
     backTextWhite: {
         color: '#FFF',
     },
+    image: {
+        borderRadius: 20,
+        width: 36,
+        height: 36,
+    }
 });

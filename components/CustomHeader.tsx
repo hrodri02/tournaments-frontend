@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'expo-image';
+import { Image, ImageSource } from 'expo-image';
 import { 
   View, 
   Text, 
@@ -8,21 +8,19 @@ import {
 
 type CustomHeaderProps = {
     imageUrl: string | undefined;
+    defaultSource: number;
     title: string;
 }
 
-export default function CustomHeader({ imageUrl, title }: CustomHeaderProps) {
+export default function CustomHeader({ imageUrl, defaultSource, title }: CustomHeaderProps) {
   let baseUrl: string | undefined = imageUrl? imageUrl.slice(0, imageUrl.indexOf("?")) : undefined;
+  const imageSource: ImageSource | number = (baseUrl) ? {uri: baseUrl} : defaultSource;
   return (
       <View style={styles.headerContainer}>
-        {
-          imageUrl &&
-          <Image
-            source={{uri: baseUrl}}
-            style={styles.headerIcon}
-          />
-        }
-          
+        <Image
+          source={imageSource}
+          style={styles.headerIcon}
+        />
         <Text style={styles.headerText}>{title}</Text>
       </View>
   );
