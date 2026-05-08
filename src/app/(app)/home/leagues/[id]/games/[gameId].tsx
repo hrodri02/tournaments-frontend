@@ -17,7 +17,7 @@ import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { ImageFetcher } from '@/components/ImageFetcher';
+import { TeamAvatar } from '@/components/TeamAvatar';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { makeSelectDenormalizedGame } from '@/store/games/gamesSlice';
@@ -230,11 +230,10 @@ export default function Game() {
             
             <View style={styles.gameStatView}> 
                 <View style={styles.teamLogo}>
-                    <ImageFetcher
-                        imageStyle={styles.teamLogoImage}
-                        key={homeTeam.logoUrl}
-                        imageUrl={homeTeam.logoUrl}
-                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                    <TeamAvatar
+                        logoUrl={homeTeam.logoUrl}
+                        name={homeTeam.name}
+                        size={screenHeight * 0.1}
                     />
                     <Text style={styles.text}>{homeTeam.name}</Text>
                 </View>
@@ -244,11 +243,10 @@ export default function Game() {
                 </View>
 
                 <View style={styles.teamLogo}> 
-                    <ImageFetcher
-                        imageStyle={styles.teamLogoImage}
-                        key={awayTeam.logoUrl}
-                        imageUrl={awayTeam.logoUrl}
-                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                    <TeamAvatar
+                        logoUrl={awayTeam.logoUrl}
+                        name={awayTeam.name}
+                        size={screenHeight * 0.1}
                     />
                     <Text style={styles.text}>{awayTeam.name}</Text>
                 </View>
@@ -326,12 +324,6 @@ const styles = StyleSheet.create({
         width: screenHeight * 0.04,
         height: screenHeight * 0.04,
     }, 
-    teamLogoImage: { 
-        borderRadius: 20,
-        width: screenHeight * 0.1,
-        height: screenHeight * 0.1,
-        marginBottom: 10
-    }, 
     text: { 
         fontSize: 16,
         textAlign: 'center'
@@ -366,6 +358,7 @@ const styles = StyleSheet.create({
     teamLogo: { 
         flex: 1,
         alignItems: 'center',  
+        gap: 6
     },
     equalWidth: { 
         flex: 1
