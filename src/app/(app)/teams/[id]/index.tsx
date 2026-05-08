@@ -10,7 +10,7 @@ import {
     FlatList,
     Platform
 } from 'react-native';
-import CustomHeader from '@/components/CustomHeader';
+import { TeamAvatar } from '@/components/TeamAvatar';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -19,7 +19,7 @@ import { selectTeamById } from '@/store/teams/teamsSlice';
 import { makeSelectPlayersByIds } from '@/store/players/playersSlice';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_IMAGES } from '@/constants/Assets';
+
 
 export default function TeamDetailPage() {
     const router = useRouter();
@@ -90,12 +90,14 @@ export default function TeamDetailPage() {
         if (team) {
             navigation.setOptions({
                 headerTitle: () => (
-                    <CustomHeader
-                        key={team.logoUrl}
-                        title={team.name} 
-                        imageUrl={team.logoUrl} 
-                        defaultSource={DEFAULT_IMAGES.TEAM_LOGO}
-                    />
+                    <View style={styles.headerContainer}>
+                        <TeamAvatar
+                            logoUrl={team.logoUrl}
+                            name={team.name}
+                            size={40}
+                        />
+                        <Text style={styles.headerText}>{team.name}</Text>
+                    </View>
                 )
             });
         }
@@ -117,6 +119,16 @@ export default function TeamDetailPage() {
 const styles = StyleSheet.create({
     topRightNavButton: {
         marginHorizontal: 20
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    headerText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#000',
+        marginLeft: 10,
     },
     safeAreaContainer: {
         flex: 1

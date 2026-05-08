@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeListView, RowMap, SwipeRow } from 'react-native-swipe-list-view';
-import { ImageFetcher } from '@/components/ImageFetcher';
+import { TeamAvatar } from '@/components/TeamAvatar';
 import { Team } from '@/entities/index';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { 
@@ -35,7 +35,7 @@ import {
 import { handleAcceptTeamInvite } from '@/store/thunks/teamOrchestratorThunks';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_IMAGES } from '@/constants/Assets';
+
 
 interface TeamIdToInviteIdMap {
     [teamId: number] : number;
@@ -59,11 +59,10 @@ type TeamsFlattenedSection = Omit<TeamsSection, 'data'> & { team: Team | null, k
 
 const Item = ({item, backgroundColor, textColor}: ItemProps) => (
     <View style={[styles.item, styles.horizontalContainer]}>
-        <ImageFetcher
-            imageStyle={styles.image}
-            key={item.logoUrl} 
-            imageUrl={item.logoUrl}
-            defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+        <TeamAvatar
+            logoUrl={item.logoUrl}
+            name={item.name}
+            size={36}
         />
         <Text style={[styles.text, {color: textColor}]}>{item.name}</Text>
     </View>
@@ -378,9 +377,5 @@ const styles = StyleSheet.create({
     backTextWhite: {
         color: '#FFF',
     },
-    image: {
-        borderRadius: 20,
-        width: 36,
-        height: 36,
-    }
+
 });
