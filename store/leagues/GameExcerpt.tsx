@@ -6,14 +6,13 @@ import {
     Pressable,
     Dimensions
 } from 'react-native';
-import { ImageFetcher } from '@/components/ImageFetcher';
+import { TeamAvatar } from '@/components/TeamAvatar';
 import { Link } from 'expo-router';
 import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -51,11 +50,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 14,
         textAlign: 'center',
-    },
-    image: {
-        borderRadius: 16,
-        width: screenHeight * 0.07,
-        height: screenHeight * 0.07,
     },
     vs: {
         fontSize: 14,
@@ -101,11 +95,10 @@ export function GameExcerpt({ game }: GameExcerptProps) {
                 <View style={styles.card}>
                     <View style={styles.matchupRow}>
                         <View style={styles.teamSide}>
-                            <ImageFetcher
-                                imageStyle={styles.image}
-                                key={game.homeTeam.logoUrl}
-                                imageUrl={game.homeTeam.logoUrl}
-                                defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                            <TeamAvatar
+                                logoUrl={game.homeTeam.logoUrl}
+                                name={game.homeTeam.name}
+                                size={screenHeight * 0.07}
                             />
                             <Text style={styles.teamName}>{game.homeTeam.name}</Text>
                         </View>
@@ -113,11 +106,10 @@ export function GameExcerpt({ game }: GameExcerptProps) {
                         <Text style={styles.vs}>vs</Text>
 
                         <View style={styles.teamSide}>
-                            <ImageFetcher
-                                imageStyle={styles.image}
-                                key={game.awayTeam.logoUrl}
-                                imageUrl={game.awayTeam.logoUrl}
-                                defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                            <TeamAvatar
+                                logoUrl={game.awayTeam.logoUrl}
+                                name={game.awayTeam.name}
+                                size={screenHeight * 0.07}
                             />
                             <Text style={styles.teamName}>{game.awayTeam.name}</Text>
                         </View>
