@@ -126,13 +126,9 @@ export default function LeagueScreen() {
   if (gamesStatus === 'idle' || gamesStatus === 'succeeded') {
     view = <FlatList
       ListHeaderComponent={<Text style={styles.header}>{t('league.schedule_title')}</Text>}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
       data={games}
       renderItem={({ item }) => (
-        <GameExcerpt 
-          game={item}
-          style={styles.item} 
-        />
+        <GameExcerpt game={item} />
       )}
     />
   }
@@ -161,11 +157,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  item: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-  },
   header: {
     fontWeight: 'bold',
     fontSize: 18,
@@ -174,10 +165,6 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 2,
     borderBottomWidth: 1
-  },
-  separator: {
-    borderWidth: 0.5,
-    borderColor: 'black'
   },
   loadingContainer: {
     flex: 1,

@@ -1,11 +1,10 @@
-import React from 'react'; 
-import { 
-    View, 
-    ViewStyle, 
-    Text, 
-    StyleSheet, 
-    Pressable, 
-    Dimensions 
+import React from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Pressable,
+    Dimensions
 } from 'react-native';
 import { ImageFetcher } from '@/components/ImageFetcher';
 import { Link } from 'expo-router';
@@ -20,98 +19,115 @@ const screenHeight = Dimensions.get('window').height;
 
 type GameExcerptProps = {
     game: GameResponse;
-    style?: ViewStyle;
 }
 
 const styles = StyleSheet.create({
-    text: {
-        textAlign: 'center',
-        alignContent: 'center',
-        fontWeight: 'bold',
-        fontSize: 16,
+    card: {
+        marginHorizontal: 12,
+        marginVertical: 6,
+        borderRadius: 12,
+        backgroundColor: '#ffffff',
+        paddingVertical: 14,
+        paddingHorizontal: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: '#e8e8e8',
     },
-    image: { 
-        borderRadius: 20,
-        width: screenHeight * 0.1,
-        height: screenHeight * 0.1,
-    },
-    teamViews: {
-        flex: 3,
-    },
-    teamView: { 
-        columnGap: 5,
-        padding: 10,
-        flex: 1,
+    matchupRow: {
         flexDirection: 'row',
-        alignItems: 'center'   
-    },
-    date: { 
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    dateContainer: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
-        borderLeftWidth: 1,
-        paddingHorizontal: 10
-    }
+        justifyContent: 'space-between',
+    },
+    teamSide: {
+        flex: 1,
+        alignItems: 'center',
+        gap: 6,
+    },
+    teamName: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    image: {
+        borderRadius: 16,
+        width: screenHeight * 0.07,
+        height: screenHeight * 0.07,
+    },
+    vs: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#888',
+        marginHorizontal: 8,
+    },
+    dateRow: {
+        marginTop: 12,
+        alignItems: 'center',
+    },
+    date: {
+        fontSize: 13,
+        color: '#555',
+    },
 })
 
-export function GameExcerpt({ game, style }: GameExcerptProps) {
+export function GameExcerpt({ game }: GameExcerptProps) {
     const { t, i18n } = useTranslation('league');
-    const locale = (['en-US', 'en'].includes(i18n.language))? enUS : es;
+    const locale = (['en-US', 'en'].includes(i18n.language)) ? enUS : es;
     const date = Date.parse(game.gameDateTime);
     const formattedDate = formatDate(date);
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
 
     function formatDate(date: number): string {
-        const dateString = format(date, 'eee, MMM d pp', {locale: locale});
+        const dateString = format(date, 'eee, MMM d pp', { locale });
         if (locale === enUS) {
             return dateString;
         }
-        // capitalize the first letter of the day and month
-        return dateString.charAt(0).toUpperCase() + 
-               dateString.slice(1,5) + 
-               dateString.charAt(5).toUpperCase() + 
+        return dateString.charAt(0).toUpperCase() +
+               dateString.slice(1, 5) +
+               dateString.charAt(5).toUpperCase() +
                dateString.slice(6);
     }
 
     return (
         <Link href={{
             pathname: '/(app)/home/leagues/[id]/games/[gameId]',
-            params: {id: leagueId, gameId: game.id}
+            params: { id: leagueId, gameId: game.id }
         }} asChild>
             <Pressable>
-            <View style={style}>
-                <View style={styles.teamViews}>
-                <View style={styles.teamView}>
-                    <ImageFetcher
-                        imageStyle={styles.image} 
-                        key={game.homeTeam.logoUrl}
-                        imageUrl={game.homeTeam.logoUrl}
-                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
-                    />
-                    <Text style={styles.text}>{game.homeTeam.name}</Text>
-                </View>
+                <View style={styles.card}>
+                    <View style={styles.matchupRow}>
+                        <View style={styles.teamSide}>
+                            <ImageFetcher
+                                imageStyle={styles.image}
+                                key={game.homeTeam.logoUrl}
+                                imageUrl={game.homeTeam.logoUrl}
+                                defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                            />
+                            <Text style={styles.teamName}>{game.homeTeam.name}</Text>
+                        </View>
 
-                <View style={styles.teamView}>
-                    <ImageFetcher 
-                        imageStyle={styles.image}
-                        key={game.awayTeam.logoUrl}
-                        imageUrl={game.awayTeam.logoUrl}
-                        defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
-                    />
-                    <Text style={styles.text}>{game.awayTeam.name}</Text>
+                        <Text style={styles.vs}>vs</Text>
+
+                        <View style={styles.teamSide}>
+                            <ImageFetcher
+                                imageStyle={styles.image}
+                                key={game.awayTeam.logoUrl}
+                                imageUrl={game.awayTeam.logoUrl}
+                                defaultImageSource={DEFAULT_IMAGES.TEAM_LOGO}
+                            />
+                            <Text style={styles.teamName}>{game.awayTeam.name}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.dateRow}>
+                        <Text style={styles.date}>{formattedDate}</Text>
                     </View>
                 </View>
-
-                <View style={styles.dateContainer}>
-                    <Text style={styles.date}>{formattedDate}</Text>
-                </View>
-            </View>
             </Pressable>
         </Link>
-    )
-}   
+    );
+}
