@@ -12,8 +12,7 @@ import { parseISO, format, addWeeks } from 'date-fns';
 import { es, enUS } from 'date-fns/locale'
 import { type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ImageFetcher } from '@/components/ImageFetcher';
-import { DEFAULT_IMAGES } from '@/constants/Assets';
+import { Avatar } from '@/components/Avatar';
 
 type LeagueExcerptProps = {
     league: League;
@@ -62,12 +61,11 @@ export function LeagueExcerpt({ league, pathname, style, clickable = false, imag
 
     const content = (
         <View style={style}>
-            <ImageFetcher
-                imageStyle={styles.leagueImage}
-                key={league.logoUrl} 
-                imageUrl={league.logoUrl} 
-                defaultImageSource={DEFAULT_IMAGES.LEAGUE_LOGO}
-            /> 
+            <Avatar
+                logoUrl={league.logoUrl}
+                name={league.name}
+                size={imageSideLength}
+            />
             <View style={styles.leagueDetails}>
                 <Text style={styles.itemHeader}>{league.name}</Text>
                 {renderLeagueDateText(league)}
@@ -98,10 +96,5 @@ const styles = StyleSheet.create({
     },
     leagueDetails: {
         justifyContent: 'center',
-    },
-    leagueImage: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
     }
 });

@@ -10,7 +10,7 @@ import {
     FlatList,
     Platform
 } from 'react-native';
-import { TeamAvatar } from '@/components/TeamAvatar';
+import CustomHeader from '@/components/CustomHeader';
 import { PlayerExcerpt }  from '@/components/PlayerExcerpt';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -90,14 +90,10 @@ export default function TeamDetailPage() {
         if (team) {
             navigation.setOptions({
                 headerTitle: () => (
-                    <View style={styles.headerContainer}>
-                        <TeamAvatar
-                            logoUrl={team.logoUrl}
-                            name={team.name}
-                            size={40}
-                        />
-                        <Text style={styles.headerText}>{team.name}</Text>
-                    </View>
+                    <CustomHeader 
+                        imageUrl={team.logoUrl} 
+                        title={team.name}
+                    />
                 )
             });
         }
@@ -119,16 +115,6 @@ export default function TeamDetailPage() {
 const styles = StyleSheet.create({
     topRightNavButton: {
         marginHorizontal: 20
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    headerText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#000',
-        marginLeft: 10,
     },
     safeAreaContainer: {
         flex: 1
