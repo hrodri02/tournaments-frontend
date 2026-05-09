@@ -6,7 +6,7 @@ import {
     Pressable,
     Dimensions
 } from 'react-native';
-import { TeamAvatar } from '@/components/TeamAvatar';
+import { Avatar } from '@/components/Avatar';
 import { Link } from 'expo-router';
 import { GameResponse } from '@/entities/index';
 import { format } from 'date-fns';
@@ -95,7 +95,7 @@ export function GameExcerpt({ game }: GameExcerptProps) {
                 <View style={styles.card}>
                     <View style={styles.matchupRow}>
                         <View style={styles.teamSide}>
-                            <TeamAvatar
+                            <Avatar
                                 logoUrl={game.homeTeam.logoUrl}
                                 name={game.homeTeam.name}
                                 size={screenHeight * 0.07}
@@ -106,7 +106,7 @@ export function GameExcerpt({ game }: GameExcerptProps) {
                         <Text style={styles.vs}>vs</Text>
 
                         <View style={styles.teamSide}>
-                            <TeamAvatar
+                            <Avatar
                                 logoUrl={game.awayTeam.logoUrl}
                                 name={game.awayTeam.name}
                                 size={screenHeight * 0.07}

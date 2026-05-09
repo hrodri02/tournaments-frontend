@@ -14,9 +14,9 @@ import {
   Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomHeader from '@/components/CustomHeader';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import CustomHeader from '@/components/CustomHeader';
 import { GameExcerpt } from '@/store/leagues/GameExcerpt';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
@@ -28,7 +28,6 @@ import {
 import { selectLeagueById } from '@/store/leagues/leaguesSlice';
 import { makeSelectDenormalizedGames } from '@/store/games/gamesSlice';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_IMAGES } from '@/constants/Assets';
 
 export default function LeagueScreen() {
   const router = useRouter();
@@ -59,12 +58,10 @@ export default function LeagueScreen() {
     if (league) {
       navigation.setOptions({
         headerTitle: () => (
-          <CustomHeader
-            key={league.logoUrl}
-            title={league.name} 
-            imageUrl={league.logoUrl} 
-            defaultSource={DEFAULT_IMAGES.LEAGUE_LOGO}
-          />
+            <CustomHeader
+              imageUrl={league.logoUrl}
+              title={league.name}
+            />
         )
       });
     }

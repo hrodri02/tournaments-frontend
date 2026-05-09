@@ -29,12 +29,12 @@ function getInitials(name: string): string {
     return (first + second).toUpperCase();
 }
 
-type TeamMonogramProps = {
+type MonogramProps = {
     name: string;
     size: number;
 }
 
-export function TeamMonogram({ name, size }: TeamMonogramProps) {
+export function Monogram({ name, size }: MonogramProps) {
     const bg = hashColor(name);
     const initials = getInitials(name);
     const fontSize = Math.round(size * 0.38);
