@@ -17,7 +17,7 @@ import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native'; 
 import { useLocalSearchParams } from 'expo-router';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { TeamAvatar } from '@/components/TeamAvatar';
+import { Avatar } from '@/components/Avatar';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStore';
 import { makeSelectDenormalizedGame } from '@/store/games/gamesSlice';
@@ -230,7 +230,7 @@ export default function Game() {
             
             <View style={styles.gameStatView}> 
                 <View style={styles.teamLogo}>
-                    <TeamAvatar
+                    <Avatar
                         logoUrl={homeTeam.logoUrl}
                         name={homeTeam.name}
                         size={screenHeight * 0.1}
@@ -243,7 +243,7 @@ export default function Game() {
                 </View>
 
                 <View style={styles.teamLogo}> 
-                    <TeamAvatar
+                    <Avatar
                         logoUrl={awayTeam.logoUrl}
                         name={awayTeam.name}
                         size={screenHeight * 0.1}

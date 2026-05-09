@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeListView, RowMap, SwipeRow } from 'react-native-swipe-list-view';
-import { TeamAvatar } from '@/components/TeamAvatar';
+import { Avatar } from '@/components/Avatar';
 import { Team } from '@/entities/index';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { 
@@ -59,7 +59,7 @@ type TeamsFlattenedSection = Omit<TeamsSection, 'data'> & { team: Team | null, k
 
 const Item = ({item, backgroundColor, textColor}: ItemProps) => (
     <View style={[styles.item, styles.horizontalContainer]}>
-        <TeamAvatar
+        <Avatar
             logoUrl={item.logoUrl}
             name={item.name}
             size={36}
