@@ -1,14 +1,14 @@
 import React from 'react';
 import { ImageFetcher } from '@/components/ImageFetcher';
-import { TeamMonogram } from '@/components/TeamMonogram';
+import { Monogram } from '@/components/Monogram';
 
-type TeamAvatarProps = {
+type AvatarProps = {
     logoUrl: string | undefined;
     name: string;
     size: number;
 }
 
-export function TeamAvatar({ logoUrl, name, size }: TeamAvatarProps) {
+export function Avatar({ logoUrl, name, size }: AvatarProps) {
     if (logoUrl) {
         return (
             <ImageFetcher
@@ -18,5 +18,5 @@ export function TeamAvatar({ logoUrl, name, size }: TeamAvatarProps) {
             />
         );
     }
-    return <TeamMonogram name={name} size={size} />;
+    return <Monogram name={name} size={size} />;
 }
