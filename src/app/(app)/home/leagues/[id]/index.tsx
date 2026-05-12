@@ -158,8 +158,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     paddingTop: 2,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: 12,
+    paddingRight: 12,
     paddingBottom: 2,
     borderBottomWidth: 1
   },
