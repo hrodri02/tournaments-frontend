@@ -94,7 +94,6 @@ export default function HomeScreen() {
   }, [navigation, user, handleMenuButtonPress])
 
   useEffect(() => {
-    console.log('[HomeScreen] leaguesStatus =', leaguesStatus);
     if (leaguesStatus === 'idle') {
       dispatch(fetchLeagues());
     }
