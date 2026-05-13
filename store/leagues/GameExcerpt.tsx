@@ -8,7 +8,12 @@ import {
 } from 'react-native';
 import { Avatar } from '@/components/Avatar';
 import { Link } from 'expo-router';
-import { GameResponse } from '@/entities/index';
+import { 
+    GameResponse, 
+    GameStatType, 
+    countStatsForTeam 
+} from '@/entities/index';
+import { getGameStatus } from '@/utils/gameStatus';
 import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { useLocalSearchParams } from 'expo-router';
@@ -57,6 +62,28 @@ const styles = StyleSheet.create({
         color: '#888',
         marginHorizontal: 8,
     },
+    scoreCenter: {
+        alignItems: 'center',
+        marginHorizontal: 8,
+    },
+    score: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#111',
+        textAlign: 'center',
+    },
+    liveBadge: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: '#fff',
+        backgroundColor: '#e53e3e',
+        borderRadius: 4,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        overflow: 'hidden',
+        marginTop: 4,
+        alignSelf: 'center',
+    },
     dateRow: {
         marginTop: 12,
         alignItems: 'center',
@@ -74,6 +101,10 @@ export function GameExcerpt({ game }: GameExcerptProps) {
     const formattedDate = formatDate(date);
     const { id } = useLocalSearchParams();
     const leagueId = Number(id);
+
+    const status = getGameStatus(game.gameDateTime, game.durationInMinutes);
+    const homeGoals = countStatsForTeam(game.stats, GameStatType.goal, game.homeTeam);
+    const awayGoals = countStatsForTeam(game.stats, GameStatType.goal, game.awayTeam);
 
     function formatDate(date: number): string {
         const dateString = format(date, 'eee, MMM d pp', { locale });
@@ -103,7 +134,16 @@ export function GameExcerpt({ game }: GameExcerptProps) {
                             <Text style={styles.teamName}>{game.homeTeam.name}</Text>
                         </View>
 
-                        <Text style={styles.vs}>vs</Text>
+                        {status === 'upcoming' ? (
+                            <Text style={styles.vs}>vs</Text>
+                        ) : (
+                            <View style={styles.scoreCenter}>
+                                <Text style={styles.score}>{homeGoals} – {awayGoals}</Text>
+                                {status === 'live' && (
+                                    <Text style={styles.liveBadge}>LIVE</Text>
+                                )}
+                            </View>
+                        )}
 
                         <View style={styles.teamSide}>
                             <Avatar
