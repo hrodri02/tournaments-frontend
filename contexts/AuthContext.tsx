@@ -141,6 +141,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         error: null,
         rememberMe: rememberMe
       });
+      dispatch(resetLeaguesState());
+      dispatch(resetTeamsFetchState());
     } catch (error) {
       setState((prev) => ({
         ...prev,
@@ -148,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         error: error instanceof Error ? error.message : "An error occurred",
       }));
     }
-  }, []);
+  }, [dispatch]);
 
   const register = useCallback(async (credentials: RegisterCredentials) => {
     try {
@@ -207,8 +209,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         error: null,
         rememberMe: prev.rememberMe
       }));
-      dispatch(resetTeamsFetchState());
-      dispatch(resetLeaguesState());
     } catch (error) {
       setState(prev => ({
         ...prev,
